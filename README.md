@@ -1,2 +1,3 @@
-# coeus
-Yet another verilog compiler
+# Veridator
+
+Yet another verilog compiler.
