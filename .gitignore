@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+*.swp
+
+src/lexer.c
+src/lexer.h
