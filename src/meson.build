@@ -1,4 +1,4 @@
-veridator_deps = []
+yaveri_deps = []
 
 fs = [
   'src/main.c',
@@ -6,7 +6,7 @@ fs = [
   'src/lexer.c'
 ]
 
-main_lexer = '@0@/src/veridator-lexer-main.l'.format(src_root_dir)
+main_lexer = '@0@/src/yaveri-lexer-main.l'.format(src_root_dir)
 r = run_command('flex', main_lexer, check: true)
 
 fl = cc.find_library('fl')
@@ -15,5 +15,5 @@ if tests
   libcmocka = dependency('cmocka', required: true)
 endif
 
-veridator_deps += [fl]
+yaveri_deps += [fl]
 subdir('cmdline')

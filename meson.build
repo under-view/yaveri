@@ -1,5 +1,5 @@
 project(
-  'veridator',
+  'yaveri',
   'c',
   version: '0.0.1',
   license: 'MIT',
@@ -25,9 +25,9 @@ subdir('src')
 
 pargs += [ '-D_GNU_SOURCE' ]
 
-executable('veridator',
+executable(project_name,
            files(fs),
-           dependencies: veridator_deps,
+           dependencies: yaveri_deps,
            include_directories: [inc],
            c_args: pargs,
            install: true)

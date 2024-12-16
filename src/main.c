@@ -6,9 +6,9 @@
 #include "cmdline/cmdline.h"
 #include "lexer.h"
 
-struct veridator
+struct yaveri
 {
-	struct veridator_cmdline *cmdline;
+	struct yaveri_cmdline *cmdline;
 };
 
 
@@ -23,9 +23,9 @@ graceful_exit (int signum)
 {
 	(void)signum;
 
-	struct veridator *veridator = ptr;
+	struct yaveri *yaveri = ptr;
 
-	veridator_cmdline_destroy(veridator->cmdline);
+	yaveri_cmdline_destroy(yaveri->cmdline);
 }
 
 
@@ -33,18 +33,18 @@ int
 main (const int argc,
       const char *argv[])
 {
-	struct veridator veridator;
+	struct yaveri yaveri;
 
 	struct sigaction action, oldAction;
 
-	struct veridator_cmdline_process_args_info processArgsInfo;
+	struct yaveri_cmdline_process_args_info processArgsInfo;
 
 	memset(&action, 0, sizeof(action));
 	memset(&oldAction, 0, sizeof(oldAction));
-	memset(&veridator, 0, sizeof(veridator));
+	memset(&yaveri, 0, sizeof(yaveri));
 	memset(&processArgsInfo, 0, sizeof(processArgsInfo));
 
-	ptr = &veridator;
+	ptr = &yaveri;
 
 	action.sa_handler = graceful_exit;
 	sigemptyset(&action.sa_mask);
@@ -65,8 +65,8 @@ main (const int argc,
 	processArgsInfo.argv = argv;
 	processArgsInfo.argc = argc;
 	processArgsInfo.stream = STDOUT_FILENO;
-	veridator.cmdline = veridator_cmdline_process_args(&processArgsInfo);
-	if (!(veridator.cmdline))
+	yaveri.cmdline = yaveri_cmdline_process_args(&processArgsInfo);
+	if (!(yaveri.cmdline))
 		return 1;
 
 	graceful_exit(0);
