@@ -13,13 +13,19 @@ project(
 
 pargs = []
 cc = meson.get_compiler('c')
-so_version = '.'.join(meson.project_version())
 project_name = meson.project_name()
 src_root_dir = meson.current_source_dir()
 build_root_dir = meson.current_build_dir()
+
+inc = include_directories('src')
+
+tests = get_option('tests')
 
 subdir('src')
 
 executable('veridator',
            files(fs),
-           dependencies: [fl])
+           dependencies: veridator_deps,
+           include_directories: [inc],
+           c_args: pargs,
+           install: true)
