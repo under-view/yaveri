@@ -23,6 +23,8 @@ tests = get_option('tests')
 
 subdir('src')
 
+pargs += [ '-D_GNU_SOURCE' ]
+
 executable('veridator',
            files(fs),
            dependencies: veridator_deps,
