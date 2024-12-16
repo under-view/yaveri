@@ -3,6 +3,8 @@
 
 #include <sys/mman.h>
 
+#include <cando/cando.h>
+
 #include "cmdline.h"
 
 #define MAX_FILENAME_SIZE (1<<9)
@@ -25,11 +27,9 @@ struct yaveri_cmdline
  **************************************************/
 
 struct yaveri_cmdline *
-yaveri_cmdline_process_args (const void *_processArgsInfo)
+yaveri_cmdline_process_args (const void CANDO_UNUSED *_processArgsInfo)
 {
 	struct yaveri_cmdline *cmdline = NULL;
-
-	(void) _processArgsInfo;
 
 	cmdline = mmap(NULL,
 	               sizeof(struct yaveri_cmdline),

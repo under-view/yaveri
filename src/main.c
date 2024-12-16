@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <cando/cando.h>
+
 #include "cmdline/cmdline.h"
 #include "lexer.h"
 
@@ -19,10 +21,8 @@ static void *ptr = NULL;
 
 
 void
-graceful_exit (int signum)
+graceful_exit (int CANDO_UNUSED signum)
 {
-	(void)signum;
-
 	struct yaveri *yaveri = ptr;
 
 	yaveri_cmdline_destroy(yaveri->cmdline);

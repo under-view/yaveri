@@ -11,6 +11,8 @@
 #include <setjmp.h>
 #include <cmocka.h>
 
+#include <cando/cando.h>
+
 #include "cmdline.h"
 
 /*************************************************
@@ -18,10 +20,8 @@
  *************************************************/
 
 static void
-test_yaveri_cmdline_create (void **state)
+test_yaveri_cmdline_create (void CANDO_UNUSED **state)
 {
-	(void) state; /* unused */
-
 	const char *argv[] = { "yaveri" };
 
 	struct yaveri_cmdline *cmdline = NULL;
