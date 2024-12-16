@@ -3,7 +3,7 @@ yaveri_deps = []
 fs = [
   'src/main.c',
   'src/cmdline/cmdline.c',
-  'src/lang/lexer.c'
+  'src/parser/lexer.c'
 ]
 
 fl = cc.find_library('fl')
@@ -16,4 +16,4 @@ endif
 yaveri_deps += [fl,libcando]
 
 subdir('cmdline')
-subdir('lang')
+subdir('parser')

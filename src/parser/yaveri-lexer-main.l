@@ -9,7 +9,7 @@
 
 %{
 
-#include "lang/reserved-words.h"
+#include "parser/reserved-words.h"
 
 %}
 
