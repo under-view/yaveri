@@ -53,5 +53,5 @@ dkms.conf
 
 *.swp
 
-src/lexer.c
-src/lexer.h
+lexer.c
+lexer.h

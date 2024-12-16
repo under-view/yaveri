@@ -1,0 +1,18 @@
+#ifndef RESERVED_WORDS_H
+#define RESERVED_WORDS_H
+
+#define SVLOG_REG 1
+#define SVLOG_WIRE 2
+#define SVLOG_INTEGER 3
+#define SVLOG_REAL 4
+#define SVLOG_TIME 5
+#define SVLOG_REAL_TIME 6
+#define SVLOG_LOGIC 7
+#define SVLOG_BIT 8
+#define SVLOG_BYTE 9
+#define SVLOG_SHORT_INT 10
+#define SVLOG_INT 11
+#define SVLOG_LONG_INT 12
+#define SVLOG_SHORT_REAL 13
+
+#endif /* RESERVED_WORDS_H */

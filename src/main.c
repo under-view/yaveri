@@ -6,7 +6,7 @@
 #include <cando/cando.h>
 
 #include "cmdline/cmdline.h"
-#include "lexer.h"
+#include "lang/lexer.h"
 
 struct yaveri
 {
