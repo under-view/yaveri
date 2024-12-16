@@ -15,12 +15,12 @@
 
 #include "cmdline.h"
 
-/*************************************************
- * Start of test_yaveri_cmdline_create functions *
- *************************************************/
+/*******************************************************
+ * Start of test_yaveri_cmdline_process_args functions *
+ *******************************************************/
 
 static void
-test_yaveri_cmdline_create (void CANDO_UNUSED **state)
+test_yaveri_cmdline_process_args (void CANDO_UNUSED **state)
 {
 	const char *argv[] = { "yaveri" };
 
@@ -33,18 +33,20 @@ test_yaveri_cmdline_create (void CANDO_UNUSED **state)
 	processArgsInfo.argv = argv;
 	cmdline = yaveri_cmdline_process_args(&processArgsInfo);
 	assert_non_null(cmdline);
+
+	yaveri_cmdline_destroy(cmdline);
 }
 
-/***********************************************
- * End of test_yaveri_cmdline_create functions *
- ***********************************************/
+/*****************************************************
+ * End of test_yaveri_cmdline_process_args functions *
+ *****************************************************/
 
 int
 main (void)
 {
 	const struct CMUnitTest tests[] =
 	{
-		cmocka_unit_test(test_yaveri_cmdline_create),
+		cmocka_unit_test(test_yaveri_cmdline_process_args),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
