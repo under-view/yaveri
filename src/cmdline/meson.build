@@ -11,7 +11,7 @@ if tests
 
     exec = executable(exec_name,
                       files([p, cmdline_fs]),
-                      dependencies: [libcmocka],
+                      dependencies: [libcmocka,yaveri_deps],
                       include_directories: [inc, cmdline_inc],
                       c_args: pargs,
                       install: false)

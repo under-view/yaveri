@@ -17,7 +17,7 @@ if tests
 
     exec = executable(exec_name,
                       files([p, parser_fs]),
-                      dependencies: [libcmocka],
+                      dependencies: [libcmocka,yaveri_deps],
                       include_directories: [inc, parser_inc],
                       c_args: pargs,
                       install: false)
