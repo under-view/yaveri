@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #include <sys/mman.h>
 
@@ -17,8 +19,9 @@
  */
 struct yaveri_cmdline
 {
-	int  fd;
-	char filename[MAX_FILENAME_SIZE];
+	struct cando_log_error_struct err;
+	int                           fd;
+	char                          filename[MAX_FILENAME_SIZE];
 };
 
 
@@ -29,6 +32,8 @@ struct yaveri_cmdline
 struct yaveri_cmdline *
 yaveri_cmdline_process_args (const void CANDO_UNUSED *_processArgsInfo)
 {
+	int err = -1;
+
 	struct yaveri_cmdline *cmdline = NULL;
 
 	cmdline = mmap(NULL,
@@ -37,6 +42,12 @@ yaveri_cmdline_process_args (const void CANDO_UNUSED *_processArgsInfo)
 	               MAP_ANONYMOUS|MAP_PRIVATE,
 	               -1, 0);
 	if (cmdline == (void*)-1) {
+		return NULL;
+	}
+
+	err = CANDO_PAGE_SET_READ(cmdline, sizeof(struct yaveri_cmdline));
+	if (err == -1) {
+		cando_log_err("mprotect: %s\n", strerror(errno));
 		return NULL;
 	}
 
