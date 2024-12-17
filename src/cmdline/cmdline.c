@@ -14,6 +14,9 @@
 /*
  * @brief Structure representing the yaveri cmdline interface
  *
+ * @member err      - Stores information about the error that occured
+ *                    for the given instance and may later be retrieved
+ *                    by caller.
  * @member fd       - file descriptor associated with the open @filename
  * @member filename - String of the file to parse
  */
@@ -47,6 +50,7 @@ yaveri_cmdline_process_args (const void CANDO_UNUSED *_processArgsInfo)
 
 	err = CANDO_PAGE_SET_READ(cmdline, sizeof(struct yaveri_cmdline));
 	if (err == -1) {
+		yaveri_cmdline_destroy(cmdline);
 		cando_log_err("mprotect: %s\n", strerror(errno));
 		return NULL;
 	}
