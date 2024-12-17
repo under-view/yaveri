@@ -23,7 +23,15 @@
 static void
 test_yaveri_parser_create (void CANDO_UNUSED **state)
 {
+	struct yaveri_parser *parser = NULL;
 
+	struct yaveri_parser_create_info parserCreateInfo;
+	memset(&parserCreateInfo, 0, sizeof(parserCreateInfo));
+
+	parser = yaveri_parser_create(&parserCreateInfo);
+	assert_non_null(parser);
+
+	yaveri_parser_destroy(parser);
 }
 
 /**********************************************
