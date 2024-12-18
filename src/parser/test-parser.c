@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 /*
@@ -14,13 +15,12 @@
 #include <cando/cando.h>
 
 #include "parser.h"
-#include "lexer.h"
 
 /************************************************
  * Start of test_yaveri_parser_create functions *
  ************************************************/
 
-static void
+static void CANDO_UNUSED
 test_yaveri_parser_create (void CANDO_UNUSED **state)
 {
 	struct yaveri_parser *parser = NULL;
@@ -37,6 +37,34 @@ test_yaveri_parser_create (void CANDO_UNUSED **state)
 /**********************************************
  * End of test_yaveri_parser_create functions *
  **********************************************/
+
+
+/**********************************************
+ * Start of test_yaveri_parser_scan functions *
+ **********************************************/
+
+static void CANDO_UNUSED
+test_yaveri_parser_scan_comments (void CANDO_UNUSED **state)
+{
+	int err = -1;
+
+	struct yaveri_parser *parser = NULL;
+
+	struct yaveri_parser_create_info parserCreateInfo;
+	memset(&parserCreateInfo, 0, sizeof(parserCreateInfo));
+
+	parser = yaveri_parser_create(&parserCreateInfo);
+	assert_non_null(parser);
+
+	err = yaveri_parser_scan(parser, NULL);
+	assert_int_equal(err, 0);
+
+	yaveri_parser_destroy(parser);
+}
+
+/********************************************
+ * End of test_yaveri_parser_scan functions *
+ ********************************************/
 
 int
 main (void)

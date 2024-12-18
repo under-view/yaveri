@@ -53,6 +53,6 @@ dkms.conf
 
 *.swp
 
-lexer.c
-lexer.h
-*.tab.c
+yaveri-sv-lexer.c
+yaveri-sv-lexer.h
+*.tab.*

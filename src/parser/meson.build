@@ -1,12 +1,24 @@
+# For main executable
+fs += [
+  'src/parser/parser.c',
+  'src/parser/yaveri-sv-lexer.c',
+  'src/parser/yaveri-sv-parser.tab.c',
+]
+
+# For test executables
 parser_fs = [
   'parser.c',
-  'lexer.c'
+  'yaveri-sv-lexer.c',
+  'yaveri-sv-parser.tab.c',
 ]
 
 parser_inc = include_directories('.')
 
-main_lexer = '@0@/src/parser/yaveri-lexer-main.l'.format(src_root_dir)
+main_lexer = '@0@/src/parser/yaveri-sv-lexer.l'.format(src_root_dir)
 r = run_command('flex', main_lexer, check: true)
+
+main_parser = '@0@/src/parser/yaveri-sv-parser.y'.format(src_root_dir)
+r = run_command('bison', '-d', main_parser, check: true)
 
 if tests
   progs = [ 'test-parser.c' ]

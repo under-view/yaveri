@@ -3,8 +3,6 @@ yaveri_deps = []
 fs = [
   'src/main.c',
   'src/cmdline/cmdline.c',
-  'src/parser/lexer.c',
-  'src/parser/parser.c',
 ]
 
 fl = cc.find_library('fl')

@@ -10,16 +10,17 @@ struct yaveri_parser;
 /*
  * @brief
  *
- * @member
+ * @member filePath - File to scan & parse.
  */
 struct yaveri_parser_create_info
 {
-	int blank;
+	int nothing;
 };
 
 
 /*
- * @brief
+ * @brief Creates an instants of struct yaveri_parser to store
+ *        key information about the code being scaned.
  *
  * @param parserCreateInfo - Pointer to a struct yaveri_parser_create_info.
  *                           The use of pointer to a void is to limit amount
@@ -31,6 +32,20 @@ struct yaveri_parser_create_info
  */
 struct yaveri_parser *
 yaveri_parser_create (const void *parserCreateInfo);
+
+/*
+ * @brief
+ *
+ * @param parser   - Pointer to a valid struct yaveri_parser
+ * @param filePath - File to scan & parser
+ *
+ * @returns
+ * 	on success: 0
+ * 	on failure: -1
+ */
+int
+yaveri_parser_scan (struct yaveri_parser *parser,
+                    const char *filePath);
 
 
 /*
