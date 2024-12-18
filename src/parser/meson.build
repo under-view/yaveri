@@ -24,7 +24,7 @@ build_lexer = custom_target('build-lexer',
                                 '@INPUT@'
                             ],
                             install: false,
-                            build_always_stale: true,
+                            build_always_stale: false,
                             build_by_default: true)
 
 main_parser = '@0@/src/parser/yaveri-sv-parser.y'.format(src_root_dir)
@@ -38,7 +38,7 @@ build_parser = custom_target('build-parser',
                                  '@INPUT@'
                              ],
                              install: false,
-                             build_always_stale: true,
+                             build_always_stale: false,
                              build_by_default: true)
 
 extra_ctgt += [build_lexer, build_parser]
