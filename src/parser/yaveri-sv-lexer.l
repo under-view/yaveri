@@ -1,5 +1,4 @@
 	/* output file definitions */
-%option outfile="yaveri-sv-lexer.c" header-file="yaveri-sv-lexer.h"
 
 %option noinput nounput 8bit nodefault
 
@@ -7,23 +6,15 @@
 
 %option noyywrap
 
-	/********************************
-	 * Start of definitions section *
-	 ********************************/
 %{
 
-#include "parser/reserved-words.h"
+#include "yaveri-sv-parser.tab.h"
+
 #include "parser/parser.h"
 
 %}
-	/******************************
-	 * End of definitions section *
-	 ******************************/
 
 
-	/**************************
-	 * Start of rules section *
-	 **************************/
 %%
 	/* Start of reserved words */
 "reg"       { return SVLOG_REG;        } 
@@ -51,6 +42,3 @@
 \/\*(.*\n)*.*\*\/  {};
 
 %%
-	/************************
-	 * End of rules section *
-	 ************************/

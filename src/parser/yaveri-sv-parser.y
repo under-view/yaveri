@@ -1,9 +1,17 @@
 %{
 #include <stdio.h>
 
-#include "yaveri-sv-parser.tab.h"
-
+/*
+ * Bison expects you to implement the function yylex(),
+ * used to get the next token. Our yylex() is provided
+ * by the flex scanner.
+ */
 extern int yylex(void);
+
+/*
+ * Bison expects you to implement the function yyerror(),
+ * invoked whenever the parser step into an error.
+ */
 extern int yyerror(char *message);
 %}
 

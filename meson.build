@@ -12,6 +12,7 @@ project(
 )
 
 pargs = []
+extra_ctgt = []
 cc = meson.get_compiler('c')
 project_name = meson.project_name()
 src_root_dir = meson.current_source_dir()
@@ -27,6 +28,8 @@ pargs += [ '-D_GNU_SOURCE' ]
 
 executable(project_name,
            files(fs),
+           sources: extra_ctgt,
+           link_language: 'c',
            dependencies: yaveri_deps,
            include_directories: [inc],
            c_args: pargs,

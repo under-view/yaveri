@@ -151,8 +151,17 @@ yaveri_parser_destroy (struct yaveri_parser *parser)
  * End of yaveri_parser_destroy functions *
  ******************************************/
 
+
+/*******************************************
+ * Start of functions used by flex & bison *
+ *******************************************/
+
 void
 yyerror (const char *s)
 {
-   fprintf(stderr, "%s\n", s);
+	fprintf(stderr, "%s\n", s);
 }
+
+/*****************************************
+ * End of functions used by flex & bison *
+ *****************************************/
