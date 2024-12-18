@@ -33,6 +33,7 @@ struct yaveri_parser_create_info
 struct yaveri_parser *
 yaveri_parser_create (const void *parserCreateInfo);
 
+
 /*
  * @brief
  *
@@ -44,8 +45,8 @@ yaveri_parser_create (const void *parserCreateInfo);
  * 	on failure: -1
  */
 int
-yaveri_parser_scan (struct yaveri_parser *parser,
-                    const char *filePath);
+yaveri_parser_parse (struct yaveri_parser *parser,
+                     const char *filePath);
 
 
 /*

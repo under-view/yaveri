@@ -1,3 +1,5 @@
+%define parse.error verbose
+
 %{
 #include <stdio.h>
 
@@ -12,7 +14,7 @@ extern int yylex(void);
  * Bison expects you to implement the function yyerror(),
  * invoked whenever the parser step into an error.
  */
-extern int yyerror(char *message);
+extern int yyerror(const char *message);
 %}
 
 /* declare tokens */

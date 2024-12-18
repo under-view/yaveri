@@ -1,5 +1,3 @@
-	/* output file definitions */
-
 %option noinput nounput 8bit nodefault
 
 %option always-interactive

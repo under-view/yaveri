@@ -6,8 +6,8 @@
 
 #include <cando/cando.h>
 
-#include "reserved-words.h"
 #include "yaveri-sv-lexer.h"
+#include "yaveri-sv-parser.tab.h"
 #include "parser.h"
 
 #define FILE_PATH_NAME_MAX (1<<9)
@@ -66,8 +66,8 @@ yaveri_parser_create (const void *_parserCreateInfo)
  *****************************************/
 
 int
-yaveri_parser_scan (struct yaveri_parser *parser,
-                    const char *file)
+yaveri_parser_parse (struct yaveri_parser *parser,
+                     const char *file)
 {
 	int token = 0;
 
@@ -85,7 +85,7 @@ yaveri_parser_scan (struct yaveri_parser *parser,
 
 	yyin = parser->file;
 
-	while ((token = yylex()))
+	while ((token = yyparse()))
 	{
 		fprintf(stdout, "%s\n", yytext);
 		switch (token)
@@ -122,7 +122,7 @@ yaveri_parser_scan (struct yaveri_parser *parser,
 	}
 
 	fclose(parser->file);
-	parser->file = NULL;
+	yyin = parser->file = NULL;
 
 	return 0;
 }
