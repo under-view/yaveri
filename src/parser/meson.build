@@ -32,7 +32,7 @@ build_parser = custom_target('build-parser',
                              output: ['yaveri-sv-parser.tab.c', 'yaveri-sv-parser.tab.h'],
                              input: main_parser,
                              command: [
-                                 bison, '-d',
+                                 bison, '-t', '-d',
                                  '--output', '@OUTPUT0@',
                                  '--header=@OUTPUT1@',
                                  '@INPUT@'
