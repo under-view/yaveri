@@ -20,6 +20,20 @@ extern int yyerror(const char *message);
 
 /* declare tokens */
 
+/* Design Element 'module' */
+%token SVLOG_MODULE
+/* Design Element 'program' */
+%token SVLOG_PROGRAM
+/* Design Element 'interface' */
+%token SVLOG_INTERFACE
+/* Design Element 'checker' */
+%token SVLOG_CHECKER
+/* Design Element 'package' */
+%token SVLOG_PACKAGE
+/* Design Element 'primitive' */
+%token SVLOG_PRIMITIVE
+/* Design Element 'config' */
+%token SVLOG_CONFIG
 /* second 's' */
 %token SVLOG_SEC
 /* millisecond 'ms' */

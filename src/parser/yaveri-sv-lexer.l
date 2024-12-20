@@ -15,6 +15,14 @@
 
 %%
 	/* Start of reserved words */
+"module"    { return SVLOG_MODULE;     }
+"program"   { return SVLOG_PROGRAM;    }
+"interface" { return SVLOG_INTERFACE;  }
+"checker"   { return SVLOG_CHECKER;    }
+"package"   { return SVLOG_PACKAGE;    }
+"primitive" { return SVLOG_PRIMITIVE;  }
+"config"    { return SVLOG_CONFIG;     }
+
 "s"         { return SVLOG_SEC;        }
 "ms"        { return SVLOG_MILLISEC;   }
 "us"        { return SVLOG_MICROSEC;   }
@@ -22,6 +30,7 @@
 "ps"        { return SVLOG_PICOSEC;    }
 "fs"        { return SVLOG_fEMTOSEC;   }
 "step"      { return SVLOG_STEP;       }
+
 "reg"       { return SVLOG_REG;        } 
 "wire"      { return SVLOG_WIRE;       }
 "integer"   { return SVLOG_INTEGER;    }
