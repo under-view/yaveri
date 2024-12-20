@@ -66,7 +66,7 @@ yaveri_parser_create (const void *_parserCreateInfo)
  *****************************************/
 
 int
-yaveri_parser_parse (struct yaveri_parser *parser,
+yaveri_parser_scan (struct yaveri_parser *parser,
                      const char *file)
 {
 	int token = 0;

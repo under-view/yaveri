@@ -44,7 +44,7 @@ test_yaveri_parser_create (void CANDO_UNUSED **state)
  **********************************************/
 
 static void CANDO_UNUSED
-test_yaveri_parser_parse_comments (void CANDO_UNUSED **state)
+test_yaveri_parser_scan_comments (void CANDO_UNUSED **state)
 {
 	int err = -1;
 
@@ -56,7 +56,7 @@ test_yaveri_parser_parse_comments (void CANDO_UNUSED **state)
 	parser = yaveri_parser_create(&parserCreateInfo);
 	assert_non_null(parser);
 
-	err = yaveri_parser_parse(parser, NULL);
+	err = yaveri_parser_scan(parser, NULL);
 	assert_int_equal(err, 0);
 
 	yaveri_parser_destroy(parser);
