@@ -1,6 +1,7 @@
 %define parse.error verbose
 
 %{
+
 #include <stdio.h>
 
 /*
@@ -18,6 +19,23 @@ extern int yyerror(const char *message);
 %}
 
 /* declare tokens */
+
+/* second 's' */
+%token SVLOG_SEC
+/* millisecond 'ms' */
+%token SVLOG_MILLISEC
+/* microsecond 'us' */
+%token SVLOG_MICROSEC
+/* nanosecond 'ns' */
+%token SVLOG_NANOSEC
+/* picosecond 'ps' */
+%token SVLOG_PICOSEC
+/* femtosecond 'fs' */
+%token SVLOG_fEMTOSEC
+/* step 'step' */
+%token SVLOG_STEP
+
+/* register 'reg' */
 %token SVLOG_REG
 %token SVLOG_WIRE
 %token SVLOG_INTEGER
@@ -32,26 +50,26 @@ extern int yyerror(const char *message);
 %token SVLOG_LONG_INT
 %token SVLOG_SHORT_REAL
 
-%token NUMBER
-%token ADD SUB MUL DIV ABS
-%token EOL
+
+/* Left Square Bracket '[' */
+%token LSBRAC
+/* Right Square Bracket ']' */
+%token RSBRAC
+/* Colon ':' */
+%token COLON
+/* Semicolon ';' */
+%token SEMICOLON
+/* Underscore '_' */
+%token UNDERSCORE
+/* Plus '+' */
+%token PLUS
+/* Minus '-' */
+%token MINUS
+
+%start svlog
 
 %%
-calclist: /* nothing */
-	| calclist exp EOL { printf("= %d\n", $2); }
-	;
 
-exp: factor
-	| exp ADD factor { $$ = $1 + $3; }
-	| exp SUB factor { $$ = $1 - $3; }
-	;
+svlog: %empty
 
-factor: term
-	| factor MUL term { $$ = $1 * $3; }
-	| factor DIV term { $$ = $1 / $3; }
-	;
-
-term: NUMBER
-	| ABS term   { $$ = $2 >= 0? $2 : - $2; }
-	;
 %%

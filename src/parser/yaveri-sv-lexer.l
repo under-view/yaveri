@@ -15,6 +15,13 @@
 
 %%
 	/* Start of reserved words */
+"s"         { return SVLOG_SEC;        }
+"ms"        { return SVLOG_MILLISEC;   }
+"us"        { return SVLOG_MICROSEC;   }
+"ns"        { return SVLOG_NANOSEC;    }
+"ps"        { return SVLOG_PICOSEC;    }
+"fs"        { return SVLOG_fEMTOSEC;   }
+"step"      { return SVLOG_STEP;       }
 "reg"       { return SVLOG_REG;        } 
 "wire"      { return SVLOG_WIRE;       }
 "integer"   { return SVLOG_INTEGER;    }
@@ -28,6 +35,13 @@
 "int"       { return SVLOG_INT;        }
 "longint"   { return SVLOG_LONG_INT;   }
 "shortreal" { return SVLOG_SHORT_REAL; }
+"["         { return LSBRAC;           }
+"]"         { return RSBRAC;           }
+":"         { return COLON;            }
+";"         { return SEMICOLON;        }
+"_"         { return UNDERSCORE;       }
+"+"         { return PLUS;             }
+"-"         { return MINUS;            }
 	/* End of reserved words */
 
 
