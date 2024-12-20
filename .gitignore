@@ -56,3 +56,4 @@ dkms.conf
 yaveri-sv-lexer.c
 yaveri-sv-lexer.h
 *.tab.*
+*.gdb_*
