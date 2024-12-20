@@ -10,12 +10,15 @@ parser_fs = [
 
 parser_inc = include_directories('.')
 
+parser_src_dir = meson.current_source_dir()
+
 flex = find_program('flex', required: true)
 bison = find_program('bison', required: true)
 
-main_lexer = '@0@/src/parser/yaveri-sv-lexer.l'.format(src_root_dir)
+lexer_outputs = ['yaveri-sv-lexer.c', 'yaveri-sv-lexer.h']
+main_lexer = '@0@/yaveri-sv-lexer.l'.format(parser_src_dir)
 build_lexer = custom_target('build-lexer',
-                            output: ['yaveri-sv-lexer.c', 'yaveri-sv-lexer.h'],
+                            output: lexer_outputs,
                             input: main_lexer,
                             command: [
                                 flex,
@@ -27,9 +30,10 @@ build_lexer = custom_target('build-lexer',
                             build_always_stale: false,
                             build_by_default: true)
 
-main_parser = '@0@/src/parser/yaveri-sv-parser.y'.format(src_root_dir)
+parser_outputs = ['yaveri-sv-parser.tab.c', 'yaveri-sv-parser.tab.h']
+main_parser = '@0@/yaveri-sv-parser.y'.format(parser_src_dir)
 build_parser = custom_target('build-parser',
-                             output: ['yaveri-sv-parser.tab.c', 'yaveri-sv-parser.tab.h'],
+                             output: parser_outputs,
                              input: main_parser,
                              command: [
                                  bison, '-t', '-d',
