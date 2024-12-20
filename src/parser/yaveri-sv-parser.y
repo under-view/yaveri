@@ -65,11 +65,39 @@ extern int yyerror(const char *message);
 %token PLUS
 /* Minus '-' */
 %token MINUS
+/* Logical NOT '!' */
+%token LOGICAL_NOT
+/* Bit Wise NOT '~' */
+%token BIT_WISE_NOT
+/* Bit Wise AND '&' */
+%token BIT_WISE_AND
+/* Bit Wise NAND '~&' */
+%token BIT_WISE_NAND
+/* Bit Wise OR '|' */
+%token BIT_WISE_OR
+/* Bit Wise NOR '~|' */
+%token BIT_WISE_NOR
+/* Bit Wise XOR '^' */
+%token BIT_WISE_XOR
+/* Bit Wise XNOR '~^' */
+%token BIT_WISE_XNOR
 
 %start svlog
 
 %%
 
-svlog: %empty
+svlog: unary_operator | %empty
+
+unary_operator
+	: PLUS
+	| MINUS
+	| LOGICAL_NOT
+	| BIT_WISE_NOT
+	| BIT_WISE_AND
+	| BIT_WISE_NAND
+	| BIT_WISE_OR
+	| BIT_WISE_NOR
+	| BIT_WISE_XOR
+	| BIT_WISE_XNOR
 
 %%

@@ -42,6 +42,15 @@
 "_"         { return UNDERSCORE;       }
 "+"         { return PLUS;             }
 "-"         { return MINUS;            }
+"!"         { return LOGICAL_NOT;      }
+"~"         { return BIT_WISE_NOT;     }
+"&"         { return BIT_WISE_AND;     }
+"~&"        { return BIT_WISE_NAND;    }
+"|"         { return BIT_WISE_OR;      }
+"~|"        { return BIT_WISE_NOR;     }
+"^"         { return BIT_WISE_XOR;     }
+"~^"        { return BIT_WISE_XNOR;    }
+"^~"        { return BIT_WISE_XNOR;    }
 	/* End of reserved words */
 
 
