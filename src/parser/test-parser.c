@@ -53,10 +53,12 @@ test_yaveri_parser_scan_comments (void CANDO_UNUSED **state)
 	struct yaveri_parser_create_info parserCreateInfo;
 	memset(&parserCreateInfo, 0, sizeof(parserCreateInfo));
 
+	cando_log_set_level(CANDO_LOG_ALL);
+
 	parser = yaveri_parser_create(&parserCreateInfo);
 	assert_non_null(parser);
 
-	err = yaveri_parser_scan(parser, NULL);
+	err = yaveri_parser_scan(parser, COMMENTS_TEST_FILE);
 	assert_int_equal(err, 0);
 
 	yaveri_parser_destroy(parser);
@@ -72,6 +74,7 @@ main (void)
 	const struct CMUnitTest tests[] =
 	{
 		cmocka_unit_test(test_yaveri_parser_create),
+		cmocka_unit_test(test_yaveri_parser_scan_comments),
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);

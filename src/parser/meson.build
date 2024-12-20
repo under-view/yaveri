@@ -48,9 +48,11 @@ build_parser = custom_target('build-parser',
 extra_ctgt += [build_lexer, build_parser]
 
 if tests
+  original_args = pargs
+
   progs = [ 'test-parser.c' ]
 
-  original_args = pargs
+  pargs += ['-DCOMMENTS_TEST_FILE="@0@/test-files/@1@"'.format(parser_src_dir, 'comment.sv')]
   foreach p : progs
     exec_name = p.substring(0,-2) # remove .c extension from name
 

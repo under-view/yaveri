@@ -67,7 +67,7 @@ yaveri_parser_create (const void *_parserCreateInfo)
 
 int
 yaveri_parser_scan (struct yaveri_parser *parser,
-                     const char *file)
+                    const char *file)
 {
 	int token = 0;
 
@@ -79,7 +79,7 @@ yaveri_parser_scan (struct yaveri_parser *parser,
 
 	parser->file = fopen(file, "rw");
 	if (!(parser->file)) {
-		cando_log_set_err(parser, errno, "fopen: %s", strerror(errno));
+		cando_log_set_err(parser, errno, "fopen('%s'): %s", file, strerror(errno));
 		return -1;
 	}
 
@@ -124,6 +124,8 @@ yaveri_parser_scan (struct yaveri_parser *parser,
 	fclose(parser->file);
 	yyin = parser->file = NULL;
 
+	yylex_destroy();
+
 	return 0;
 }
 
@@ -142,8 +144,6 @@ yaveri_parser_destroy (struct yaveri_parser *parser)
 	if (!parser)
 		return;
 
-	fclose(parser->file);
-	yylex_destroy();
 	munmap(parser, sizeof(struct yaveri_parser));
 }
 
