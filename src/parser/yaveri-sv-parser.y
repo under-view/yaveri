@@ -22,18 +22,25 @@ extern int yyerror(const char *message);
 
 /* Design Element 'module' */
 %token SVLOG_MODULE
+%token SVLOG_ENDMODULE
 /* Design Element 'program' */
 %token SVLOG_PROGRAM
+%token SVLOG_ENDPROGRAM
 /* Design Element 'interface' */
 %token SVLOG_INTERFACE
+%token SVLOG_ENDINTERFACE
 /* Design Element 'checker' */
 %token SVLOG_CHECKER
+%token SVLOG_ENDCHECKER
 /* Design Element 'package' */
 %token SVLOG_PACKAGE
+%token SVLOG_ENDPACKAGE
 /* Design Element 'primitive' */
 %token SVLOG_PRIMITIVE
+%token SVLOG_ENDPRIMITIVE
 /* Design Element 'config' */
 %token SVLOG_CONFIG
+%token SVLOG_ENDCONFIG
 /* second 's' */
 %token SVLOG_SEC
 /* millisecond 'ms' */
