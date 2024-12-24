@@ -20,6 +20,7 @@ extern int yyerror(const char *message);
 
 /* declare tokens */
 
+
 /* Design Element 'module' */
 %token SVLOG_MODULE
 %token SVLOG_ENDMODULE
@@ -102,6 +103,10 @@ extern int yyerror(const char *message);
 %token BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
 %token BIT_WISE_XNOR
+
+
+/* Simple Identifier */
+%token SVLOG_SIDENT
 
 %start svlog
 

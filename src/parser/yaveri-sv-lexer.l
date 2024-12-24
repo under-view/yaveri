@@ -12,6 +12,8 @@
 
 %}
 
+	/* Simple Identifier regex */
+SIDENT ^(?!$0-9)([_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z])
 
 %%
 	/* Start of reserved words */
@@ -69,6 +71,7 @@
 "^~"           { return BIT_WISE_XNOR;      }
 	/* End of reserved words */
 
+{SIDENT}       { return SVLOG_SIDENT;       }
 
 [ \n\t\f\v] { /* skip blanks */ }
 
