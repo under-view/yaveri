@@ -10,4 +10,4 @@ comment
 
 /* here are some nasty comments: */
 /* ///// /// */
-/*******/
+/********/

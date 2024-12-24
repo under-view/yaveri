@@ -24,7 +24,7 @@
 	 **************************/
 
 	/* Simple identifier regex */
-SIDENT [^(?!$0-9)][_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z]
+SIDENT [_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z]
 	/* Single comment regex */
 SCOMMENT \/\/(.*)
 	/* Multi comment regex */
