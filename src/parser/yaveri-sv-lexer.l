@@ -24,13 +24,11 @@
 	 **************************/
 
 	/* Simple identifier regex */
-SIDENT ^(?!$0-9)([_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z])
+SIDENT [^(?!$0-9)][_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z]
 	/* Single comment regex */
 SCOMMENT \/\/(.*)
 	/* Multi comment regex */
 MCOMMENT \/\*(.*\n)*.*\*\/
-	/* Blanks regex */
-BLANKS [ \n\t\f\v]
 
 %%
 	/* Start of reserved words */
@@ -88,10 +86,11 @@ BLANKS [ \n\t\f\v]
 "^~"           { return BIT_WISE_XNOR;      }
 	/* End of reserved words */
 
-SIDENT         { return SVLOG_SIDENT;       };
-SCOMMENT       {      /* Do nothing */      };
-MCOMMENT       {      /* Do nothing */      };
-BLANKS         {      /* Do nothing */      };
+{SIDENT}       { return SVLOG_SIDENT;       }
+{SCOMMENT}     {      /* Do nothing */      }
+{MCOMMENT}     {      /* Do nothing */      }
+[ \n\t\f\v]    {      /* Do nothing */      }
+.              { fprintf(stdout, "bad input character '%s' at line %d\n", yytext, yylineno); }
 
 %%
 	/************************
