@@ -4,6 +4,9 @@
 
 %option noyywrap
 
+	/*******************************
+	 * Start of definition section *
+	 *******************************/
 %{
 
 #include "yaveri-sv-parser.tab.h"
@@ -11,9 +14,23 @@
 #include "parser/parser.h"
 
 %}
+	/*****************************
+	 * End of definition section *
+	 *****************************/
 
-	/* Simple Identifier regex */
+
+	/**************************
+	 * Start of rules section *
+	 **************************/
+
+	/* Simple identifier regex */
 SIDENT ^(?!$0-9)([_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z])
+	/* Single comment regex */
+SCOMMENT \/\/(.*)
+	/* Multi comment regex */
+MCOMMENT \/\*(.*\n)*.*\*\/
+	/* Blanks regex */
+BLANKS [ \n\t\f\v]
 
 %%
 	/* Start of reserved words */
@@ -71,14 +88,12 @@ SIDENT ^(?!$0-9)([_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z])
 "^~"           { return BIT_WISE_XNOR;      }
 	/* End of reserved words */
 
-{SIDENT}       { return SVLOG_SIDENT;       }
-
-[ \n\t\f\v] { /* skip blanks */ }
-
-	/* Regular expression for single line comment*/
-\/\/(.*) {};
-
-	/* Regular expression for multi line comment*/
-\/\*(.*\n)*.*\*\/  {};
+SIDENT         { return SVLOG_SIDENT;       };
+SCOMMENT       {      /* Do nothing */      };
+MCOMMENT       {      /* Do nothing */      };
+BLANKS         {      /* Do nothing */      };
 
 %%
+	/************************
+	 * End of rules section *
+	 ************************/
