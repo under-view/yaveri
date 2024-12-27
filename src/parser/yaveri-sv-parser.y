@@ -113,7 +113,7 @@ extern int yyerror(const char *message);
 %%
 
 svlog
-	: statements { fprintf(stdout, "svlog -> SVLOG_SIDENT SEMICOLON\n"); }
+	: statements
 	| unary_operator
 	| %empty
 
