@@ -22,89 +22,106 @@ extern int yyerror(const char *message);
 /* declare tokens */
 
 
+/*
+ * Comment from: https://aquamentus.com/flex_bison.html
+ *
+ * Bison fundamentally works by asking flex to get the next token, which it
+ * returns as an object of type "yystype". Initially (by default), yystype
+ * is merely a typedef of "int", but for non-trivial projects, tokens could
+ * be of any arbitrary data type. So, to deal with that, the idea is to
+ * override yystype's default typedef to be a C union instead. Unions can
+ * hold all of the types of tokens that Flex could return, and this this means
+ * we can return ints or floats or strings cleanly. Bison implements this
+ * mechanism with the %union directive:
+ */
+%union {
+	int itoken; // Integer token
+}
+
+
 /* Design Element 'module' */
-%token SVLOG_MODULE
-%token SVLOG_ENDMODULE
+%token <itoken> SVLOG_MODULE
+%token <itoken> SVLOG_ENDMODULE
 /* Design Element 'program' */
-%token SVLOG_PROGRAM
-%token SVLOG_ENDPROGRAM
+%token <itoken> SVLOG_PROGRAM
+%token <itoken> SVLOG_ENDPROGRAM
 /* Design Element 'interface' */
-%token SVLOG_INTERFACE
-%token SVLOG_ENDINTERFACE
+%token <itoken> SVLOG_INTERFACE
+%token <itoken> SVLOG_ENDINTERFACE
 /* Design Element 'checker' */
-%token SVLOG_CHECKER
-%token SVLOG_ENDCHECKER
+%token <itoken> SVLOG_CHECKER
+%token <itoken> SVLOG_ENDCHECKER
 /* Design Element 'package' */
-%token SVLOG_PACKAGE
-%token SVLOG_ENDPACKAGE
+%token <itoken> SVLOG_PACKAGE
+%token <itoken> SVLOG_ENDPACKAGE
 /* Design Element 'primitive' */
-%token SVLOG_PRIMITIVE
-%token SVLOG_ENDPRIMITIVE
+%token <itoken> SVLOG_PRIMITIVE
+%token <itoken> SVLOG_ENDPRIMITIVE
 /* Design Element 'config' */
-%token SVLOG_CONFIG
-%token SVLOG_ENDCONFIG
+%token <itoken> SVLOG_CONFIG
+%token <itoken> SVLOG_ENDCONFIG
 /* second 's' */
-%token SVLOG_SEC
+%token <itoken> SVLOG_SEC
 /* millisecond 'ms' */
-%token SVLOG_MILLISEC
+%token <itoken> SVLOG_MILLISEC
 /* microsecond 'us' */
-%token SVLOG_MICROSEC
+%token <itoken> SVLOG_MICROSEC
 /* nanosecond 'ns' */
-%token SVLOG_NANOSEC
+%token <itoken> SVLOG_NANOSEC
 /* picosecond 'ps' */
-%token SVLOG_PICOSEC
+%token <itoken> SVLOG_PICOSEC
 /* femtosecond 'fs' */
-%token SVLOG_fEMTOSEC
+%token <itoken> SVLOG_fEMTOSEC
 /* step 'step' */
-%token SVLOG_STEP
+%token <itoken> SVLOG_STEP
 /* register 'reg' */
-%token SVLOG_REG
-%token SVLOG_WIRE
-%token SVLOG_INTEGER
-%token SVLOG_REAL
-%token SVLOG_TIME
-%token SVLOG_REAL_TIME
-%token SVLOG_LOGIC
-%token SVLOG_BIT
-%token SVLOG_BYTE
-%token SVLOG_SHORT_INT
-%token SVLOG_INT
-%token SVLOG_LONG_INT
-%token SVLOG_SHORT_REAL
+%token <itoken> SVLOG_REG
+%token <itoken> SVLOG_WIRE
+%token <itoken> SVLOG_INTEGER
+%token <itoken> SVLOG_REAL
+%token <itoken> SVLOG_TIME
+%token <itoken> SVLOG_REAL_TIME
+%token <itoken> SVLOG_LOGIC
+%token <itoken> SVLOG_BIT
+%token <itoken> SVLOG_BYTE
+%token <itoken> SVLOG_SHORT_INT
+%token <itoken> SVLOG_INT
+%token <itoken> SVLOG_LONG_INT
+%token <itoken> SVLOG_SHORT_REAL
 /* Left Square Bracket '[' */
-%token LSBRAC
+%token <itoken> LSBRAC
 /* Right Square Bracket ']' */
-%token RSBRAC
+%token <itoken> RSBRAC
 /* Colon ':' */
-%token COLON
+%token <itoken> COLON
 /* Semicolon ';' */
-%token SEMICOLON
+%token <itoken> SEMICOLON
 /* Underscore '_' */
-%token UNDERSCORE
+%token <itoken> UNDERSCORE
 /* Plus '+' */
-%token PLUS
+%token <itoken> PLUS
 /* Minus '-' */
-%token MINUS
+%token <itoken> MINUS
 /* Logical NOT '!' */
-%token LOGICAL_NOT
+%token <itoken> LOGICAL_NOT
 /* Bit Wise NOT '~' */
-%token BIT_WISE_NOT
+%token <itoken> BIT_WISE_NOT
 /* Bit Wise AND '&' */
-%token BIT_WISE_AND
+%token <itoken> BIT_WISE_AND
 /* Bit Wise NAND '~&' */
-%token BIT_WISE_NAND
+%token <itoken> BIT_WISE_NAND
 /* Bit Wise OR '|' */
-%token BIT_WISE_OR
+%token <itoken> BIT_WISE_OR
 /* Bit Wise NOR '~|' */
-%token BIT_WISE_NOR
+%token <itoken> BIT_WISE_NOR
 /* Bit Wise XOR '^' */
-%token BIT_WISE_XOR
+%token <itoken> BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
-%token BIT_WISE_XNOR
+%token <itoken> BIT_WISE_XNOR
 /* Simple Identifier */
-%token SVLOG_SIDENT
+%token <itoken> SVLOG_SIDENT
 /* Escaped identifiers */
-%token SVLOG_EIDENT
+%token <itoken> SVLOG_EIDENT
 
 %start svlog
 
@@ -114,14 +131,17 @@ svlog
 	: statements
 	| unary_operator
 	| %empty
+	;
 
 statements
 	: statement statements
 	| statement
+	;
 
 statement
 	: SVLOG_SIDENT SEMICOLON
 	| SVLOG_EIDENT
+	;
 
 unary_operator
 	: PLUS
@@ -134,5 +154,6 @@ unary_operator
 	| BIT_WISE_NOR
 	| BIT_WISE_XOR
 	| BIT_WISE_XNOR
+	;
 
 %%

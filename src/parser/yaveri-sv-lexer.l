@@ -2,8 +2,6 @@
 
 %option always-interactive
 
-%option noyywrap
-
 	/*******************************
 	 * Start of definition section *
 	 *******************************/
