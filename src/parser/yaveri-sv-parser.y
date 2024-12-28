@@ -1,4 +1,5 @@
 %define parse.error verbose
+%locations
 
 %{
 
@@ -56,7 +57,6 @@ extern int yyerror(const char *message);
 %token SVLOG_fEMTOSEC
 /* step 'step' */
 %token SVLOG_STEP
-
 /* register 'reg' */
 %token SVLOG_REG
 %token SVLOG_WIRE
@@ -71,8 +71,6 @@ extern int yyerror(const char *message);
 %token SVLOG_INT
 %token SVLOG_LONG_INT
 %token SVLOG_SHORT_REAL
-
-
 /* Left Square Bracket '[' */
 %token LSBRAC
 /* Right Square Bracket ']' */
@@ -103,10 +101,10 @@ extern int yyerror(const char *message);
 %token BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
 %token BIT_WISE_XNOR
-
-
 /* Simple Identifier */
 %token SVLOG_SIDENT
+/* Escaped identifiers */
+%token SVLOG_EIDENT
 
 %start svlog
 
@@ -123,6 +121,7 @@ statements
 
 statement
 	: SVLOG_SIDENT SEMICOLON
+	| SVLOG_EIDENT
 
 unary_operator
 	: PLUS

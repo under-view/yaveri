@@ -25,6 +25,9 @@
 
 	/* Simple identifier regex */
 SIDENT [_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z]
+	/* Escape identifier regex */
+	/* WILL NEED TO BE UPDATED WHEN UNDERSTOOD MORE */
+EIDENT [\\\S* ]
 	/* Single comment regex */
 SCOMMENT \/\/(.*)
 	/* Multi comment regex */
@@ -87,6 +90,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 	/* End of reserved words */
 
 {SIDENT}       { return SVLOG_SIDENT;       }
+{EIDENT}       { return SVLOG_EIDENT;       }
 {SCOMMENT}     {      /* Do nothing */      }
 {MCOMMENT}     {      /* Do nothing */      }
 [ \n\t\f\v]    {      /* Do nothing */      }
