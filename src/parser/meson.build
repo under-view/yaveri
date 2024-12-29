@@ -51,11 +51,10 @@ extra_ctgt += [build_lexer, build_parser]
 if tests
   original_args = pargs
 
+  subdir('test-files')
+
   progs = [ 'test-parser.c' ]
 
-  pargs += ['-DCOMMENTS_TEST_FILE="@0@/test-files/@1@"'.format(parser_src_dir, 'comment.sv')]
-  pargs += ['-DIDENTIFIER_TEST_FILE="@0@/test-files/@1@"'.format(parser_src_dir, 'identifier.sv')]
-  pargs += ['-DESCAPE_IDENTIFIER_TEST_FILE="@0@/test-files/@1@"'.format(parser_src_dir, 'escape-identifier.sv')]
   foreach p : progs
     exec_name = p.substring(0,-2) # remove .c extension from name
 
