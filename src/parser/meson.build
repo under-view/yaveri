@@ -37,6 +37,7 @@ build_parser = custom_target('build-parser',
                              input: main_parser,
                              command: [
                                  bison, '-t', '-d',
+                                 '-Wcounterexamples',
                                  '--output', '@OUTPUT0@',
                                  '--header=@OUTPUT1@',
                                  '@INPUT@'
