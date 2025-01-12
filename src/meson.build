@@ -8,7 +8,7 @@ fs = [
 # flex libraries are only needed to get
 # the default yywrap definition
 fl = cc.find_library('fl')
-libcando = dependency('cando', required: true, version: '>=0.1.2')
+libcando = dependency('cando', version: '>= 0.1.4', required: true)
 
 if tests
   libcmocka = dependency('cmocka', required: true)

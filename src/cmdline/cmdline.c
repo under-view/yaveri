@@ -51,7 +51,7 @@ yaveri_cmdline_process_args (const void CANDO_UNUSED *_processArgsInfo)
 	err = CANDO_PAGE_SET_READ(cmdline, sizeof(struct yaveri_cmdline));
 	if (err == -1) {
 		yaveri_cmdline_destroy(cmdline);
-		cando_log_err("mprotect: %s\n", strerror(errno));
+		cando_log_error("mprotect: %s\n", strerror(errno));
 		return NULL;
 	}
 

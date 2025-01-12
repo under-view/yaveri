@@ -39,7 +39,7 @@ yaveri_parser_create (const void *_parserCreateInfo)
 
 	if (!parserCreateInfo)
 	{
-		cando_log_err("Incorrect data passed\n");
+		cando_log_error("Incorrect data passed\n");
 		return NULL;
 	}
 
@@ -49,7 +49,7 @@ yaveri_parser_create (const void *_parserCreateInfo)
 	              MAP_PRIVATE|MAP_ANONYMOUS,
 	              -1, 0);
 	if (!parser) {
-		cando_log_err("mmap: %s\n", strerror(errno));
+		cando_log_error("mmap: %s\n", strerror(errno));
 		return NULL;
 	}
 
@@ -73,13 +73,13 @@ yaveri_parser_scan (struct yaveri_parser *parser,
 
 	if (!parser)
 	{
-		cando_log_set_err(parser, CANDO_LOG_ERR_INCORRECT_DATA, "");
+		cando_log_set_error(parser, CANDO_LOG_ERR_INCORRECT_DATA, "");
 		return -1;
 	}
 
 	parser->file = fopen(file, "rw");
 	if (!(parser->file)) {
-		cando_log_set_err(parser, errno, "fopen('%s'): %s", file, strerror(errno));
+		cando_log_set_error(parser, errno, "fopen('%s'): %s", file, strerror(errno));
 		return -1;
 	}
 
