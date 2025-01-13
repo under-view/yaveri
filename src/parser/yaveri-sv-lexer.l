@@ -21,11 +21,31 @@
 	 * Start of rules section *
 	 **************************/
 
+	/* Digit */
+DIGIT [0-9]
+	/* Hex characters */
+HEXCHAR [a-fA-F]
 	/* Simple identifier regex */
 SIDENT [_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z]
 	/* Escape identifier regex */
 	/* WILL NEED TO BE UPDATED WHEN UNDERSTOOD MORE */
 EIDENT [\\\S* ]
+	/* system-verilog exp regex */
+SVEXP [e|E]
+	/* decimal-base D regex */
+SVDECBASED [d|D]
+	/* decimal-base S regex */
+SVDECBASES [s|S]
+	/* binary-base B regex */
+SVBINBASE [b|B]
+	/* octal-base O regex */
+SVOCTBASE [o|O]
+	/* hex-base H regex */
+SVHEXBASE [h|H]
+	/* X digit regex */
+SVXDIGIT [x|X]
+	/* Z digit regex */
+SVZDIGIT [z|Z|?]
 	/* Single comment regex */
 SCOMMENT \/\/(.*)
 	/* Multi comment regex */
@@ -76,6 +96,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "_"            { return UNDERSCORE;         }
 "+"            { return PLUS;               }
 "-"            { return MINUS;              }
+"."            { return PERIOD;             }
+"'"            { return APOSTROPHE;         }
 "!"            { return LOGICAL_NOT;        }
 "~"            { return BIT_WISE_NOT;       }
 "&"            { return BIT_WISE_AND;       }
@@ -85,8 +107,18 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "^"            { return BIT_WISE_XOR;       }
 "~^"           { return BIT_WISE_XNOR;      }
 "^~"           { return BIT_WISE_XNOR;      }
+{SVEXP}        { return SVLOG_EXP;          }
+{SVDECBASED}   { return SVLOG_DEC_BASE_D;   }
+{SVDECBASES}   { return SVLOG_DEC_BASE_S;   }
+{SVBINBASE}    { return SVLOG_BIN_BASE;     }
+{SVOCTBASE}    { return SVLOG_OCT_BASE;     }
+{SVHEXBASE}    { return SVLOG_HEX_BASE;     }
+{SVXDIGIT}     { return SVLOG_Z_DIGIT;      }
+{SVZDIGIT}     { return SVLOG_X_DIGIT;      }
 	/* End of reserved words */
 
+{DIGIT}        { return SVLOG_DIGIT;        }
+{HEXCHAR}      { return SVLOG_HEXCHAR;      }
 {SIDENT}       { return SVLOG_SIDENT;       }
 {EIDENT}       { return SVLOG_EIDENT;       }
 {SCOMMENT}     {      /* Do nothing */      }
