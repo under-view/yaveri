@@ -159,8 +159,8 @@ svlog
 	;
 
 statements
-	: statement statements
-	| statement
+	: statement
+	| statements statement
 	;
 
 statement
@@ -213,17 +213,17 @@ decimal_base_unsigned_number
 	;
 
 decimal_base_x_digit
-	: decimal_base x_digit UNDERSCORE decimal_base_x_digit
-	| decimal_base x_digit
-	| size decimal_base x_digit UNDERSCORE decimal_base_x_digit
+	: decimal_base x_digit
+	| decimal_base_x_digit decimal_base x_digit UNDERSCORE
 	| size decimal_base x_digit
+	| decimal_base_x_digit size decimal_base x_digit UNDERSCORE
 	;
 
 decimal_base_z_digit
-	: decimal_base z_digit UNDERSCORE decimal_base_z_digit
-	| decimal_base z_digit
-	| size decimal_base z_digit UNDERSCORE decimal_base_z_digit
+	: decimal_base z_digit
+	| decimal_base_z_digit decimal_base z_digit UNDERSCORE
 	| size decimal_base z_digit
+	| decimal_base_z_digit size decimal_base z_digit UNDERSCORE
 	;
 
 binary_number
@@ -258,27 +258,27 @@ fixed_point_number
 	;
 
 unsigned_number
-	: decimal_digit UNDERSCORE unsigned_number
-	| decimal_digit unsigned_number
-	| decimal_digit
+	: decimal_digit
+	| unsigned_number decimal_digit
+	| unsigned_number decimal_digit UNDERSCORE
 	;
 
 binary_value
-	: binary_digit UNDERSCORE binary_value
-	| binary_digit binary_value
-	| binary_digit
+	: binary_digit
+	| binary_value binary_digit
+	| binary_value binary_digit UNDERSCORE
 	;
 
 octal_value
-	: octal_digit UNDERSCORE octal_value
-	| octal_digit octal_value
-	| octal_digit
+	: octal_digit
+	| octal_value octal_digit
+	| octal_value octal_digit UNDERSCORE
 	;
 
 hex_value
-	: hex_digit UNDERSCORE hex_value
-	| hex_digit hex_value
-	| hex_digit
+	: hex_digit
+	| hex_value hex_digit
+	| hex_value hex_digit UNDERSCORE
 	;
 
 decimal_base
