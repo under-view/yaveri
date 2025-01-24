@@ -98,7 +98,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "^"            { return BIT_WISE_XOR;       }
 "~^"           { return BIT_WISE_XNOR;      }
 "^~"           { return BIT_WISE_XNOR;      }
-";"            { return SEMICOLON;          }
+";"            { return ';';                }
 {SVEXP}        { return SVLOG_EXP;          }
 {SVDECBASED}   { return SVLOG_DEC_BASE_D;   }
 {SVDECBASES}   { return SVLOG_DEC_BASE_S;   }

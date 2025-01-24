@@ -129,8 +129,6 @@ extern int yyerror(const char *message);
 %token <itoken> BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
 %token <itoken> BIT_WISE_XNOR
-/* Semicolon ';' */
-%token <itoken> SEMICOLON
 
 %start svlog
 
@@ -149,7 +147,7 @@ statements
 	;
 
 statement
-	: SVLOG_SIDENT SEMICOLON { fprintf(stdout, "statement -> %s ;\n", $1); }
+	: SVLOG_SIDENT ';' { fprintf(stdout, "statement -> %s %c\n", $1, ';'); }
 	| SVLOG_EIDENT
 	;
 
