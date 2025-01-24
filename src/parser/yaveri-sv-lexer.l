@@ -26,7 +26,7 @@ DIGIT [0-9]
 	/* Hex characters */
 HEXCHAR [a-fA-F]
 	/* Simple identifier regex */
-SIDENT [_a-zA-Z][_$0-9a-zA-Z]+|[_a-zA-Z]
+SIDENT [_a-zA-Z][_$0-9a-zA-Z]+[^;]|[_a-zA-Z][^;]
 	/* Escape identifier regex */
 	/* WILL NEED TO BE UPDATED WHEN UNDERSTOOD MORE */
 EIDENT [\\\S* ]
@@ -98,6 +98,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "^"            { return BIT_WISE_XOR;       }
 "~^"           { return BIT_WISE_XNOR;      }
 "^~"           { return BIT_WISE_XNOR;      }
+";"            { return SEMICOLON;          }
 {SVEXP}        { return SVLOG_EXP;          }
 {SVDECBASED}   { return SVLOG_DEC_BASE_D;   }
 {SVDECBASES}   { return SVLOG_DEC_BASE_S;   }

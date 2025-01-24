@@ -107,6 +107,10 @@ extern int yyerror(const char *message);
 %token <itoken> SVLOG_Z_DIGIT
 /* letters between a-fA-F */
 %token <itoken> SVLOG_HEXCHAR
+/* Simple Identifier */
+%token <stoken> SVLOG_SIDENT
+/* Escaped identifiers */
+%token <stoken> SVLOG_EIDENT
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
 /* Logical NOT '!' */
@@ -125,10 +129,8 @@ extern int yyerror(const char *message);
 %token <itoken> BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
 %token <itoken> BIT_WISE_XNOR
-/* Simple Identifier */
-%token <stoken> SVLOG_SIDENT
-/* Escaped identifiers */
-%token <stoken> SVLOG_EIDENT
+/* Semicolon ';' */
+%token <itoken> SEMICOLON
 
 %start svlog
 
@@ -147,7 +149,7 @@ statements
 	;
 
 statement
-	: SVLOG_SIDENT ';' { fprintf(stdout, "statement -> %s;\n", $1); }
+	: SVLOG_SIDENT SEMICOLON { fprintf(stdout, "statement -> %s ;\n", $1); }
 	| SVLOG_EIDENT
 	;
 
