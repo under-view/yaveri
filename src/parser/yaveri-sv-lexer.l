@@ -89,15 +89,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "int"          { return SVLOG_INT;          }
 "longint"      { return SVLOG_LONG_INT;     }
 "shortreal"    { return SVLOG_SHORT_REAL;   }
-"["            { return LSBRAC;             }
-"]"            { return RSBRAC;             }
-":"            { return COLON;              }
-";"            { return SEMICOLON;          }
-"_"            { return UNDERSCORE;         }
-"+"            { return PLUS;               }
-"-"            { return MINUS;              }
-"."            { return PERIOD;             }
-"'"            { return APOSTROPHE;         }
 "!"            { return LOGICAL_NOT;        }
 "~"            { return BIT_WISE_NOT;       }
 "&"            { return BIT_WISE_AND;       }
@@ -119,8 +110,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 {DIGIT}        { return SVLOG_DIGIT;        }
 {HEXCHAR}      { return SVLOG_HEXCHAR;      }
-{SIDENT}       { return SVLOG_SIDENT;       }
-{EIDENT}       { return SVLOG_EIDENT;       }
+{SIDENT}       { strncpy(yylval.stoken,yytext,4095); return SVLOG_SIDENT;  }
+{EIDENT}       { strncpy(yylval.stoken,yytext,4095); return SVLOG_EIDENT;  }
 {SCOMMENT}     {      /* Do nothing */      }
 {MCOMMENT}     {      /* Do nothing */      }
 [ \n\t\f\v]    {      /* Do nothing */      }

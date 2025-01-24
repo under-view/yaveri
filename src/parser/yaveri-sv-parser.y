@@ -35,7 +35,8 @@ extern int yyerror(const char *message);
  * mechanism with the %union directive:
  */
 %union {
-	int itoken; // Integer token
+	int itoken;        /* Integer token */
+	char stoken[4096]; /* String token */
 }
 
 
@@ -108,24 +109,6 @@ extern int yyerror(const char *message);
 %token <itoken> SVLOG_HEXCHAR
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
-/* Left Square Bracket '[' */
-%token <itoken> LSBRAC
-/* Right Square Bracket ']' */
-%token <itoken> RSBRAC
-/* Colon ':' */
-%token <itoken> COLON
-/* Semicolon ';' */
-%token <itoken> SEMICOLON
-/* Underscore '_' */
-%token <itoken> UNDERSCORE
-/* Plus '+' */
-%token <itoken> PLUS
-/* Minus '-' */
-%token <itoken> MINUS
-/* Period '.' */
-%token <itoken> PERIOD
-/* Apostrophe ' */
-%token <itoken> APOSTROPHE
 /* Logical NOT '!' */
 %token <itoken> LOGICAL_NOT
 /* Bit Wise NOT '~' */
@@ -143,9 +126,9 @@ extern int yyerror(const char *message);
 /* Bit Wise XNOR '~^' */
 %token <itoken> BIT_WISE_XNOR
 /* Simple Identifier */
-%token <itoken> SVLOG_SIDENT
+%token <stoken> SVLOG_SIDENT
 /* Escaped identifiers */
-%token <itoken> SVLOG_EIDENT
+%token <stoken> SVLOG_EIDENT
 
 %start svlog
 
@@ -164,7 +147,7 @@ statements
 	;
 
 statement
-	: SVLOG_SIDENT SEMICOLON
+	: SVLOG_SIDENT ';' { fprintf(stdout, "statement -> %s;\n", $1); }
 	| SVLOG_EIDENT
 	;
 
@@ -214,16 +197,16 @@ decimal_base_unsigned_number
 
 decimal_base_x_digit
 	: decimal_base x_digit
-	| decimal_base_x_digit decimal_base x_digit UNDERSCORE
+	| decimal_base_x_digit decimal_base x_digit '_'
 	| size decimal_base x_digit
-	| decimal_base_x_digit size decimal_base x_digit UNDERSCORE
+	| decimal_base_x_digit size decimal_base x_digit '_'
 	;
 
 decimal_base_z_digit
 	: decimal_base z_digit
-	| decimal_base_z_digit decimal_base z_digit UNDERSCORE
+	| decimal_base_z_digit decimal_base z_digit '_'
 	| size decimal_base z_digit
-	| decimal_base_z_digit size decimal_base z_digit UNDERSCORE
+	| decimal_base_z_digit size decimal_base z_digit '_'
 	;
 
 binary_number
@@ -249,56 +232,56 @@ real_number
 	: fixed_point_number
 	| unsigned_number exp unsigned_number
 	| unsigned_number exp sign unsigned_number
-	| unsigned_number PERIOD unsigned_number exp unsigned_number
-	| unsigned_number PERIOD unsigned_number exp sign unsigned_number
+	| unsigned_number '.' unsigned_number exp unsigned_number
+	| unsigned_number '.' unsigned_number exp sign unsigned_number
 	;
 
 fixed_point_number
-	: unsigned_number PERIOD unsigned_number
+	: unsigned_number '.' unsigned_number
 	;
 
 unsigned_number
 	: decimal_digit
 	| unsigned_number decimal_digit
-	| unsigned_number decimal_digit UNDERSCORE
+	| unsigned_number decimal_digit '_'
 	;
 
 binary_value
 	: binary_digit
 	| binary_value binary_digit
-	| binary_value binary_digit UNDERSCORE
+	| binary_value binary_digit '_'
 	;
 
 octal_value
 	: octal_digit
 	| octal_value octal_digit
-	| octal_value octal_digit UNDERSCORE
+	| octal_value octal_digit '_'
 	;
 
 hex_value
 	: hex_digit
 	| hex_value hex_digit
-	| hex_value hex_digit UNDERSCORE
+	| hex_value hex_digit '_'
 	;
 
 decimal_base
-	: APOSTROPHE SVLOG_DEC_BASE_S SVLOG_DEC_BASE_D
-	| APOSTROPHE SVLOG_DEC_BASE_D
+	: '\'' SVLOG_DEC_BASE_S SVLOG_DEC_BASE_D
+	| '\'' SVLOG_DEC_BASE_D
 	;
 
 binary_base
-	: APOSTROPHE SVLOG_DEC_BASE_S SVLOG_BIN_BASE
-	| APOSTROPHE SVLOG_BIN_BASE
+	: '\'' SVLOG_DEC_BASE_S SVLOG_BIN_BASE
+	| '\'' SVLOG_BIN_BASE
 	;
 
 octal_base
-	: APOSTROPHE SVLOG_DEC_BASE_S SVLOG_OCT_BASE
-	| APOSTROPHE SVLOG_OCT_BASE
+	: '\'' SVLOG_DEC_BASE_S SVLOG_OCT_BASE
+	| '\'' SVLOG_OCT_BASE
 	;
 
 hex_base
-	: APOSTROPHE SVLOG_DEC_BASE_S SVLOG_HEX_BASE
-	| APOSTROPHE SVLOG_HEX_BASE
+	: '\'' SVLOG_DEC_BASE_S SVLOG_HEX_BASE
+	| '\'' SVLOG_HEX_BASE
 	;
 
 // make sure it's between 0-9
@@ -341,18 +324,18 @@ exp
 	;
 
 sign
-	: PLUS
-	| MINUS
+	: '+'
+	| '-'
 	;
 
 // make sure digit between 0 and 1
 unbased_unsized_literal
-	: APOSTROPHE SVLOG_DIGIT
+	: '\'' SVLOG_DIGIT
 	;
 
 unary_operator
-	: PLUS
-	| MINUS
+	: '+'
+	| '-'
 	| LOGICAL_NOT
 	| BIT_WISE_NOT
 	| BIT_WISE_AND
