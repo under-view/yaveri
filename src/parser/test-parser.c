@@ -143,7 +143,7 @@ main (void)
 		cmocka_unit_test(test_yaveri_parser_create),
 		cmocka_unit_test(test_yaveri_parser_scan_comments),
 		cmocka_unit_test(test_yaveri_parser_scan_identifier),
-		//cmocka_unit_test(test_yaveri_parser_scan_escape_identifier),
+		cmocka_unit_test(test_yaveri_parser_scan_escape_identifier),
 		//cmocka_unit_test(test_yaveri_parser_scan_system_tf_call),
 	};
 

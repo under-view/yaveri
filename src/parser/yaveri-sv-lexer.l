@@ -25,11 +25,10 @@
 DIGIT [0-9]
 	/* Hex characters */
 HEXCHAR [a-fA-F]
-	/* Simple identifier regex */
-SIDENT [_a-zA-Z][_$0-9a-zA-Z]+[^;]|[_a-zA-Z][^;]
 	/* Escape identifier regex */
-	/* WILL NEED TO BE UPDATED WHEN UNDERSTOOD MORE */
-EIDENT [\\\S* ]
+EIDENT ^[\\][^ \n\t\f\v]*
+	/* Simple identifier regex */
+SIDENT ^[_a-zA-Z][_$0-9a-zA-Z]*[^;]
 	/* system-verilog exp regex */
 SVEXP [e|E]
 	/* decimal-base D regex */

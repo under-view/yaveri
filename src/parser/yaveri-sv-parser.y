@@ -122,8 +122,8 @@ statements
 	;
 
 statement
-	: SVLOG_SIDENT ';' { fprintf(stdout, "statement -> %s %c\n", $1, ';'); }
-	| SVLOG_EIDENT
+	: SVLOG_SIDENT ';' { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s ;\n", $1); }
+	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
 	;
 
 primary_literal
