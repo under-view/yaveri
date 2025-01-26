@@ -1,5 +1,5 @@
 %option noinput nounput 8bit nodefault
-
+%option reentrant bison-bridge
 %option always-interactive
 
 	/*******************************
@@ -7,9 +7,9 @@
 	 *******************************/
 %{
 
-#include "yaveri-sv-parser.tab.h"
+#include "parser/parser-private.h"
 
-#include "parser/parser.h"
+#include "yaveri-sv-parser.tab.h"
 
 %}
 	/*****************************
@@ -118,8 +118,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 {DIGIT}        { return SVLOG_DIGIT;        }
 {HEXCHAR}      { return SVLOG_HEXCHAR;      }
-{SIDENT}       { strncpy(yylval.stoken,yytext,4095); return SVLOG_SIDENT;  }
-{EIDENT}       { strncpy(yylval.stoken,yytext,4095); return SVLOG_EIDENT;  }
+{SIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_SIDENT;  }
+{EIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_EIDENT;  }
 {SCOMMENT}     {      /* Do nothing */      }
 {MCOMMENT}     {      /* Do nothing */      }
 [ \n\t\f\v]    {      /* Do nothing */      }

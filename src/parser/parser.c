@@ -6,8 +6,11 @@
 
 #include <cando/cando.h>
 
+#include "parser-private.h"
+
 #include "yaveri-sv-lexer.h"
 #include "yaveri-sv-parser.tab.h"
+
 #include "parser.h"
 
 #define FILE_PATH_NAME_MAX (1<<9)
@@ -69,62 +72,36 @@ int
 yaveri_parser_scan (struct yaveri_parser *parser,
                     const char *file)
 {
-	int token = 0;
+	yyscan_t scanner;
 
-	if (!parser)
+	YY_BUFFER_STATE buff = NULL;
+
+	const void *data = NULL;
+
+	struct cando_file_ops *flops = NULL;
+	struct cando_file_ops_create_info flopsCreateInfo;
+
+	if (!parser || \
+	    !file)
 	{
 		cando_log_set_error(parser, CANDO_LOG_ERR_INCORRECT_DATA, "");
 		return -1;
 	}
 
-	parser->file = fopen(file, "rw");
-	if (!(parser->file)) {
-		cando_log_set_error(parser, errno, "fopen('%s'): %s", file, strerror(errno));
+	memset(&flopsCreateInfo, 0, sizeof(flopsCreateInfo));
+
+	flopsCreateInfo.fileName = file;
+	flops = cando_file_ops_create(&flopsCreateInfo);
+	if (!flops)
 		return -1;
-	}
 
-	yyin = parser->file;
+	data = cando_file_ops_get_data(flops, 0);
 
-	while ((token = yyparse()))
-	{
-		fprintf(stdout, "%s\n", yytext);
-		switch (token)
-		{
-			case SVLOG_REG:
-				break;
-			case SVLOG_WIRE:
-				break;
-			case SVLOG_INTEGER:
-				break;
-			case SVLOG_REAL:
-				break;
-			case SVLOG_TIME:
-				break;
-			case SVLOG_REAL_TIME:
-				break;
-			case SVLOG_LOGIC:
-				break;
-			case SVLOG_BIT:
-				break;
-			case SVLOG_BYTE:
-				break;
-			case SVLOG_SHORT_INT:
-				break;
-			case SVLOG_INT:
-				break;
-			case SVLOG_LONG_INT:
-				break;
-			case SVLOG_SHORT_REAL:
-				break;
-			default:
-				return -1;
-		}
-	}
-
-	fclose(parser->file);
-	yyin = parser->file = NULL;
-
-	yylex_destroy();
+	yylex_init(&scanner);
+	buff = yy_scan_string(data, scanner);
+	yyparse(scanner);
+	yy_delete_buffer(buff, scanner);
+	yylex_destroy(scanner);
 
 	return 0;
 }
@@ -157,9 +134,11 @@ yaveri_parser_destroy (struct yaveri_parser *parser)
  *******************************************/
 
 void
-yyerror (const char *s)
+yyerror (void CANDO_UNUSED *type,
+         void CANDO_UNUSED *yylloc,
+         const char *message)
 {
-	fprintf(stderr, "%s\n", s);
+	fprintf(stderr, "%s\n", message);
 }
 
 /*****************************************

@@ -1,44 +1,19 @@
-%define parse.error verbose
-%locations
-
 %{
 
 #include <stdio.h>
 
-/*
- * Bison expects you to implement the function yylex(),
- * used to get the next token. Our yylex() is provided
- * by the flex scanner.
- */
-extern int yylex(void);
+#include "parser/parser-private.h"
 
-/*
- * Bison expects you to implement the function yyerror(),
- * invoked whenever the parser step into an error.
- */
-extern int yyerror(const char *message);
 %}
 
+%define parse.error verbose
+%define api.pure full
+%define api.value.type {union YYSTYPE}
+%parse-param {void *scanner}
+%lex-param {void *scanner}
+%locations
+
 /* declare tokens */
-
-
-/*
- * Comment from: https://aquamentus.com/flex_bison.html
- *
- * Bison fundamentally works by asking flex to get the next token, which it
- * returns as an object of type "yystype". Initially (by default), yystype
- * is merely a typedef of "int", but for non-trivial projects, tokens could
- * be of any arbitrary data type. So, to deal with that, the idea is to
- * override yystype's default typedef to be a C union instead. Unions can
- * hold all of the types of tokens that Flex could return, and this this means
- * we can return ints or floats or strings cleanly. Bison implements this
- * mechanism with the %union directive:
- */
-%union {
-	int itoken;        /* Integer token */
-	char stoken[4096]; /* String token */
-}
-
 
 /* Design Element 'module' */
 %token <itoken> SVLOG_MODULE
