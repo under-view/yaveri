@@ -86,6 +86,8 @@
 %token <stoken> SVLOG_SIDENT
 /* Escaped identifiers */
 %token <stoken> SVLOG_EIDENT
+/* System task and functions identifier regex */
+%token <stoken> SVLOG_STFIDENT
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
 /* Logical NOT '!' */
@@ -113,6 +115,7 @@ svlog
 	: statements
 	| primary_literal
 	| unary_operator
+	| system_tf_call
 	| %empty
 	;
 
@@ -122,7 +125,12 @@ statements
 	;
 
 statement
-	: SVLOG_SIDENT ';' { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s ;\n", $1); }
+	: identifier
+	| identifier ';'
+	;
+
+identifier
+	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
 	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
 	;
 
@@ -286,6 +294,41 @@ hex_digit
 	| SVLOG_HEXCHAR
 	;
 
+system_tf_call
+	: system_tf_identifier ';'
+	| system_tf_identifier '(' list_of_arguments ')' ';'
+	| system_tf_identifier '(' data_type ')' ';'
+	| system_tf_identifier '(' data_type ',' expression ')' ';'
+	| system_tf_identifier '(' expression ')' ';'
+	| system_tf_identifier '(' expression ',' clocking_event ')' ';'
+	;
+
+list_of_arguments
+	: 
+	| expression
+	| '.' identifier '(' ')'
+	| '.' identifier '(' expression ')'
+	| list_of_arguments ',' expression
+	| list_of_arguments ',' '.' identifier '(' ')'
+	| list_of_arguments ',' '.' identifier '(' expression ')'
+	;
+
+expression
+	:	
+	| primary
+	| unary_operator { attribute_instance } primary
+	| inc_or_dec_expression
+	| ( operator_assignment )
+	| expression binary_operator { attribute_instance } expression
+	| conditional_expression
+	| inside_expression
+	| tagged_union_expression
+	;
+
+system_tf_identifier
+	: SVLOG_STFIDENT { fprintf(stdout, "%s\n", $1); }
+	;
+
 x_digit
 	: SVLOG_X_DIGIT
 	;
@@ -309,8 +352,7 @@ unbased_unsized_literal
 	;
 
 unary_operator
-	: '+'
-	| '-'
+	: sign
 	| LOGICAL_NOT
 	| BIT_WISE_NOT
 	| BIT_WISE_AND

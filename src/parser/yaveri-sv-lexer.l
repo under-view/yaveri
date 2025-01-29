@@ -29,6 +29,8 @@ HEXCHAR [a-fA-F]
 EIDENT ^[\\][^ \n\t\f\v]*
 	/* Simple identifier regex */
 SIDENT ^[_a-zA-Z][_$0-9a-zA-Z]*[^;]
+	/* System task and functions identifier regex */
+STFIDENT ^[$][a-zA-Z0-9_$]+[^;]
 	/* system-verilog exp regex */
 SVEXP [e|E]
 	/* decimal-base D regex */
@@ -103,7 +105,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "-"            { return '-';                }
 "_"            { return '_';                }
 "."            { return '.';                }
+","            { return ',';                }
 "'"            { return '\'';               }
+"("            { return '(';                }
+")"            { return ')';                }
 
 {SVEXP}        { return SVLOG_EXP;          }
 {SVDECBASED}   { return SVLOG_DEC_BASE_D;   }
@@ -117,8 +122,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 {DIGIT}        { return SVLOG_DIGIT;        }
 {HEXCHAR}      { return SVLOG_HEXCHAR;      }
-{SIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_SIDENT;  }
-{EIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_EIDENT;  }
+{STFIDENT}     { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_STFIDENT; }
+{SIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_SIDENT;   }
+{EIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_EIDENT;   }
 {SCOMMENT}     {      /* Do nothing */      }
 {MCOMMENT}     {      /* Do nothing */      }
 [ \n\t\f\v]    {      /* Do nothing */      }
