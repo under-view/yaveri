@@ -98,6 +98,8 @@
 %token <stoken> SVLOG_ESCAPE_SEQ
 /* Triple Quoted Strings */
 %token <stoken> SVLOG_TRIPLE_QUOTED_STRING
+/* Hierarchical Identifier */
+%token <itoken> SVLOG_HIDENT
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
 /* Logical NOT '!' */
@@ -174,7 +176,9 @@ primary
 	| SVLOG_THIS
 	| SVLOG_NULL
 	| primary_literal
-	| [ class_qualifier | package_scope ] hierarchical_identifier select
+	| hierarchical_identifier select
+	| class_qualifier hierarchical_identifier select
+	| package_scope hierarchical_identifier select
 	| empty_unpacked_array_concatenation
 	| concatenation [ [ range_expression ] ]
 	| multiple_concatenation [ [ range_expression ] ]
@@ -365,6 +369,25 @@ unary_operator
 	| BIT_WISE_NOR
 	| BIT_WISE_XOR
 	| BIT_WISE_XNOR
+	;
+
+hierarchical_identifier
+	:
+	| identifier
+	| SVLOG_HIDENT '.' identifier
+	| hierarchical_identifier identifier constant_bit_select '.'
+	;
+
+constant_bit_select 
+	: '[' constant_expression ']'
+	| constant_bit_select '[' constant_expression ']'
+	;
+
+constant_expression
+	: constant_primary
+	| unary_operator { attribute_instance } constant_primary
+	| constant_expression binary_operator { attribute_instance } constant_expression
+	| constant_expression '?' { attribute_instance } constant_expression : constant_expression
 	;
 
 system_tf_identifier

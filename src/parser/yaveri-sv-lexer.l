@@ -120,6 +120,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "("            { return '(';                }
 ")"            { return ')';                }
 
+"$root"        { return SVLOG_HIDENT;       }
+
 {SVEXP}        { return SVLOG_EXP;          }
 {SVDECBASED}   { return SVLOG_DEC_BASE_D;   }
 {SVDECBASES}   { return SVLOG_DEC_BASE_S;   }
