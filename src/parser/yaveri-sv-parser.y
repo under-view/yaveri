@@ -50,6 +50,10 @@
 %token <itoken> SVLOG_fEMTOSEC
 /* step 'step' */
 %token <itoken> SVLOG_STEP
+/* 'this' keyword */
+%token <itoken> SVLOG_THIS
+/* 'null' keyword */
+%token <itoken> SVLOG_NULL
 /* register 'reg' */
 %token <itoken> SVLOG_REG
 %token <itoken> SVLOG_WIRE
@@ -86,8 +90,14 @@
 %token <stoken> SVLOG_SIDENT
 /* Escaped identifiers */
 %token <stoken> SVLOG_EIDENT
-/* System task and functions identifier regex */
+/* System task and functions identifier */
 %token <stoken> SVLOG_STFIDENT
+/* Quoted Strings */
+%token <stoken> SVLOG_QUOTED_STRING
+/* String Escape Sequence */
+%token <stoken> SVLOG_ESCAPE_SEQ
+/* Triple Quoted Strings */
+%token <stoken> SVLOG_TRIPLE_QUOTED_STRING
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
 /* Logical NOT '!' */
@@ -129,15 +139,64 @@ statement
 	| identifier ';'
 	;
 
-identifier
-	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
-	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
+system_tf_call
+	: system_tf_identifier ';'
+	| system_tf_identifier '(' list_of_arguments ')' ';'
+	| system_tf_identifier '(' data_type ')' ';'
+	| system_tf_identifier '(' data_type ',' expression ')' ';'
+	| system_tf_identifier '(' expression ',' clocking_event ')' ';'
+	;
+
+list_of_arguments
+	: 
+	| expression
+	| '.' identifier '(' ')'
+	| '.' identifier '(' expression ')'
+	| list_of_arguments ',' expression
+	| list_of_arguments ',' '.' identifier '(' ')'
+	| list_of_arguments ',' '.' identifier '(' expression ')'
+	;
+
+expression
+	:	
+	| primary
+	| unary_operator { attribute_instance } primary
+	| inc_or_dec_expression
+	| '(' operator_assignment ')'
+	| expression binary_operator { attribute_instance } expression
+	| conditional_expression
+	| inside_expression
+	| tagged_union_expression
+	;
+
+primary
+	: '$'
+	| SVLOG_THIS
+	| SVLOG_NULL
+	| primary_literal
+	| [ class_qualifier | package_scope ] hierarchical_identifier select
+	| empty_unpacked_array_concatenation
+	| concatenation [ [ range_expression ] ]
+	| multiple_concatenation [ [ range_expression ] ]
+	| function_subroutine_call [ [ range_expression ] ]
+	| let_expression
+	| ( mintypmax_expression )
+	| cast
+	| assignment_pattern_expression
+	| streaming_concatenation
+	| sequence_method_call
 	;
 
 primary_literal
 	: number
 	| time_literal
 	| unbased_unsized_literal
+	| string_literal
+	;
+
+number
+	: integral_number
+	| real_number
 	;
 
 time_literal
@@ -145,18 +204,20 @@ time_literal
 	| fixed_point_number time_unit
 	;
 
-time_unit
-	: SVLOG_SEC
-	| SVLOG_MILLISEC
-	| SVLOG_MICROSEC
-	| SVLOG_NANOSEC
-	| SVLOG_PICOSEC
-	| SVLOG_fEMTOSEC
+string_literal
+	: quoted_string
+	| triple_quoted_string
 	;
 
-number
-	: integral_number
-	| real_number
+quoted_string
+	: '"' quoted_string_item '"'
+	| '"' string_escape_seq '"'
+	;
+
+triple_quoted_string 
+	:
+	| '"' '"' '"' triple_quoted_string_item '"' '"' '"'
+	| '"' '"' '"' string_escape_seq '"' '"' '"'
 	;
 
 integral_number
@@ -294,39 +355,25 @@ hex_digit
 	| SVLOG_HEXCHAR
 	;
 
-system_tf_call
-	: system_tf_identifier ';'
-	| system_tf_identifier '(' list_of_arguments ')' ';'
-	| system_tf_identifier '(' data_type ')' ';'
-	| system_tf_identifier '(' data_type ',' expression ')' ';'
-	| system_tf_identifier '(' expression ')' ';'
-	| system_tf_identifier '(' expression ',' clocking_event ')' ';'
-	;
-
-list_of_arguments
-	: 
-	| expression
-	| '.' identifier '(' ')'
-	| '.' identifier '(' expression ')'
-	| list_of_arguments ',' expression
-	| list_of_arguments ',' '.' identifier '(' ')'
-	| list_of_arguments ',' '.' identifier '(' expression ')'
-	;
-
-expression
-	:	
-	| primary
-	| unary_operator { attribute_instance } primary
-	| inc_or_dec_expression
-	| ( operator_assignment )
-	| expression binary_operator { attribute_instance } expression
-	| conditional_expression
-	| inside_expression
-	| tagged_union_expression
+unary_operator
+	: sign
+	| LOGICAL_NOT
+	| BIT_WISE_NOT
+	| BIT_WISE_AND
+	| BIT_WISE_NAND
+	| BIT_WISE_OR
+	| BIT_WISE_NOR
+	| BIT_WISE_XOR
+	| BIT_WISE_XNOR
 	;
 
 system_tf_identifier
 	: SVLOG_STFIDENT { fprintf(stdout, "%s\n", $1); }
+	;
+
+identifier
+	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
+	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
 	;
 
 x_digit
@@ -351,16 +398,28 @@ unbased_unsized_literal
 	: '\'' SVLOG_DIGIT
 	;
 
-unary_operator
-	: sign
-	| LOGICAL_NOT
-	| BIT_WISE_NOT
-	| BIT_WISE_AND
-	| BIT_WISE_NAND
-	| BIT_WISE_OR
-	| BIT_WISE_NOR
-	| BIT_WISE_XOR
-	| BIT_WISE_XNOR
+time_unit
+	: SVLOG_SEC
+	| SVLOG_MILLISEC
+	| SVLOG_MICROSEC
+	| SVLOG_NANOSEC
+	| SVLOG_PICOSEC
+	| SVLOG_fEMTOSEC
+	;
+
+quoted_string_item
+	: SVLOG_QUOTED_STRING
+	| %empty
+	;
+
+triple_quoted_string_item
+	: SVLOG_TRIPLE_QUOTED_STRING
+	| %empty
+	;
+
+string_escape_seq
+	: SVLOG_ESCAPE_SEQ
+	| %empty
 	;
 
 %%

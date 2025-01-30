@@ -26,9 +26,15 @@ DIGIT [0-9]
 	/* Hex characters */
 HEXCHAR [a-fA-F]
 	/* Escape identifier regex */
-EIDENT ^[\\][^ \n\t\f\v]*
+EIDENT ^[\\][^ ]*
 	/* Simple identifier regex */
 SIDENT ^[_a-zA-Z][_$0-9a-zA-Z]*[^;]
+	/* Quoted String regex */
+QUOTEDS [^\n"\\]+
+	/* Triple Quoted String regex */
+TRIPLEQS [^\\]+
+	/* String Escape Sequence regex */
+SESCAPESEQ ^[\\].*
 	/* System task and functions identifier regex */
 STFIDENT ^[$][a-zA-Z0-9_$]+[^;]
 	/* system-verilog exp regex */
@@ -77,6 +83,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "fs"           { return SVLOG_fEMTOSEC;     }
 "step"         { return SVLOG_STEP;         }
 
+"this"         { return SVLOG_THIS;         }
+"null"         { return SVLOG_NULL;         }
+
 "reg"          { return SVLOG_REG;          }
 "wire"         { return SVLOG_WIRE;         }
 "integer"      { return SVLOG_INTEGER;      }
@@ -107,6 +116,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "."            { return '.';                }
 ","            { return ',';                }
 "'"            { return '\'';               }
+"\""           { return '"';                }
 "("            { return '(';                }
 ")"            { return ')';                }
 
@@ -122,9 +132,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 {DIGIT}        { return SVLOG_DIGIT;        }
 {HEXCHAR}      { return SVLOG_HEXCHAR;      }
+{QUOTEDS}      { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_QUOTED_STRING; }
+{TRIPLEQS}     { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_TRIPLE_QUOTED_STRING; }
 {STFIDENT}     { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_STFIDENT; }
 {SIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_SIDENT;   }
 {EIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_EIDENT;   }
+{SESCAPESEQ}   { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_ESCAPE_SEQ; }
 {SCOMMENT}     {      /* Do nothing */      }
 {MCOMMENT}     {      /* Do nothing */      }
 [ \n\t\f\v]    {      /* Do nothing */      }
