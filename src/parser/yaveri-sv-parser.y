@@ -178,9 +178,12 @@ list_of_arguments
 
 constant_expression
 	: constant_primary
-	| unary_operator { attribute_instance } constant_primary
-	| constant_expression binary_operator { attribute_instance } constant_expression
-	| constant_expression '?' { attribute_instance } constant_expression : constant_expression
+	| unary_operator constant_primary
+	| unary_operator attribute_instance constant_primary
+	| constant_expression binary_operator constant_expression
+	| constant_expression binary_operator attribute_instance constant_expression
+	| constant_expression '?' constant_expression ':' constant_expression
+	| constant_expression '?' attribute_instance constant_expression ':' constant_expression
 	;
 
 expression
@@ -205,6 +208,25 @@ expression
  * Start of 'Primaries' Grammer Rules    *
  * Based off section: (A.8.4 Primaries). *
  *****************************************/
+
+constant_primary
+	: SVLOG_NULL
+	| primary_literal
+	| ps_parameter_identifier constant_select
+	| specparam_identifier [ '[' constant_range_expression ']' ]
+	| genvar_identifier
+	| formal_port_identifier constant_select
+	| [ package_scope | class_scope ] enum_identifier
+	| empty_unpacked_array_concatenation
+	| constant_concatenation [ '[' constant_range_expression ']' ]
+	| constant_multiple_concatenation [ '[' constant_range_expression ']' ]
+	| constant_function_call [ '[' constant_range_expression ']' ]
+	| constant_let_expression
+	| '(' constant_mintypmax_expression ')'
+	| constant_cast
+	| constant_assignment_pattern_expression
+	| type_reference
+	;
 
 primary
 	: '$'
@@ -494,6 +516,36 @@ string_escape_seq
  * End of 'Strings' Grammer Rules      *
  * Based off section: (A.8.8 Strings). *
  ***************************************/
+
+
+/******************************************
+ * Start of 'Attributes' grammer rules.   *
+ * Based off section: (A.9.1 Attributes). *
+ ******************************************/
+
+attribute_instance
+	:
+	| '(' '*' attribute_specs '*' ')'
+	;
+
+attribute_specs
+	: attr_spec
+	| attribute_instace_loop ',' attr_spec
+	;
+
+attr_spec
+	: attr_name
+	| attr_name  '=' constant_expression
+	;
+
+attr_name
+	: identifier
+	;
+
+/******************************************
+ * Start of 'Attributes' grammer rules.   *
+ * Based off section: (A.9.1 Attributes). *
+ ******************************************/
 
 
 /*******************************************
