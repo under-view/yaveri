@@ -141,6 +141,12 @@ statement
 	| identifier ';'
 	;
 
+
+/************************************************
+ * Start of 'Subroutine Calls' Grammer Rules    *
+ * Based off section: (A.8.2 Subroutine calls). *
+ ************************************************/
+
 system_tf_call
 	: system_tf_identifier ';'
 	| system_tf_identifier '(' list_of_arguments ')' ';'
@@ -159,6 +165,24 @@ list_of_arguments
 	| list_of_arguments ',' '.' identifier '(' expression ')'
 	;
 
+/************************************************
+ * End of 'Subroutine Calls' Grammer Rules      *
+ * Based off section: (A.8.2 Subroutine calls). *
+ ************************************************/
+
+
+/*******************************************
+ * Start of 'Expressions' Grammer Rules    *
+ * Based off section: (A.8.3 Expressions). *
+ *******************************************/
+
+constant_expression
+	: constant_primary
+	| unary_operator { attribute_instance } constant_primary
+	| constant_expression binary_operator { attribute_instance } constant_expression
+	| constant_expression '?' { attribute_instance } constant_expression : constant_expression
+	;
+
 expression
 	:	
 	| primary
@@ -170,6 +194,17 @@ expression
 	| inside_expression
 	| tagged_union_expression
 	;
+
+/*******************************************
+ * End of 'Expressions' Grammer Rules      *
+ * Based off section: (A.8.3 Expressions). *
+ *******************************************/
+
+
+/*****************************************
+ * Start of 'Primaries' Grammer Rules    *
+ * Based off section: (A.8.4 Primaries). *
+ *****************************************/
 
 primary
 	: '$'
@@ -198,30 +233,62 @@ primary_literal
 	| string_literal
 	;
 
-number
-	: integral_number
-	| real_number
-	;
-
 time_literal
 	: unsigned_number time_unit
 	| fixed_point_number time_unit
 	;
 
-string_literal
-	: quoted_string
-	| triple_quoted_string
+time_unit
+	: SVLOG_SEC
+	| SVLOG_MILLISEC
+	| SVLOG_MICROSEC
+	| SVLOG_NANOSEC
+	| SVLOG_PICOSEC
+	| SVLOG_fEMTOSEC
 	;
 
-quoted_string
-	: '"' quoted_string_item '"'
-	| '"' string_escape_seq '"'
+constant_bit_select
+	: '[' constant_expression ']'
+	| constant_bit_select '[' constant_expression ']'
 	;
 
-triple_quoted_string 
-	:
-	| '"' '"' '"' triple_quoted_string_item '"' '"' '"'
-	| '"' '"' '"' string_escape_seq '"' '"' '"'
+/*****************************************
+ * End of 'Primaries' Grammer Rules      *
+ * Based off section: (A.8.4 Primaries). *
+ *****************************************/
+
+
+/*****************************************
+ * Start of 'Operators' Grammer Rules    *
+ * Based off section: (A.8.6 Operators). *
+ *****************************************/
+
+unary_operator
+	: sign
+	| LOGICAL_NOT
+	| BIT_WISE_NOT
+	| BIT_WISE_AND
+	| BIT_WISE_NAND
+	| BIT_WISE_OR
+	| BIT_WISE_NOR
+	| BIT_WISE_XOR
+	| BIT_WISE_XNOR
+	;
+
+/*****************************************
+ * End of 'Operators' Grammer Rules      *
+ * Based off section: (A.8.6 Operators). *
+ *****************************************/
+
+
+/***************************************
+ * Start of 'Numbers' Grammer Rules    *
+ * Based off section: (A.8.7 Numbers). *
+ ***************************************/
+
+number
+	: integral_number
+	| real_number
 	;
 
 integral_number
@@ -272,6 +339,11 @@ hex_number
 	| size hex_base hex_value
 	;
 
+sign
+	: '+'
+	| '-'
+	;
+
 size
 	: unsigned_number
 	;
@@ -286,6 +358,10 @@ real_number
 
 fixed_point_number
 	: unsigned_number '.' unsigned_number
+	;
+
+exp
+	: SVLOG_EXP
 	;
 
 unsigned_number
@@ -359,46 +435,6 @@ hex_digit
 	| SVLOG_HEXCHAR
 	;
 
-unary_operator
-	: sign
-	| LOGICAL_NOT
-	| BIT_WISE_NOT
-	| BIT_WISE_AND
-	| BIT_WISE_NAND
-	| BIT_WISE_OR
-	| BIT_WISE_NOR
-	| BIT_WISE_XOR
-	| BIT_WISE_XNOR
-	;
-
-hierarchical_identifier
-	:
-	| identifier
-	| SVLOG_HIDENT '.' identifier
-	| hierarchical_identifier identifier constant_bit_select '.'
-	;
-
-constant_bit_select 
-	: '[' constant_expression ']'
-	| constant_bit_select '[' constant_expression ']'
-	;
-
-constant_expression
-	: constant_primary
-	| unary_operator { attribute_instance } constant_primary
-	| constant_expression binary_operator { attribute_instance } constant_expression
-	| constant_expression '?' { attribute_instance } constant_expression : constant_expression
-	;
-
-system_tf_identifier
-	: SVLOG_STFIDENT { fprintf(stdout, "%s\n", $1); }
-	;
-
-identifier
-	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
-	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
-	;
-
 x_digit
 	: SVLOG_X_DIGIT
 	;
@@ -407,27 +443,36 @@ z_digit
 	: SVLOG_Z_DIGIT
 	;
 
-exp
-	: SVLOG_EXP
-	;
-
-sign
-	: '+'
-	| '-'
-	;
-
 // make sure digit between 0 and 1
 unbased_unsized_literal
 	: '\'' SVLOG_DIGIT
 	;
 
-time_unit
-	: SVLOG_SEC
-	| SVLOG_MILLISEC
-	| SVLOG_MICROSEC
-	| SVLOG_NANOSEC
-	| SVLOG_PICOSEC
-	| SVLOG_fEMTOSEC
+/***************************************
+ * End of 'Numbers' Grammer Rules      *
+ * Based off section: (A.8.7 Numbers). *
+ ***************************************/
+
+
+/***************************************
+ * Start of 'Strings' Grammer Rules    *
+ * Based off section: (A.8.8 Strings). *
+ ***************************************/
+
+string_literal
+	: quoted_string
+	| triple_quoted_string
+	;
+
+quoted_string
+	: '"' quoted_string_item '"'
+	| '"' string_escape_seq '"'
+	;
+
+triple_quoted_string 
+	:
+	| '"' '"' '"' triple_quoted_string_item '"' '"' '"'
+	| '"' '"' '"' string_escape_seq '"' '"' '"'
 	;
 
 quoted_string_item
@@ -444,5 +489,37 @@ string_escape_seq
 	: SVLOG_ESCAPE_SEQ
 	| %empty
 	;
+
+/***************************************
+ * End of 'Strings' Grammer Rules      *
+ * Based off section: (A.8.8 Strings). *
+ ***************************************/
+
+
+/*******************************************
+ * Start of 'Identifiers' grammer rules.   *
+ * Based off section: (A.9.3 Identifiers). *
+ *******************************************/
+
+hierarchical_identifier
+	:
+	| identifier
+	| SVLOG_HIDENT '.' identifier
+	| hierarchical_identifier identifier constant_bit_select '.'
+	;
+
+identifier
+	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
+	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
+	;
+
+system_tf_identifier
+	: SVLOG_STFIDENT { fprintf(stdout, "%s\n", $1); }
+	;
+
+/*******************************************
+ * End of 'Identifiers' grammer rules.     *
+ * Based off section: (A.9.3 Identifiers). *
+ *******************************************/
 
 %%
