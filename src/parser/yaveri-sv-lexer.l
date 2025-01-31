@@ -108,6 +108,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "^"            { return BIT_WISE_XOR;       }
 "~^"           { return BIT_WISE_XNOR;      }
 "^~"           { return BIT_WISE_XNOR;      }
+"++"           { return INCREMENT_OPERATOR; }
+"--"           { return DECREMENT_OPERATOR; }
 
 ";"            { return ';';                }
 "+"            { return '+';                }

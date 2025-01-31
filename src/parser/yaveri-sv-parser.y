@@ -118,6 +118,10 @@
 %token <itoken> BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
 %token <itoken> BIT_WISE_XNOR
+/* Increment operation '++' */
+%token <itoken> INCREMENT_OPERATOR
+/* Decrement operation '--' */
+%token <itoken> DECREMENT_OPERATOR
 
 %start svlog
 
@@ -176,23 +180,32 @@ list_of_arguments
  * Based off section: (A.8.3 Expressions). *
  *******************************************/
 
+inc_or_dec_expression
+	: inc_or_dec_operator variable_lvalue
+	| inc_or_dec_operator attribute_instances variable_lvalue
+	| variable_lvalue inc_or_dec_operator
+	| variable_lvalue attribute_instances inc_or_dec_operator
+	;
+
 constant_expression
 	: constant_primary
 	| unary_operator constant_primary
-	| unary_operator attribute_instance constant_primary
+	| unary_operator attribute_instances constant_primary
 	| constant_expression binary_operator constant_expression
-	| constant_expression binary_operator attribute_instance constant_expression
+	| constant_expression binary_operator attribute_instances constant_expression
 	| constant_expression '?' constant_expression ':' constant_expression
-	| constant_expression '?' attribute_instance constant_expression ':' constant_expression
+	| constant_expression '?' attribute_instances constant_expression ':' constant_expression
 	;
 
 expression
 	:	
 	| primary
-	| unary_operator { attribute_instance } primary
+	| unary_operator primary
+	| unary_operator attribute_instances primary
 	| inc_or_dec_expression
 	| '(' operator_assignment ')'
-	| expression binary_operator { attribute_instance } expression
+	| expression binary_operator expression
+	| expression binary_operator attribute_instances expression
 	| conditional_expression
 	| inside_expression
 	| tagged_union_expression
@@ -280,6 +293,27 @@ constant_bit_select
  *****************************************/
 
 
+/***********************************************************
+ * Start of 'Expression left-side values' Grammer Rules    *
+ * Based off section: (A.8.5 Expression left-side values). *
+ ***********************************************************/
+
+variable_lvalue
+	: hierarchical_variable_identifier select
+	| implicit_class_handle '.' hierarchical_variable_identifier select
+	| package_scope hierarchical_variable_identifier select
+	| streaming_concatenation
+	| assignment_pattern_variable_lvalue
+	| assignment_pattern_expression_type assignment_pattern_variable_lvalue
+	| variable_lvalue ',' variable_lvalue
+	;
+
+/***********************************************************
+ * End of 'Expression left-side values' Grammer Rules      *
+ * Based off section: (A.8.5 Expression left-side values). *
+ ***********************************************************/
+
+
 /*****************************************
  * Start of 'Operators' Grammer Rules    *
  * Based off section: (A.8.6 Operators). *
@@ -295,6 +329,11 @@ unary_operator
 	| BIT_WISE_NOR
 	| BIT_WISE_XOR
 	| BIT_WISE_XNOR
+	;
+
+inc_or_dec_operator
+	: INCREMENT_OPERATOR
+	| DECREMENT_OPERATOR
 	;
 
 /*****************************************
@@ -522,6 +561,11 @@ string_escape_seq
  * Start of 'Attributes' grammer rules.   *
  * Based off section: (A.9.1 Attributes). *
  ******************************************/
+
+attribute_instances
+	: attribute_instance
+	| attribute_instances attribute_instance
+	;
 
 attribute_instance
 	:
