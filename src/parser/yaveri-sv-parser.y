@@ -316,6 +316,10 @@ constant_concatenation
 	| constant_concatenation ',' constant_expression
 	;
 
+constant_multiple_concatenation
+	: '{' constant_expression constant_concatenation '}'
+	;
+
 empty_unpacked_array_concatenation
 	: '{' '}'
 	;
