@@ -302,6 +302,20 @@ assignment_operator
  * Based off section: (A.8.1 Concatenations). *
  **********************************************/
 
+concatenation
+	: %empty
+	| expression
+	| concatenation expression
+	| concatenation ',' expression
+	;
+
+constant_concatenation
+	: %empty
+	| constant_expression
+	| constant_concatenation constant_expression
+	| constant_concatenation ',' constant_expression
+	;
+
 empty_unpacked_array_concatenation
 	: '{' '}'
 	;
