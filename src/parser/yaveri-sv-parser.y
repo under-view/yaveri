@@ -102,8 +102,8 @@
 %token <itoken> SVLOG_HIDENT
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
-/* Logical NOT '!' */
-%token <itoken> LOGICAL_NOT
+
+
 /* Bit Wise NOT '~' */
 %token <itoken> BIT_WISE_NOT
 /* Bit Wise AND '&' */
@@ -118,18 +118,50 @@
 %token <itoken> BIT_WISE_XOR
 /* Bit Wise XNOR '~^' */
 %token <itoken> BIT_WISE_XNOR
-/* Increment operation '++' */
-%token <itoken> INCREMENT_OPERATOR
-/* Decrement operation '--' */
-%token <itoken> DECREMENT_OPERATOR
-/* Left Shift '<<' */
-%token <itoken> LEFT_SHIFT
-/* Right Shift '>>' */
-%token <itoken> RIGHT_SHIFT
+
+
+/* Logical NOT '!' */
+%token <itoken> LOGICAL_NOT
+/* Logical Equality '==' */
+%token <itoken> LOGICAL_EQUAL
+/* Logical Inequality '!=' */
+%token <itoken> LOGICAL_INEQUAL
+/* Logical And '&&' */
+%token <itoken> LOGICAL_AND
+/* Logical Or '||' */
+%token <itoken> LOGICAL_OR
 /* Logical Left Shift '<<<' */
 %token <itoken> LOGICAL_LEFT_SHIFT
 /* Logical Right Shift '>>>' */
 %token <itoken> LOGICAL_RIGHT_SHIFT
+
+
+/* Case equality operator '===' */
+%token <itoken> CASE_EQUAL
+/* Case inequality operator '!==' */
+%token <itoken> CASE_NOT_EQUAL
+
+
+/* Wildcard equality operator '==?' */
+%token <itoken> WILDCARD_EQUAL
+/* Wildcard inequality operator '!=?' */
+%token <itoken> WILDCARD_NOT_EQUAL
+
+
+/* Power Off operation '**' */
+%token <itoken> POWER_OFF_OPERATOR
+/* Increment operation '++' */
+%token <itoken> INCREMENT_OPERATOR
+/* Decrement operation '--' */
+%token <itoken> DECREMENT_OPERATOR
+/* Implication operation '->' */
+%token <itoken> IMPLICATION_OPERATOR
+/* Equivalance operation '<->' */
+%token <itoken> EQUIVALANCE_OPERATOR
+/* Left Shift '<<' */
+%token <itoken> LEFT_SHIFT
+/* Right Shift '>>' */
+%token <itoken> RIGHT_SHIFT
 
 %start svlog
 
@@ -368,6 +400,37 @@ unary_operator
 	| BIT_WISE_NOR
 	| BIT_WISE_XOR
 	| BIT_WISE_XNOR
+	;
+
+binary_operator
+	: '+'
+	| '-'
+	| '*'
+	| '/'
+	| '%'
+	| LOGICAL_EQUAL
+	| LOGICAL_INEQUAL
+	| CASE_EQUAL
+	| CASE_NOT_EQUAL
+	| WILDCARD_EQUAL
+	| WILDCARD_NOT_EQUAL
+	| LOGICAL_ADD
+	| LOGICAL_OR
+	| POWER_OFF_OPERATOR
+	| '<'
+	| LT_OR_EQ
+	| '>'
+	| GT_OR_EQ
+	| BIT_WISE_AND
+	| BIT_WISE_OR
+	| BIT_WISE_XOR
+	| BIT_WISE_XNOR
+	| RIGHT_SHIFT
+	| LEFT_SHIFT
+	| LOGICAL_LEFT_SHIFT
+	| LOGICAL_RIGHT_SHIFT
+	| IMPLICATION_OPERATOR
+	| EQUIVALANCE_OPERATOR
 	;
 
 inc_or_dec_operator
