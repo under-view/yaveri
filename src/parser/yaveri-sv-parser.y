@@ -122,6 +122,14 @@
 %token <itoken> INCREMENT_OPERATOR
 /* Decrement operation '--' */
 %token <itoken> DECREMENT_OPERATOR
+/* Left Shift '<<' */
+%token <itoken> LEFT_SHIFT
+/* Right Shift '>>' */
+%token <itoken> RIGHT_SHIFT
+/* Logical Left Shift '<<<' */
+%token <itoken> LOGICAL_LEFT_SHIFT
+/* Logical Right Shift '>>>' */
+%token <itoken> LOGICAL_RIGHT_SHIFT
 
 %start svlog
 
@@ -144,6 +152,37 @@ statement
 	: identifier
 	| identifier ';'
 	;
+
+
+/*****************************************************************
+ * Start of 'Procedural blocks and assignments' Grammer Rules    *
+ * Based off section: (A.6.2 Procedural blocks and assignments). *
+ *****************************************************************/
+
+operator_assignment
+	: variable_lvalue assignment_operator expression
+	;
+
+assignment_operator
+	: '='
+	| '+' '='
+	| '-' '='
+	| '*' '='
+	| '/' '='
+	| '%' '='
+	| BIT_WISE_AND '='
+	| BIT_WISE_OR '='
+	| BIT_WISE_XOR '='
+	| LEFT_SHIFT '='
+	| RIGHT_SHIFT '='
+	| LOGICAL_LEFT_SHIFT '='
+	| LOGICAL_RIGHT_SHIFT '='
+	;
+
+/*****************************************************************
+ * End of 'Procedural blocks and assignments' Grammer Rules      *
+ * Based off section: (A.6.2 Procedural blocks and assignments). *
+ *****************************************************************/
 
 
 /************************************************
