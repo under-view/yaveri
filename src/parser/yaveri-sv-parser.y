@@ -98,10 +98,14 @@
 %token <stoken> SVLOG_ESCAPE_SEQ
 /* Triple Quoted Strings */
 %token <stoken> SVLOG_TRIPLE_QUOTED_STRING
-/* Hierarchical Identifier */
-%token <itoken> SVLOG_HIDENT
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
+
+
+/* $root */
+%token <itoken> SVLOG_ROOT
+/* $unit */
+%token <itoken> SVLOG_UNIT
 
 
 /* Bit Wise NOT '~' */
@@ -148,8 +152,10 @@
 %token <itoken> WILDCARD_NOT_EQUAL
 
 
-/* Power Off operation '**' */
-%token <itoken> POWER_OFF_OPERATOR
+/* Class Scope Operator '::' */
+%token <itoken> CLASS_SCOPE_OPERATOR
+/* Power Of operation '**' */
+%token <itoken> POWER_OF_OPERATOR
 /* Increment operation '++' */
 %token <itoken> INCREMENT_OPERATOR
 /* Decrement operation '--' */
@@ -184,6 +190,74 @@ statement
 	: identifier
 	| identifier ';'
 	;
+
+
+/********************************************************
+ * Start of 'Net and variable types' Grammer Rules      *
+ * Based off section: (A.2.2.1 Net and variable types). *
+ ********************************************************/
+
+class_scope
+	: class_type CLASS_SCOPE_OPERATOR
+	;
+
+class_type_ident_loop
+	: CLASS_SCOPE_OPERATOR identifier
+	| CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
+	| class_type_ident_loop CLASS_SCOPE_OPERATOR identifier
+	| class_type_ident_loop LASS_SCOPE_OPERATOR identifier parameter_value_assignment
+	;
+
+class_type
+	: ps_class_identifier
+	| ps_class_identifier parameter_value_assignment
+	| ps_class_identifier class_type_ident_loop
+	;
+
+/********************************************************
+ * End of 'Net and variable types' Grammer Rules        *
+ * Based off section: (A.2.2.1 Net and variable types). *
+ ********************************************************/
+
+
+/******************************************************
+ * Start of 'Module instantiation' Grammer Rules      *
+ * Based off section: (A.4.1.1 Module instantiation). *
+ ******************************************************/
+
+parameter_value_assignment
+	: '#' '(' ')'
+	| '#' '(' list_of_parameter_value_assignments ')'
+	;
+
+list_of_parameter_value_assignments
+	: ordered_parameter_assignment_loop
+	| named_parameter_assignment_loop
+	;
+
+ordered_parameter_assignment_loop
+	: ordered_parameter_assignment
+	| ordered_parameter_assignment_loop ',' ordered_parameter_assignment
+	;
+
+ordered_parameter_assignment
+	: param_expression
+	;
+
+named_parameter_assignment_loop
+	: named_parameter_assignment
+	| named_parameter_assignment_loop ',' named_parameter_assignment
+	;
+
+named_parameter_assignment
+	: '.' identifier '(' ')'
+	| '.' identifier '(' param_expression ')'
+	;
+
+/******************************************************
+ * End of 'Module instantiation' Grammer Rules        *
+ * Based off section: (A.4.1.1 Module instantiation). *
+ ******************************************************/
 
 
 /*****************************************************************
@@ -266,6 +340,12 @@ constant_expression
 	| constant_expression binary_operator attribute_instances constant_expression
 	| constant_expression '?' constant_expression ':' constant_expression
 	| constant_expression '?' attribute_instances constant_expression ':' constant_expression
+	;
+
+param_expression
+	: mintypmax_expression
+	| data_type
+	| '$'
 	;
 
 expression
@@ -416,7 +496,7 @@ binary_operator
 	| WILDCARD_NOT_EQUAL
 	| LOGICAL_ADD
 	| LOGICAL_OR
-	| POWER_OFF_OPERATOR
+	| POWER_OF_OPERATOR
 	| '<'
 	| LT_OR_EQ
 	| '>'
@@ -702,13 +782,37 @@ attr_name
 hierarchical_identifier
 	:
 	| identifier
-	| SVLOG_HIDENT '.' identifier
+	| SVLOG_ROOT '.' identifier
 	| hierarchical_identifier identifier constant_bit_select '.'
 	;
 
 identifier
 	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
 	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
+	;
+
+package_scope
+	: identifier CLASS_SCOPE_OPERATOR
+	| SVLOG_UNIT CLASS_SCOPE_OPERATOR
+	;
+
+ps_class_identifier
+	: identifier
+	| package_scope identifier
+	;
+
+ps_param_ident_loop
+	: generate_block_identifier '.'
+	| generate_block_identifier  '[' constant_expression ']' '.'
+	| ps_param_ident_loop generate_block_identifier '.'
+	| ps_param_ident_loop generate_block_identifier  '[' constant_expression ']' '.'
+	;
+
+ps_parameter_identifier
+	: identifier
+	| package_scope identifier
+	| class_scope identifier
+	| ps_param_ident_loop identifier
 	;
 
 system_tf_identifier

@@ -75,6 +75,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "config"       { return SVLOG_CONFIG;        }
 "endconfig"    { return SVLOG_ENDCONFIG;     }
 
+"$root"        { return SVLOG_ROOT;           }
+"$unit"        { return SVLOG_UNIT;           }
+
 "s"            { return SVLOG_SEC;           }
 "ms"           { return SVLOG_MILLISEC;      }
 "us"           { return SVLOG_MICROSEC;      }
@@ -123,7 +126,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "==?"          { return WILDCARD_EQUAL;      }
 "!=?"          { return WILDCARD_NOT_EQUAL;  }
 
-"**"           { return POWER_OFF_OPERATOR;   }
+"::"           { return CLASS_SCOPE_OPERATOR; }
+"**"           { return POWER_OF_OPERATOR;    }
 "++"           { return INCREMENT_OPERATOR;   }
 "--"           { return DECREMENT_OPERATOR;   }
 "->"           { return IMPLICATION_OPERATOR; }
@@ -135,6 +139,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "<"            { return '<';                  }
 "<="           { return LT_OR_EQ;             }
 
+"$"            { return '$';                 }
+"#"            { return '#';                 }
 "="            { return '=';                 }
 ";"            { return ';';                 }
 "+"            { return '+';                 }
@@ -149,8 +155,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "\""           { return '"';                 }
 "("            { return '(';                 }
 ")"            { return ')';                 }
-
-"$root"        { return SVLOG_HIDENT;        }
 
 {SVEXP}        { return SVLOG_EXP;           }
 {SVDECBASED}   { return SVLOG_DEC_BASE_D;    }
