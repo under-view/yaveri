@@ -126,7 +126,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "==?"          { return WILDCARD_EQUAL;      }
 "!=?"          { return WILDCARD_NOT_EQUAL;  }
 
+"+:"           { return ADDITION_OPERATOR;    }
+"-:"           { return REDUCTION_OPERATOR;   }
 "::"           { return CLASS_SCOPE_OPERATOR; }
+
 "**"           { return POWER_OF_OPERATOR;    }
 "++"           { return INCREMENT_OPERATOR;   }
 "--"           { return DECREMENT_OPERATOR;   }

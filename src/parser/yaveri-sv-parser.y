@@ -152,8 +152,14 @@
 %token <itoken> WILDCARD_NOT_EQUAL
 
 
+/* Addition Operator '+:' */
+%token <itoken> ADDITION_OPERATOR
+/* Reduction Operator '-:' */
+%token <itoken> REDUCTION_OPERATOR
 /* Class Scope Operator '::' */
 %token <itoken> CLASS_SCOPE_OPERATOR
+
+
 /* Power Of operation '**' */
 %token <itoken> POWER_OF_OPERATOR
 /* Increment operation '++' */
@@ -348,6 +354,20 @@ param_expression
 	| '$'
 	;
 
+constant_part_select_range
+	: constant_range
+	| constant_indexed_range
+	;
+
+constant_range
+	: constant_expression ':' constant_expression
+	;
+
+constant_indexed_range
+	: constant_expression ADDITION_OPERATOR constant_expression
+	| constant_expression REDUCTION_OPERATOR constant_expression
+	;
+
 expression
 	:	
 	| primary
@@ -436,6 +456,18 @@ time_unit
 constant_bit_select
 	: '[' constant_expression ']'
 	| constant_bit_select '[' constant_expression ']'
+	;
+
+constant_select_loop
+	: '.' identifier constant_bit_select
+	| constant_select_loop '.' identifier constant_bit_select
+	;
+
+constant_select
+	: constant_bit_select
+	| constant_bit_select '[' constant_part_select_range ']'
+	| constant_select_loop
+	| constant_select_loop '[' constant_part_select_range ']'
 	;
 
 /*****************************************
