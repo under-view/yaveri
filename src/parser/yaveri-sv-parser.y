@@ -297,6 +297,21 @@ assignment_operator
  *****************************************************************/
 
 
+/**********************************************
+ * Start of 'Concatenations' Grammer Rules    *
+ * Based off section: (A.8.1 Concatenations). *
+ **********************************************/
+
+empty_unpacked_array_concatenation
+	: '{' '}'
+	;
+
+/**********************************************
+ * End of 'Concatenations' Grammer Rules      *
+ * Based off section: (A.8.1 Concatenations). *
+ **********************************************/
+
+
 /************************************************
  * Start of 'Subroutine Calls' Grammer Rules    *
  * Based off section: (A.8.2 Subroutine calls). *
@@ -395,16 +410,20 @@ expression
 
 constant_primary
 	: SVLOG_NULL
+	| identifier
+	| identifier '[' constant_range_expression ']'
 	| primary_literal
 	| ps_parameter_identifier constant_select
-	| specparam_identifier [ '[' constant_range_expression ']' ]
-	| genvar_identifier
-	| formal_port_identifier constant_select
-	| [ package_scope | class_scope ] enum_identifier
+	| identifier constant_select
+	| package_scope identifier
+	| class_scope identifier
 	| empty_unpacked_array_concatenation
-	| constant_concatenation [ '[' constant_range_expression ']' ]
-	| constant_multiple_concatenation [ '[' constant_range_expression ']' ]
-	| constant_function_call [ '[' constant_range_expression ']' ]
+	| constant_concatenation
+	| constant_concatenation '[' constant_range_expression ']'
+	| constant_multiple_concatenation
+	| constant_multiple_concatenation '[' constant_range_expression ']'
+	| constant_function_call
+	| constant_function_call '[' constant_range_expression ']'
 	| constant_let_expression
 	| '(' constant_mintypmax_expression ')'
 	| constant_cast
