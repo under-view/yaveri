@@ -64,6 +64,28 @@
 %token <itoken> SVLOG_RANDOMIZE
 /* 'unique' keyword */
 %token <itoken> SVLOG_UNIQUE
+/* 'solve' keyword */
+%token <itoken> SVLOG_SOLVE
+/* 'before' keyword */
+%token <itoken> SVLOG_BEFORE
+/* 'soft' keyword */
+%token <itoken> SVLOG_SOFT
+/* 'disable' keyword */
+%token <itoken> SVLOG_DISABLE
+/* 'dist' keyword */
+%token <itoken> SVLOG_DIST
+/* 'default' keyword */
+%token <itoken> SVLOG_DEFAULT
+/* 'super' keyword */
+%token <itoken> SVLOG_SUPER
+
+
+/* 'if' keyword */
+%token <itoken> SVLOG_IF
+/* 'else' keyword */
+%token <itoken> SVLOG_ELSE
+/* 'foreach' keyword */
+%token <itoken> SVLOG_FOREACH
 /* 'and' keyword */
 %token <itoken> SVLOG_AND
 /* 'or' keyword */
@@ -176,6 +198,10 @@
 %token <itoken> REDUCTION_OPERATOR
 /* Class Scope Operator '::' */
 %token <itoken> CLASS_SCOPE_OPERATOR
+/* Distributed Weight Operator used by dist ':/' */
+%token <itoken> DISTRIBUTED_WEIGHT_OPERATOR
+/* Equal Weight Operator used by dist ':=' */
+%token <itoken> EQUAL_WEIGHT_OPERATOR
 
 
 /* Power Of operation '**' */
@@ -214,6 +240,82 @@ statement
 	: identifier
 	| identifier ';'
 	;
+
+
+/********************************************
+ * Start of 'Constraints' Grammer Rules     *
+ * Based off section: (A.1.10 Constraints). *
+ ********************************************/
+
+constraint_block
+	: '{' constraint_block_item_recursive '}'
+	;
+
+constraint_block_item_recurse
+	: constraint_block_item
+	| constraint_block_item_recurse constraint_block_item
+	;
+
+constraint_block_item
+	: SVLOG_SOLVE solve_before_list SVLOG_BEFORE solve_before_list ';'
+	| constraint_expression
+	;
+
+solve_before_list
+	: constraint_primary
+	| solve_before_list ',' constraint_primary
+	;
+
+constraint_expression_recurse
+	: constraint_expression
+	| constraint_expression_recurse constraint_expression
+	;
+
+constraint_expression
+	: expression_or_dist ';'
+	| SVLOG_SOFT expression_or_dist ';'
+	| uniqueness_constraint ';'
+	| expression IMPLICATION_OPERATOR constraint_set
+	| SVLOG_IF '(' expression ')' constraint_set
+	| SVLOG_IF '(' expression ')' constraint_set SVLOG_ELSE constraint_set
+	| SVLOG_FOREACH '(' ps_or_hierarchical_array_identifier '[' loop_variables ']' ')' constraint_set
+	| SVLOG_DISABLE SVLOG_SOFT constraint_primary ';'
+	;
+
+uniqueness_constraint
+	: SVLOG_UNIQUE '{' range_list '}'
+	;
+
+constraint_set
+	: constraint_expression
+	| '{' constraint_expression_recurse '}'
+	;
+
+expression_or_dist
+	: expression
+	| expression SVLOG_DIST '{' dist_list '}'
+	;
+
+dist_list
+	: dist_item
+	| dist_list ',' dist_item
+	;
+
+dist_item
+	: value_range
+	| value_range dist_weight
+	| SVLOG_DEFAULT DISTRIBUTED_WEIGHT_OPERATOR expression
+	;
+
+dist_weight
+	: EQUAL_WEIGHT_OPERATOR expression
+	| DISTRIBUTED_WEIGHT_OPERATOR expression
+	;
+
+/********************************************
+ * End of 'Constraints' Grammer Rules       *
+ * Based off section: (A.1.10 Constraints). *
+ ********************************************/
 
 
 /********************************************************
@@ -313,6 +415,31 @@ assignment_operator
  * End of 'Procedural blocks and assignments' Grammer Rules      *
  * Based off section: (A.6.2 Procedural blocks and assignments). *
  *****************************************************************/
+
+
+/***********************************************
+ * Start of 'Case statements' Grammer Rules    *
+ * Based off section: (A.6.7 Case statements). *
+ ***********************************************/
+
+range_list
+	: value_range
+	| range_list ',' value_range
+	;
+
+value_range
+	: expression
+	| '[' expression ':' expression ']'
+	| '[' '$' ':' expression ']'
+	| '[' expression ':' '$' ']'
+	| '[' expression '+' '/' '-' expression ']'
+	| '[' expression '+' '%' '-' expression ']'
+	;
+
+/***********************************************
+ * End of 'Case statements' Grammer Rules      *
+ * Based off section: (A.6.7 Case statements). *
+ ***********************************************/
 
 
 /**********************************************
@@ -578,6 +705,12 @@ time_unit
 	| SVLOG_NANOSEC
 	| SVLOG_PICOSEC
 	| SVLOG_fEMTOSEC
+	;
+
+implicit_class_handle
+	: SVLOG_THIS
+	| SVLOG_SUPER
+	| SVLOG_THIS '.' SVLOG_SUPER
 	;
 
 constant_bit_select
@@ -958,6 +1091,13 @@ package_scope
 
 ps_class_identifier
 	: identifier
+	| package_scope identifier
+	;
+
+ps_or_hierarchical_array_identifier
+	: identifier
+	| implicit_class_handle '.' identifier
+	| class_scope identifier
 	| package_scope identifier
 	;
 

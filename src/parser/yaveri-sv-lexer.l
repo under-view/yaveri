@@ -92,6 +92,17 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "with"         { return SVLOG_WITH;          }
 "randomize"    { return SVLOG_RANDOMIZE;     }
 "unique"       { return SVLOG_UNIQUE;        }
+"solve"        { return SVLOG_SOLVE;         }
+"before"       { return SVLOG_BEFORE;        }
+"soft"         { return SVLOG_SOFT;          }
+"disable"      { return SVLOG_DISABLE;       }
+"dist"         { return SVLOG_DIST;          }
+"default"      { return SVLOG_DEFAULT;       }
+"super"        { return SVLOG_SUPER;         }
+
+"if"           { return SVLOG_IF;            }
+"else"         { return SVLOG_ELSE;          }
+"foreach"      { return SVLOG_FOREACH;       }
 "and"          { return SVLOG_AND;           }
 "or"           { return SVLOG_OR;            }
 "xor"          { return SVLOG_XOR;           }
@@ -133,9 +144,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "==?"          { return WILDCARD_EQUAL;      }
 "!=?"          { return WILDCARD_NOT_EQUAL;  }
 
-"+:"           { return ADDITION_OPERATOR;    }
-"-:"           { return REDUCTION_OPERATOR;   }
-"::"           { return CLASS_SCOPE_OPERATOR; }
+"+:"           { return ADDITION_OPERATOR;           }
+"-:"           { return REDUCTION_OPERATOR;          }
+"::"           { return CLASS_SCOPE_OPERATOR;        }
+":/"           { return DISTRIBUTED_WEIGHT_OPERATOR; }
+":="           { return EQUAL_WEIGHT_OPERATOR;       }
 
 "**"           { return POWER_OF_OPERATOR;    }
 "++"           { return INCREMENT_OPERATOR;   }
@@ -153,6 +166,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "#"            { return '#';                 }
 "="            { return '=';                 }
 ";"            { return ';';                 }
+":"            { return ':';                 }
 "+"            { return '+';                 }
 "-"            { return '-';                 }
 "*"            { return '*';                 }
@@ -165,6 +179,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "\""           { return '"';                 }
 "("            { return '(';                 }
 ")"            { return ')';                 }
+"["            { return ']';                 }
+"]"            { return ']';                 }
 
 {SVEXP}        { return SVLOG_EXP;           }
 {SVDECBASED}   { return SVLOG_DEC_BASE_D;    }
