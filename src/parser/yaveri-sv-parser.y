@@ -346,6 +346,46 @@ class_type
  ********************************************************/
 
 
+/*************************************************
+ * Start of 'Let declarations' Grammer Rules     *
+ * Based off section: (A.2.12 Let declarations). *
+ *************************************************/
+
+let_expression
+	: identifier
+	| identifier '(' let_list_of_arguments ')'
+	| package_scope identifier
+	| package_scope identifier '(' let_list_of_arguments ')'
+	;
+
+let_list_of_arguments
+	: %empty
+	| let_actual_arg_recurse let_list_of_arguments_ident_recurse
+	| '.' identifier '(' let_actual_arg ')' let_list_of_arguments_ident_recurse
+	;
+
+let_list_of_arguments_ident_recurse
+	: %empty
+	| ',' '.' identifier '(' let_actual_arg ')'
+	| let_list_of_arguments_ident_recurse ',' '.' identifier '(' let_actual_arg ')'
+	;
+
+let_actual_arg_recurse
+	: let_actual_arg
+	| let_actual_arg_recurse ',' let_actual_arg
+	;
+
+let_actual_arg
+	: %empty
+	| expression
+	;
+
+/*************************************************
+ * End of 'Let declarations' Grammer Rules       *
+ * Based off section: (A.2.12 Let declarations). *
+ *************************************************/
+
+
 /******************************************************
  * Start of 'Module instantiation' Grammer Rules      *
  * Based off section: (A.4.1.1 Module instantiation). *
@@ -693,7 +733,8 @@ primary
 	| concatenation '[' range_expression ']'
 	| multiple_concatenation
 	| multiple_concatenation '[' range_expression ']'
-	| function_subroutine_call [ [ range_expression ] ]
+	| function_subroutine_call
+	| function_subroutine_call '[' range_expression ']'
 	| let_expression
 	| ( mintypmax_expression )
 	| cast
