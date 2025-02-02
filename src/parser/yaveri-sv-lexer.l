@@ -86,8 +86,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "fs"           { return SVLOG_fEMTOSEC;      }
 "step"         { return SVLOG_STEP;          }
 
+"std"          { return SVLOG_STD;           }
 "this"         { return SVLOG_THIS;          }
 "null"         { return SVLOG_NULL;          }
+"with"         { return SVLOG_WITH;          }
+"randomize"    { return SVLOG_RANDOMIZE;     }
 
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }

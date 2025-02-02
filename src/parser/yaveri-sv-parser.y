@@ -50,10 +50,16 @@
 %token <itoken> SVLOG_fEMTOSEC
 /* step 'step' */
 %token <itoken> SVLOG_STEP
+
+
+/* 'std' keyword */
+%token <itoken> SVLOG_STD
 /* 'this' keyword */
 %token <itoken> SVLOG_THIS
 /* 'null' keyword */
 %token <itoken> SVLOG_NULL
+
+
 /* register 'reg' */
 %token <itoken> SVLOG_REG
 %token <itoken> SVLOG_WIRE
@@ -335,12 +341,33 @@ empty_unpacked_array_concatenation
  * Based off section: (A.8.2 Subroutine calls). *
  ************************************************/
 
+constant_function_call
+	: function_subroutine_call
+	;
+
+tf_call
+	: ps_or_hierarchical_tf_identifier attribute_instances
+	| ps_or_hierarchical_tf_identifier attribute_instances '(' list_of_arguments ')'
+	;
+
 system_tf_call
 	: system_tf_identifier ';'
 	| system_tf_identifier '(' list_of_arguments ')' ';'
 	| system_tf_identifier '(' data_type ')' ';'
 	| system_tf_identifier '(' data_type ',' expression ')' ';'
 	| system_tf_identifier '(' expression ',' clocking_event ')' ';'
+	;
+
+subroutine_call
+	: tf_call
+	| system_tf_call
+	| method_call
+	| randomize_call
+	| SVLOG_STD CLASS_SCOPE_OPERATOR randomize_call
+	;
+
+function_subroutine_call
+	: subroutine_call
 	;
 
 list_of_arguments
@@ -351,6 +378,49 @@ list_of_arguments
 	| list_of_arguments ',' expression
 	| list_of_arguments ',' '.' identifier '(' ')'
 	| list_of_arguments ',' '.' identifier '(' expression ')'
+	;
+
+method_call
+	: method_call_root '.' method_call_body
+	;
+
+method_call_body
+	: identifier
+	| identifier attribute_instances '(' list_of_arguments ')'
+	| built_in_method_call
+	;
+
+built_in_method_call
+	: array_manipulation_call
+	| randomize_call
+	;
+
+array_manipulation_call
+	: array_method_name
+	| array_method_name '(' list_of_arguments ')'
+	| array_method_name '(' expression ')'
+	| array_method_name '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
+	| array_method_name attribute_instances
+	| array_method_name attribute_instances '(' list_of_arguments ')'
+	| array_method_name attribute_instances SVLOG_WITH '(' expression ')'
+	| array_method_name attribute_instances '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
+	;
+
+randomize_call
+	: SVLOG_RANDOMIZE attribute_instances
+	| SVLOG_RANDOMIZE attribute_instances '(' variable_identifier_list ')'
+	| SVLOG_RANDOMIZE attribute_instances '(' SVLOG_NULL ')'
+	| SVLOG_RANDOMIZE attribute_instances SVLOG_WITH constraint_block
+	| SVLOG_RANDOMIZE attribute_instances SVLOG_WITH '(' identifier_list ')' constraint_block
+	| SVLOG_RANDOMIZE attribute_instances '(' variable_identifier_list ')' SVLOG_WITH constraint_block
+	| SVLOG_RANDOMIZE attribute_instances '(' variable_identifier_list ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| SVLOG_RANDOMIZE attribute_instances '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
+	| SVLOG_RANDOMIZE attribute_instances '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	;
+
+method_call_root
+	: primary
+	| implicit_class_handle
 	;
 
 /************************************************
@@ -816,6 +886,7 @@ string_escape_seq
 attribute_instances
 	: attribute_instance
 	| attribute_instances attribute_instance
+	| %empty
 	;
 
 attribute_instance
@@ -868,6 +939,12 @@ package_scope
 ps_class_identifier
 	: identifier
 	| package_scope identifier
+	;
+
+ps_or_hierarchical_tf_identifier
+	: identifier
+	| package_scope identifier
+	| hierarchical_identifier
 	;
 
 ps_param_ident_loop
