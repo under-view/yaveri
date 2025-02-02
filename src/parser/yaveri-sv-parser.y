@@ -465,6 +465,10 @@ constant_multiple_concatenation
 	: '{' constant_expression constant_concatenation '}'
 	;
 
+multiple_concatenation
+	: '{' expression concatenation '}'
+	;
+
 empty_unpacked_array_concatenation
 	: '{' '}'
 	;
@@ -687,7 +691,8 @@ primary
 	| empty_unpacked_array_concatenation
 	| concatenation
 	| concatenation '[' range_expression ']'
-	| multiple_concatenation [ [ range_expression ] ]
+	| multiple_concatenation
+	| multiple_concatenation '[' range_expression ']'
 	| function_subroutine_call [ [ range_expression ] ]
 	| let_expression
 	| ( mintypmax_expression )
