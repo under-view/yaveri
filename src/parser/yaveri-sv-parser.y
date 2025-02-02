@@ -632,6 +632,16 @@ expression
 	| tagged_union_expression
 	;
 
+part_select_range 
+	: constant_range
+	| indexed_range
+	;
+
+indexed_range
+	: expression ADDITION_OPERATOR constant_expression
+	| expression REDUCTION_OPERATOR constant_expression
+	;
+
 /*******************************************
  * End of 'Expressions' Grammer Rules      *
  * Based off section: (A.8.3 Expressions). *
@@ -675,7 +685,8 @@ primary
 	| class_qualifier hierarchical_identifier select
 	| package_scope hierarchical_identifier select
 	| empty_unpacked_array_concatenation
-	| concatenation [ [ range_expression ] ]
+	| concatenation
+	| concatenation '[' range_expression ']'
 	| multiple_concatenation [ [ range_expression ] ]
 	| function_subroutine_call [ [ range_expression ] ]
 	| let_expression
@@ -684,6 +695,11 @@ primary
 	| assignment_pattern_expression
 	| streaming_concatenation
 	| sequence_method_call
+	;
+
+range_expression 
+	: expression
+	| part_select_range
 	;
 
 primary_literal
