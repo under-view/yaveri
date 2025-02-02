@@ -91,6 +91,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "null"         { return SVLOG_NULL;          }
 "with"         { return SVLOG_WITH;          }
 "randomize"    { return SVLOG_RANDOMIZE;     }
+"unique"       { return SVLOG_UNIQUE;        }
+"and"          { return SVLOG_AND;           }
+"or"           { return SVLOG_OR;            }
+"xor"          { return SVLOG_XOR;           }
 
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }

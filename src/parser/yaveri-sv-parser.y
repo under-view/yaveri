@@ -58,6 +58,18 @@
 %token <itoken> SVLOG_THIS
 /* 'null' keyword */
 %token <itoken> SVLOG_NULL
+/* 'with' keyword */
+%token <itoken> SVLOG_WITH
+/* 'randomize' keyword */
+%token <itoken> SVLOG_RANDOMIZE
+/* 'unique' keyword */
+%token <itoken> SVLOG_UNIQUE
+/* 'and' keyword */
+%token <itoken> SVLOG_AND
+/* 'or' keyword */
+%token <itoken> SVLOG_OR
+/* 'xor' keyword */
+%token <itoken> SVLOG_XOR
 
 
 /* register 'reg' */
@@ -421,6 +433,14 @@ randomize_call
 method_call_root
 	: primary
 	| implicit_class_handle
+	;
+
+array_method_name
+	: identifier
+	| SVLOG_UNIQUE
+	| SVLOG_AND
+	| SVLOG_OR
+	| SVLOG_XOR
 	;
 
 /************************************************
