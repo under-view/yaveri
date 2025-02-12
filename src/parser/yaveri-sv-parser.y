@@ -248,7 +248,7 @@ statement
  ********************************************/
 
 constraint_block
-	: '{' constraint_block_item_recursive '}'
+	: '{' constraint_block_item_recurse '}'
 	;
 
 constraint_block_item_recurse
@@ -489,6 +489,22 @@ value_range
  * End of 'Case statements' Grammer Rules      *
  * Based off section: (A.6.7 Case statements). *
  ***********************************************/
+
+
+/**************************************************
+ * Start of 'Looping statements' Grammer Rules    *
+ * Based off section: (A.6.8 Looping statements). *
+ **************************************************/
+
+loop_variables
+	: identifier
+	| loop_variables ',' identifier
+	;
+
+/**************************************************
+ * Start of 'Looping statements' Grammer Rules    *
+ * Based off section: (A.6.8 Looping statements). *
+ **************************************************/
 
 
 /**********************************************
