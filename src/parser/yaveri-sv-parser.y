@@ -266,6 +266,15 @@ solve_before_list
 	| solve_before_list ',' constraint_primary
 	;
 
+constraint_primary
+	: hierarchical_identifier select
+	| hierarchical_identifier select '(' ')'
+	| implicit_class_handle '.' hierarchical_identifier select
+	| implicit_class_handle '.' hierarchical_identifier select '(' ')'
+	| class_scope hierarchical_identifier select
+	| class_scope hierarchical_identifier select '(' ')'
+	;
+
 constraint_expression_recurse
 	: constraint_expression
 	| constraint_expression_recurse constraint_expression
@@ -778,6 +787,24 @@ implicit_class_handle
 	: SVLOG_THIS
 	| SVLOG_SUPER
 	| SVLOG_THIS '.' SVLOG_SUPER
+	;
+
+bit_select
+	: %empty
+	| '[' expression ']'
+	| bit_select '[' expression ']'
+	;
+
+member_identifier_bit_select_recurse
+	: %empty
+	| '.' identifier bit_select
+	| member_identifier_bit_select_recurse '.' identifier bit_select
+
+select
+	: bit_select
+	| bit_select '[' part_select_range ']'
+	| member_identifier_bit_select_recurse '.' identifier bit_select
+	| member_identifier_bit_select_recurse '.' identifier bit_select '[' part_select_range ']'
 	;
 
 constant_bit_select
