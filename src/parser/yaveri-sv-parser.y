@@ -340,7 +340,7 @@ class_type_ident_loop
 	: CLASS_SCOPE_OPERATOR identifier
 	| CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
 	| class_type_ident_loop CLASS_SCOPE_OPERATOR identifier
-	| class_type_ident_loop LASS_SCOPE_OPERATOR identifier parameter_value_assignment
+	| class_type_ident_loop CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
 	;
 
 class_type
