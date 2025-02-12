@@ -676,6 +676,11 @@ expression
 	| tagged_union_expression
 	;
 
+mintypmax_expression
+	: expression
+	| expression ':' expression ':' expression
+	;
+
 part_select_range 
 	: constant_range
 	| indexed_range
@@ -736,7 +741,7 @@ primary
 	| function_subroutine_call
 	| function_subroutine_call '[' range_expression ']'
 	| let_expression
-	| ( mintypmax_expression )
+	| '(' mintypmax_expression ')'
 	| cast
 	| assignment_pattern_expression
 	| streaming_concatenation
