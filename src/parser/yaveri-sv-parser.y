@@ -299,23 +299,10 @@
 %%
 
 svlog
-	: statements
-	| primary_literal
-	| unary_operator
+	: primary_literal
 	| system_tf_call
 	| %empty
 	;
-
-statements
-	: statement
-	| statements statement
-	;
-
-statement
-	: identifier
-	| identifier ';'
-	;
-
 
 /*******************************************
  * Start of 'Class items' Grammer Rules    *
@@ -895,6 +882,58 @@ assignment_operator
  *****************************************************************/
 
 
+/******************************************
+ * Start of 'Statements' Grammer Rules    *
+ * Based off section: (A.6.4 Statements). *
+ ******************************************/
+
+statement_or_null
+	: statement
+	| attribute_instance_recurse ';'
+	;
+
+statement
+	: attribute_instance_recurse statement_item
+	| block_identifier ':' attribute_instance_recurse statement_item
+	;
+
+statement_item
+	: blocking_assignment ';'
+	| nonblocking_assignment ';'
+	| procedural_continuous_assignment ';'
+	| case_statement
+	| conditional_statement
+	| subroutine_call_statement
+	| disable_statement
+	| event_trigger
+	| loop_statement
+	| jump_statement
+	| par_block
+	| procedural_timing_control_statement
+	| seq_block
+	| wait_statement
+	| procedural_assertion_statement
+	| clocking_drive ';'
+	| randsequence_statement
+	| randcase_statement
+	| expect_property_statement
+	;
+
+function_statement
+	: statement
+	;
+
+function_statement_or_null
+	: function_statement
+	| attribute_instance_recurse ';'
+	;
+
+/******************************************
+ * End of 'Statements' Grammer Rules      *
+ * Based off section: (A.6.4 Statements). *
+ ******************************************/
+
+
 /*********************************************************
  * Start of 'Timing control statements' Grammer Rules    *
  * Based off section: (A.6.5 Timing control statements). *
@@ -930,7 +969,7 @@ event_expression
  ******************************************************/
 
 conditional_statement
-	: SLVOG_IF '(' cond_predicate ')' statement_or_null
+	: SVLOG_IF '(' cond_predicate ')' statement_or_null
 	| unique_priority SLVOG_IF '(' cond_predicate ')' cs_else_if_resurse cs_else
 	;
 
@@ -957,8 +996,8 @@ cond_predicate
 
 expression_or_cond_pattern_recurse
 	: %empty
-	| IF_AND_ONLY_IF expression_or_cond_pattern
-	| expression_or_cond_pattern_recurse IF_AND_ONLY_IF expression_or_cond_pattern
+	| SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
+	| expression_or_cond_pattern_recurse SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
 	;
 
 expression_or_cond_pattern
