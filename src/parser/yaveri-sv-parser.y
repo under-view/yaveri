@@ -1264,6 +1264,22 @@ assignment_pattern_variable_lvalue
  ******************************************/
 
 
+/**********************************************************
+ * Start of 'Subroutine call statements' Grammer Rules    *
+ * Based off section: (A.6.9 Subroutine call statements). *
+ **********************************************************/
+
+subroutine_call_statement
+	: subroutine_call ';'
+	| SVLOG_VOID APOSTROPHE '(' function_subroutine_call ')' ';'
+	;
+
+/**********************************************************
+ * End of 'Subroutine call statements' Grammer Rules      *
+ * Based off section: (A.6.9 Subroutine call statements). *
+ **********************************************************/
+
+
 /*********************************************************
  * Start of 'Specify path declarations' Grammer Rules    *
  * Based off section: (A.7.2 Specify path declarations). *
