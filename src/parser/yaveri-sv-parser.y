@@ -138,6 +138,18 @@
 %token <itoken> SVLOG_INTERSECT
 /* 'matches' keyword */
 %token <itoken> SVLOG_MATCHES
+/* 'inside' keyword */
+%token <itoken> SVLOG_INSIDE
+/* 'case' keyword */
+%token <itoken> SVLOG_CASE
+/* 'casez' keyword */
+%token <itoken> SVLOG_CASEZ
+/* 'casex' keyword */
+%token <itoken> SVLOG_CASEX
+/* 'randcase' keyword */
+%token <itoken> SVLOG_RANDCASE
+/* 'endcase' keyword */
+%token <itoken> SVLOG_ENDCASE
 
 
 /* 'assign' keyword */
@@ -1080,7 +1092,7 @@ event_expression
 
 conditional_statement
 	: SVLOG_IF '(' cond_predicate ')' statement_or_null
-	| unique_priority SLVOG_IF '(' cond_predicate ')' cs_else_if_resurse cs_else
+	| unique_priority SVLOG_IF '(' cond_predicate ')' cs_else_if_resurse cs_else
 	;
 
 cs_else
@@ -1129,6 +1141,73 @@ cond_pattern
  * Start of 'Case statements' Grammer Rules    *
  * Based off section: (A.6.7 Case statements). *
  ***********************************************/
+
+case_statement
+	: case_keyword '(' expression ')' case_item_recurse SVLOG_ENDCASE
+	| unique_priority case_keyword '(' expression ')' case_item_recurse SVLOG_ENDCASE
+	| case_keyword '(' expression ')' SVLOG_MATCHES case_pattern_item_recurse SVLOG_ENDCASE
+	| unique_priority case_keyword '(' expression ')' SVLOG_MATCHES case_pattern_item_recurse SVLOG_ENDCASE
+	| SVLOG_CASE '(' expression ')' SVLOG_INSIDE case_inside_item_recurse SVLOG_ENDCASE
+	| unique_priority SVLOG_CASE '(' expression ')' SVLOG_INSIDE case_inside_item_recurse SVLOG_ENDCASE
+	;
+
+case_keyword
+	: SVLOG_CASE
+	| SVLOG_CASEZ
+	| SVLOG_CASEX
+	;
+
+case_item
+	: case_item_expression_recurse ':' statement_or_null
+	| SVLOG_DEFAULT statement_or_null
+	| SVLOG_DEFAULT ':' statement_or_null
+	;
+
+case_item_recurse
+	: case_item
+	| case_item_recurse case_item
+	;
+
+case_item_expression_recurse
+	: expression
+	| case_item_expression_recurse ',' expression
+	;
+
+case_pattern_item
+	: pattern ':' statement_or_null
+	| pattern SVLOG_IF_AND_ONLY_IF expression ':' statement_or_null
+	| SVLOG_DEFAULT statement_or_null
+	| SVLOG_DEFAULT ':' statement_or_null
+	;
+
+case_pattern_item_recurse
+	: case_pattern_item
+	| case_pattern_item_recurse case_pattern_item
+	;
+
+case_inside_item
+	: range_list ':' statement_or_null
+	| SVLOG_DEFAULT statement_or_null
+	| SVLOG_DEFAULT ':' statement_or_null
+	;
+
+case_inside_item_recurse
+	: case_inside_item
+	| case_inside_item_recurse case_inside_item
+	;
+
+randcase_statement
+	: SVLOG_RANDCASE randcase_item_recurse SVLOG_ENDCASE
+	;
+
+randcase_item
+	: expression ':' statement_or_null
+	;
+
+randcase_item_recurse
+	: randcase_item
+	| randcase_item_recurse randcase_item
+	;
 
 range_list
 	: value_range

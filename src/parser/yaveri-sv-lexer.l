@@ -130,6 +130,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "xor"          { return SVLOG_XOR;            }
 "intersect"    { return SVLOG_INTERSECT;      }
 "matches"      { return SVLOG_MATCHES;        }
+"inside"       { return SVLOG_INSIDE;         }
+"case"         { return SVLOG_CASE;           }
+"casez"        { return SVLOG_CASEZ;          }
+"casex"        { return SVLOG_CASEX;          }
+"randcase"     { return SVLOG_RANDCASE;       }
+"endcase"      { return SVLOG_ENDCASE;        }
 
 
 "assign"       { return SVLOG_ASSIGN;         }
