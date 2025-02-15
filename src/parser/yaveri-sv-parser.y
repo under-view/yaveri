@@ -266,6 +266,11 @@
 %token <itoken> LEFT_SHIFT
 /* Right Shift '>>' */
 %token <itoken> RIGHT_SHIFT
+/* Greater Than Or Equal '>=' */
+%token <itoken> GT_OR_EQ
+/* Less Than Or Equal '<=' */
+%token <itoken> LT_OR_EQ
+
 
 %start svlog
 
@@ -1184,7 +1189,7 @@ binary_operator
 	| CASE_NOT_EQUAL
 	| WILDCARD_EQUAL
 	| WILDCARD_NOT_EQUAL
-	| LOGICAL_ADD
+	| LOGICAL_AND
 	| LOGICAL_OR
 	| POWER_OF_OPERATOR
 	| '<'
