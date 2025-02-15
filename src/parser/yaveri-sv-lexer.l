@@ -112,6 +112,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "new"          { return SVLOG_NEW;           }
 "enum"         { return SVLOG_ENUM;          }
 "type"         { return SVLOG_TYPE;          }
+"first_match"  { return SVLOG_FIRST_MATCH;   }
+"throughout"   { return SVLOG_THROUGHOUT;    }
+"within"       { return SVLOG_WITHIN;        }
+
 
 "iff"          { return SVLOG_IF_AND_ONLY_IF; }
 "if"           { return SVLOG_IF;             }
@@ -120,6 +124,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "and"          { return SVLOG_AND;            }
 "or"           { return SVLOG_OR;             }
 "xor"          { return SVLOG_XOR;            }
+"intersect"    { return SVLOG_INTERSECT;      }
 
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }

@@ -104,6 +104,12 @@
 %token <itoken> SVLOG_NEW
 /* 'type' keyword */
 %token <itoken> SVLOG_TYPE
+/* 'first_match' keyword */
+%token <itoken> SVLOG_FIRST_MATCH
+/* 'throughout' keyword */
+%token <itoken> SVLOG_THROUGHOUT
+/* 'within' keyword */
+%token <itoken> SVLOG_WITHIN
 
 
 /* 'iff' If and only if keyword */
@@ -120,6 +126,8 @@
 %token <itoken> SVLOG_OR
 /* 'xor' keyword */
 %token <itoken> SVLOG_XOR
+/* 'intersect' keyword */
+%token <itoken> SVLOG_INTERSECT
 
 
 /* 'reg' keyword */
@@ -661,6 +669,43 @@ unsized_dimension
  * Based off section: (A.2.10 Assertion declarations). *
  *******************************************************/
 
+sequence_expr
+	: cycle_delay_range sequence_expr
+	| sequence_expr cycle_delay_range sequence_expr
+	| expression_or_dist
+	| expression_or_dist boolean_abbrev
+	| sequence_instance
+	| sequence_instance sequence_abbrev
+	| '(' sequence_expr sequence_match_item_recurse ')'
+	| '(' sequence_expr sequence_match_item_recurse ')' sequence_abbrev
+	| sequence_expr SVLOG_AND sequence_expr
+	| sequence_expr SVLOG_INTERSECT sequence_expr
+	| sequence_expr SVLOG_OR sequence_expr
+	| SVLOG_FIRST_MATCH '(' sequence_expr sequence_match_item_recurse ')'
+	| expression_or_dist SVLOG_THROUGHOUT sequence_expr
+	| sequence_expr SVLOG_WITHIN sequence_expr
+	| clocking_event sequence_expr
+	;
+
+cycle_delay_range
+	: '#' '#' constant_primary
+	| '#' '#' '[' cycle_delay_const_range_expression ']'
+	| '#' '#' '[' '*' ']'
+	| '#' '#' '[' '+' ']'
+	;
+
+sequence_match_item_recurse
+	: %empty
+	| ',' sequence_match_item
+	| sequence_match_item_recurse ',' sequence_match_item
+	;
+
+sequence_match_item
+	: operator_assignment
+	| inc_or_dec_expression
+	| subroutine_call
+	;
+
 sequence_instance
 	: ps_or_hierarchical_sequence_identifier
 	| ps_or_hierarchical_sequence_identifier '(' ')'
@@ -691,6 +736,40 @@ sequence_actual_arg
 	: event_expression
 	| sequence_expr
 	| '$'
+	;
+
+boolean_abbrev
+	: consecutive_repetition
+	| nonconsecutive_repetition
+	| goto_repetition
+	;
+
+sequence_abbrev
+	: consecutive_repetition
+	;
+
+consecutive_repetition
+	: '[' '*' const_or_range_expression ']'
+	| '[' '*' ']'
+	| '[' '+' ']'
+	;
+
+nonconsecutive_repetition
+	: '[' '=' const_or_range_expression ']'
+	;
+
+goto_repetition
+	: '[' IMPLICATION_OPERATOR const_or_range_expression ']'
+	;
+
+const_or_range_expression
+	: constant_expression
+	| cycle_delay_const_range_expression
+	;
+
+cycle_delay_const_range_expression
+	: constant_expression ':' constant_expression
+	| constant_expression ':' '$'
 	;
 
 /*******************************************************
