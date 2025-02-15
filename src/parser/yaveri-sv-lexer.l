@@ -93,6 +93,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "with"         { return SVLOG_WITH;          }
 "randomize"    { return SVLOG_RANDOMIZE;     }
 "unique"       { return SVLOG_UNIQUE;        }
+"unique0"      { return SVLOG_UNIQUE0;       }
+"priority"     { return SVLOG_PRIORITY;      }
 "solve"        { return SVLOG_SOLVE;         }
 "before"       { return SVLOG_BEFORE;        }
 "soft"         { return SVLOG_SOFT;          }
@@ -125,6 +127,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "or"           { return SVLOG_OR;             }
 "xor"          { return SVLOG_XOR;            }
 "intersect"    { return SVLOG_INTERSECT;      }
+"matches"      { return SVLOG_MATCHES;        }
 
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }
@@ -147,6 +150,13 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "negedge"      { return SVLOG_NEGEDGE;       }
 "edge"         { return SVLOG_EDGE;          }
 
+"&&&"          { return IF_AND_ONLY_IF;      }
+"==="          { return CASE_EQUAL;          }
+"!=="          { return CASE_NOT_EQUAL;      }
+
+"==?"          { return WILDCARD_EQUAL;      }
+"!=?"          { return WILDCARD_NOT_EQUAL;  }
+
 "~"            { return BIT_WISE_NOT;        }
 "&"            { return BIT_WISE_AND;        }
 "~&"           { return BIT_WISE_NAND;       }
@@ -163,12 +173,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "||"           { return LOGICAL_OR;          }
 "<<<"          { return LOGICAL_LEFT_SHIFT;  }
 ">>>"          { return LOGICAL_RIGHT_SHIFT; }
-
-"==="          { return CASE_EQUAL;          }
-"!=="          { return CASE_NOT_EQUAL;      }
-
-"==?"          { return WILDCARD_EQUAL;      }
-"!=?"          { return WILDCARD_NOT_EQUAL;  }
 
 "+:"           { return ADDITION_OPERATOR;           }
 "-:"           { return REDUCTION_OPERATOR;          }

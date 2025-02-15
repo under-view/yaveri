@@ -68,6 +68,10 @@
 %token <itoken> SVLOG_RANDOMIZE
 /* 'unique' keyword */
 %token <itoken> SVLOG_UNIQUE
+/* 'unique0' keyword */
+%token <itoken> SVLOG_UNIQUE0
+/* 'priority' keyword */
+%token <itoken> SVLOG_PRIORITY
 /* 'solve' keyword */
 %token <itoken> SVLOG_SOLVE
 /* 'before' keyword */
@@ -112,7 +116,7 @@
 %token <itoken> SVLOG_WITHIN
 
 
-/* 'iff' If and only if keyword */
+/* 'iff'|'&&&' If and only if */
 %token <itoken> SVLOG_IF_AND_ONLY_IF
 /* 'if' keyword */
 %token <itoken> SVLOG_IF
@@ -128,6 +132,8 @@
 %token <itoken> SVLOG_XOR
 /* 'intersect' keyword */
 %token <itoken> SVLOG_INTERSECT
+/* 'matches' keyword */
+%token <itoken> SVLOG_MATCHES
 
 
 /* 'reg' keyword */
@@ -212,6 +218,18 @@
 %token <itoken> SVLOG_UNIT
 
 
+/* Case equality operator '===' */
+%token <itoken> CASE_EQUAL
+/* Case inequality operator '!==' */
+%token <itoken> CASE_NOT_EQUAL
+
+
+/* Wildcard equality operator '==?' */
+%token <itoken> WILDCARD_EQUAL
+/* Wildcard inequality operator '!=?' */
+%token <itoken> WILDCARD_NOT_EQUAL
+
+
 /* Bit Wise NOT '~' */
 %token <itoken> BIT_WISE_NOT
 /* Bit Wise AND '&' */
@@ -242,18 +260,6 @@
 %token <itoken> LOGICAL_LEFT_SHIFT
 /* Logical Right Shift '>>>' */
 %token <itoken> LOGICAL_RIGHT_SHIFT
-
-
-/* Case equality operator '===' */
-%token <itoken> CASE_EQUAL
-/* Case inequality operator '!==' */
-%token <itoken> CASE_NOT_EQUAL
-
-
-/* Wildcard equality operator '==?' */
-%token <itoken> WILDCARD_EQUAL
-/* Wildcard inequality operator '!=?' */
-%token <itoken> WILDCARD_NOT_EQUAL
 
 
 /* Addition Operator '+:' */
@@ -918,6 +924,58 @@ event_expression
  *********************************************************/
 
 
+/******************************************************
+ * Start of 'Conditional statements' Grammer Rules    *
+ * Based off section: (A.6.6 Conditional statements). *
+ ******************************************************/
+
+conditional_statement
+	: SLVOG_IF '(' cond_predicate ')' statement_or_null
+	| unique_priority SLVOG_IF '(' cond_predicate ')' cs_else_if_resurse cs_else
+	;
+
+cs_else
+	: %empty
+	| SVLOG_ELSE statement_or_null
+	;
+
+cs_else_if_resurse
+	: %empty
+	| SVLOG_ELSE SLVOG_IF '(' cond_predicate ')' statement_or_null
+	| conditional_statement_else_if_resurse SVLOG_ELSE SLVOG_IF '(' cond_predicate ')' statement_or_null
+	;
+
+unique_priority
+	: SVLOG_UNIQUE
+	| SVLOG_UNIQUE0
+	| SVLOG_PRIORITY
+	;
+
+cond_predicate
+	: expression_or_cond_pattern expression_or_cond_pattern_recurse
+	;
+
+expression_or_cond_pattern_recurse
+	: %empty
+	| IF_AND_ONLY_IF expression_or_cond_pattern
+	| expression_or_cond_pattern_recurse IF_AND_ONLY_IF expression_or_cond_pattern
+	;
+
+expression_or_cond_pattern
+	: expression
+	| cond_pattern
+	;
+
+cond_pattern
+	: expression SVLOG_MATCHES pattern
+	;
+
+/******************************************************
+ * End of 'Conditional statements' Grammer Rules      *
+ * Based off section: (A.6.6 Conditional statements). *
+ ******************************************************/
+
+
 /***********************************************
  * Start of 'Case statements' Grammer Rules    *
  * Based off section: (A.6.7 Case statements). *
@@ -1143,6 +1201,10 @@ inc_or_dec_expression
 	| inc_or_dec_operator attribute_instance_recurse variable_lvalue
 	| variable_lvalue inc_or_dec_operator
 	| variable_lvalue attribute_instance_recurse inc_or_dec_operator
+	;
+
+conditional_expression
+	: cond_predicate '?' attribute_instance_recurse expression ':' expression
 	;
 
 constant_expression
