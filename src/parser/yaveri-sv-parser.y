@@ -923,6 +923,11 @@ assignment_operator
 	| LOGICAL_RIGHT_SHIFT '='
 	;
 
+nonblocking_assignment
+	: variable_lvalue LT_OR_EQ expression
+	| variable_lvalue LT_OR_EQ delay_or_event_control expression
+	;
+
 /*****************************************************************
  * End of 'Procedural blocks and assignments' Grammer Rules      *
  * Based off section: (A.6.2 Procedural blocks and assignments). *
