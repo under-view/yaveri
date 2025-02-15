@@ -131,6 +131,13 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "intersect"    { return SVLOG_INTERSECT;      }
 "matches"      { return SVLOG_MATCHES;        }
 
+
+"assign"       { return SVLOG_ASSIGN;         }
+"deassign"     { return SVLOG_DEASSIGN;       }
+"force"        { return SVLOG_FORCE;          }
+"release"      { return SVLOG_RELEASE;        }
+
+
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }
 "integer"      { return SVLOG_INTEGER;       }
@@ -208,7 +215,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "_"            { return '_';                 }
 "."            { return '.';                 }
 ","            { return ',';                 }
-"'"            { return '\'';                }
+"'"            { return APOSTROPHE;          }
 "\""           { return '"';                 }
 "("            { return '(';                 }
 ")"            { return ')';                 }

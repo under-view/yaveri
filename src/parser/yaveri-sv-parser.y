@@ -140,6 +140,16 @@
 %token <itoken> SVLOG_MATCHES
 
 
+/* 'assign' keyword */
+%token <itoken> SVLOG_ASSIGN
+/* 'deassign' keyword */
+%token <itoken> SVLOG_DEASSIGN
+/* 'force' keyword */
+%token <itoken> SVLOG_FORCE
+/* 'release' keyword */
+%token <itoken> SVLOG_RELEASE
+
+
 /* 'reg' keyword */
 %token <itoken> SVLOG_REG
 /* 'wire' keyword */
@@ -296,6 +306,10 @@
 %token <itoken> GT_OR_EQ
 /* Less Than Or Equal '<=' */
 %token <itoken> LT_OR_EQ
+
+
+/* apostrophe token ' */
+%token <itoken> APOSTROPHE
 
 
 %start svlog
@@ -887,6 +901,21 @@ named_parameter_assignment
  ******************************************************/
 
 
+/******************************************************************************
+ * Start of 'Continuous assignment and net alias statements' Grammer Rules    *
+ * Based off section: (A.6.1 Continuous assignment and net alias statements). *
+ ******************************************************************************/
+
+net_assignment
+	: net_lvalue '=' expression
+	;
+
+/******************************************************************************
+ * End of 'Continuous assignment and net alias statements' Grammer Rules      *
+ * Based off section: (A.6.1 Continuous assignment and net alias statements). *
+ ******************************************************************************/
+
+
 /*****************************************************************
  * Start of 'Procedural blocks and assignments' Grammer Rules    *
  * Based off section: (A.6.2 Procedural blocks and assignments). *
@@ -927,6 +956,18 @@ nonblocking_assignment
 	: variable_lvalue LT_OR_EQ expression
 	| variable_lvalue LT_OR_EQ delay_or_event_control expression
 	;
+
+procedural_continuous_assignment
+	: SVLOG_ASSIGN variable_assignment
+	| SVLOG_DEASSIGN variable_lvalue
+	| SVLOG_FORCE variable_assignment
+	| SVLOG_FORCE net_assignment
+	| SVLOG_RELEASE variable_lvalue
+	| SVLOG_RELEASE net_lvalue
+	;
+
+variable_assignment
+	: variable_lvalue '=' expression
 
 /*****************************************************************
  * End of 'Procedural blocks and assignments' Grammer Rules      *
@@ -1123,6 +1164,25 @@ loop_variables
  * End of 'Looping statements' Grammer Rules      *
  * Based off section: (A.6.8 Looping statements). *
  **************************************************/
+
+
+/******************************************
+ * End of 'Patterns' Grammer Rules        *
+ * Based off section: (A.6.7.1 Patterns). *
+ ******************************************/
+
+assignment_pattern_net_lvalue
+	: APOSTROPHE '{'  net_lvalue_recurse '}'
+	;
+
+assignment_pattern_variable_lvalue
+	:  APOSTROPHE '{' variable_lvalue_recurse '}'
+	;
+
+/******************************************
+ * End of 'Patterns' Grammer Rules        *
+ * Based off section: (A.6.7.1 Patterns). *
+ ******************************************/
 
 
 /*********************************************************
@@ -1520,6 +1580,18 @@ constant_select
  * Based off section: (A.8.5 Expression left-side values). *
  ***********************************************************/
 
+net_lvalue
+	: ps_or_hierarchical_net_identifier constant_select
+	| '{' net_lvalue_recurse '}'
+	| assignment_pattern_net_lvalue
+	| assignment_pattern_expression_type assignment_pattern_net_lvalue
+	;
+
+net_lvalue_recurse
+	: net_lvalue
+	| net_lvalue_recurse ',' net_lvalue
+	;
+
 variable_lvalue
 	: hierarchical_identifier select
 	| implicit_class_handle '.' hierarchical_identifier select
@@ -1528,6 +1600,11 @@ variable_lvalue
 	| assignment_pattern_variable_lvalue
 	| assignment_pattern_expression_type assignment_pattern_variable_lvalue
 	| variable_lvalue ',' variable_lvalue
+	;
+
+variable_lvalue_recurse
+	: variable_lvalue
+	| variable_lvalue_recurse ',' variable_lvalue
 	;
 
 nonrange_variable_lvalue
@@ -1899,6 +1976,12 @@ ps_or_hierarchical_array_identifier
 	| implicit_class_handle '.' identifier
 	| class_scope identifier
 	| package_scope identifier
+	;
+
+ps_or_hierarchical_net_identifier
+	: identifier
+	| package_scope identifier
+	| hierarchical_identifier
 	;
 
 ps_or_hierarchical_sequence_identifier
