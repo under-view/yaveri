@@ -85,6 +85,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "ps"           { return SVLOG_PICOSEC;       }
 "fs"           { return SVLOG_fEMTOSEC;      }
 "step"         { return SVLOG_STEP;          }
+"1step"        { return SVLOG_1STEP;         }
 
 "std"          { return SVLOG_STD;           }
 "this"         { return SVLOG_THIS;          }
@@ -117,6 +118,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "first_match"  { return SVLOG_FIRST_MATCH;   }
 "throughout"   { return SVLOG_THROUGHOUT;    }
 "within"       { return SVLOG_WITHIN;        }
+"repeat"       { return SVLOG_REPEAT;        }
 
 
 "iff"          { return SVLOG_IF_AND_ONLY_IF; }

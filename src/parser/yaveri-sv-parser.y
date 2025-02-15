@@ -52,6 +52,8 @@
 %token <itoken> SVLOG_fEMTOSEC
 /* step 'step' */
 %token <itoken> SVLOG_STEP
+/* 1step '1step' */
+%token <itoken> SVLOG_1STEP
 
 
 /* 'std' keyword */
@@ -114,6 +116,8 @@
 %token <itoken> SVLOG_THROUGHOUT
 /* 'within' keyword */
 %token <itoken> SVLOG_WITHIN
+/* 'repeat' keyword */
+%token <itoken> SVLOG_REPEAT
 
 
 /* 'iff'|'&&&' If and only if */
@@ -555,6 +559,38 @@ type_identifier_or_class_type
  ********************************************************/
 
 
+/****************************************
+ * Start of 'Delays' Grammer Rules      *
+ * Based off section: (A.2.2.3 Delays). *
+ ****************************************/
+
+delay2
+	: '#' delay_value
+	| '#' '(' mintypmax_expression ')'
+	| '#' '(' mintypmax_expression ',' mintypmax_expression ')'
+	;
+
+delay3
+	: '#' delay_value
+	| '#' '(' mintypmax_expression ')'
+	| '#' '(' mintypmax_expression ',' mintypmax_expression ')'
+	| '#' '(' mintypmax_expression ',' mintypmax_expression ',' mintypmax_expression ')'
+	;
+
+delay_value
+	: unsigned_number
+	| real_number
+	| ps_identifier
+	| time_literal
+	| SVLOG_1STEP
+	;
+
+/****************************************
+ * End of 'Delays' Grammer Rules        *
+ * Based off section: (A.2.2.3 Delays). *
+ ****************************************/
+
+
 /*************************************************
  * Start of 'Declaration lists' Grammer Rules    *
  * Based off section: (A.2.3 Declaration lists). *
@@ -856,6 +892,17 @@ named_parameter_assignment
  * Based off section: (A.6.2 Procedural blocks and assignments). *
  *****************************************************************/
 
+blocking_assignment
+	: variable_lvalue '=' delay_or_event_control expression
+	| nonrange_variable_lvalue '=' dynamic_array_new
+	| hierarchical_identifier select '=' class_new
+	| implicit_class_handle '.' hierarchical_identifier select '=' class_new
+	| class_scope hierarchical_identifier select '=' class_new
+	| package_scope hierarchical_identifier select '=' class_new
+	| operator_assignment
+	| inc_or_dec_expression
+	;
+
 operator_assignment
 	: variable_lvalue assignment_operator expression
 	;
@@ -894,7 +941,7 @@ statement_or_null
 
 statement
 	: attribute_instance_recurse statement_item
-	| block_identifier ':' attribute_instance_recurse statement_item
+	| identifier ':' attribute_instance_recurse statement_item
 	;
 
 statement_item
@@ -938,6 +985,23 @@ function_statement_or_null
  * Start of 'Timing control statements' Grammer Rules    *
  * Based off section: (A.6.5 Timing control statements). *
  *********************************************************/
+
+delay_or_event_control
+	: delay_control
+	| event_control
+	| SVLOG_REPEAT '(' expression ')' event_control
+	;
+
+delay_control
+	: '#' delay_value
+	| '#' '(' mintypmax_expression ')'
+	;
+
+event_control
+	: clocking_event
+	| '@' '*'
+	| '@' '(' '*' ')'
+	;
 
 clocking_event
 	: '@' ps_identifier
@@ -1412,6 +1476,17 @@ select
 	| member_identifier_bit_select_recurse '.' identifier bit_select '[' part_select_range ']'
 	;
 
+mident_bit_select_recurse
+	: %empty
+	| '.' identifier bit_select
+	| mident_bit_select_recurse '.' identifier bit_select
+	;
+
+nonrange_select
+	: bit_select
+	| mident_bit_select_recurse '.' identifier bit_select
+	;
+
 constant_bit_select
 	: '[' constant_expression ']'
 	| constant_bit_select '[' constant_expression ']'
@@ -1441,13 +1516,19 @@ constant_select
  ***********************************************************/
 
 variable_lvalue
-	: hierarchical_variable_identifier select
-	| implicit_class_handle '.' hierarchical_variable_identifier select
-	| package_scope hierarchical_variable_identifier select
+	: hierarchical_identifier select
+	| implicit_class_handle '.' hierarchical_identifier select
+	| package_scope hierarchical_identifier select
 	| streaming_concatenation
 	| assignment_pattern_variable_lvalue
 	| assignment_pattern_expression_type assignment_pattern_variable_lvalue
 	| variable_lvalue ',' variable_lvalue
+	;
+
+nonrange_variable_lvalue
+	: hierarchical_identifier nonrange_select
+	| implicit_class_handle '.' hierarchical_identifier nonrange_select
+	| package_scope hierarchical_identifier nonrange_select
 	;
 
 /***********************************************************
