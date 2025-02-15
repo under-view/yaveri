@@ -36,6 +36,8 @@
 /* Design Element 'config' */
 %token <itoken> SVLOG_CONFIG
 %token <itoken> SVLOG_ENDCONFIG
+
+
 /* second 's' */
 %token <itoken> SVLOG_SEC
 /* millisecond 'ms' */
@@ -56,6 +58,8 @@
 %token <itoken> SVLOG_STD
 /* 'this' keyword */
 %token <itoken> SVLOG_THIS
+/* 'void' keyword */
+%token <itoken> SVLOG_VOID
 /* 'null' keyword */
 %token <itoken> SVLOG_NULL
 /* 'with' keyword */
@@ -78,6 +82,28 @@
 %token <itoken> SVLOG_DEFAULT
 /* 'super' keyword */
 %token <itoken> SVLOG_SUPER
+/* 'struct' keyword */
+%token <itoken> SVLOG_STRUCT
+/* 'union' keyword */
+%token <itoken> SVLOG_UNION
+/* 'tagged' keyword */
+%token <itoken> SVLOG_TAGGED
+/* 'packed' keyword */
+%token <itoken> SVLOG_PACKED
+/* 'enum' keyword */
+%token <itoken> SVLOG_ENUM
+/* 'string' keyword */
+%token <itoken> SVLOG_STRING
+/* 'chandle' keyword */
+%token <itoken> SVLOG_CHANDLE
+/* 'virtual' keyword */
+%token <itoken> SVLOG_VIRTUAL
+/* 'event' keyword */
+%token <itoken> SVLOG_EVENT
+/* 'new' keyword */
+%token <itoken> SVLOG_NEW
+/* 'type' keyword */
+%token <itoken> SVLOG_TYPE
 
 
 /* 'if' keyword */
@@ -94,20 +120,42 @@
 %token <itoken> SVLOG_XOR
 
 
-/* register 'reg' */
+/* 'reg' keyword */
 %token <itoken> SVLOG_REG
+/* 'wire' keyword */
 %token <itoken> SVLOG_WIRE
+/* 'integer' keyword */
 %token <itoken> SVLOG_INTEGER
+/* 'real' keyword */
 %token <itoken> SVLOG_REAL
+/* 'time' keyword */
 %token <itoken> SVLOG_TIME
+/* 'realtime' keyword */
 %token <itoken> SVLOG_REAL_TIME
+/* 'logic' keyword */
 %token <itoken> SVLOG_LOGIC
+/* 'bit' keyword */
 %token <itoken> SVLOG_BIT
+/* 'byte' keyword */
 %token <itoken> SVLOG_BYTE
+/* 'shortint' keyword */
 %token <itoken> SVLOG_SHORT_INT
+/* 'int' keyword */
 %token <itoken> SVLOG_INT
+/* 'longint' keyword */
 %token <itoken> SVLOG_LONG_INT
+/* 'shortreal' keyword */
 %token <itoken> SVLOG_SHORT_REAL
+/* 'signed' keyword */
+%token <itoken> SVLOG_SIGNED
+/* 'unsigned' keyword */
+%token <itoken> SVLOG_UNSIGNED
+/* 'rand' keyword */
+%token <itoken> SVLOG_RAND
+/* 'randc' keyword */
+%token <itoken> SVLOG_RANDC
+
+
 /* exp lowercase 'e' or upercase 'E' */
 %token <itoken> SVLOG_EXP
 /* decimal_base 'd','D' */
@@ -242,6 +290,22 @@ statement
 	;
 
 
+/*******************************************
+ * Start of 'Class items' Grammer Rules    *
+ * Based off section: (A.1.9 Class items). *
+ *******************************************/
+
+random_qualifier
+	: SVLOG_RAND
+	| SVLOG_RANDC
+	;
+
+/*******************************************
+ * End of 'Class items' Grammer Rules      *
+ * Based off section: (A.1.9 Class items). *
+ *******************************************/
+
+
 /********************************************
  * Start of 'Constraints' Grammer Rules     *
  * Based off section: (A.1.10 Constraints). *
@@ -332,6 +396,60 @@ dist_weight
  * Based off section: (A.2.2.1 Net and variable types). *
  ********************************************************/
 
+data_type
+	: SVLOG_STRING
+	| SVLOG_CHANDLE
+	| SVLOG_EVENT
+	| integer_vector_type
+	| integer_vector_type signing packed_dimesion_recurse
+	| integer_atom_type
+	| integer_atom_type signing
+	| non_integer_type
+	| struct_union '{' struct_union_member_recurse '}' packed_dimesion_recurse
+	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimesion_recurse
+	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimesion_recurse
+	| SVLOG_ENUM enum_name_declaration_recurse packed_dimesion_recurse
+	| SVLOG_ENUM enum_base_type enum_name_declaration_recurse packed_dimesion_recurse
+	| SVLOG_VIRTUAL identifier
+	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier
+	| SVLOG_VIRTUAL identifier parameter_value_assignment
+	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier parameter_value_assignment
+	| SVLOG_VIRTUAL identifier '.' identifier
+	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier '.' identifier
+	| SVLOG_VIRTUAL identifier parameter_value_assignment '.' identifier
+	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier parameter_value_assignment '.' identifier
+	| class_scope identifier packed_dimesion_recurse
+	| package_scope identifier packed_dimesion_recurse
+	| class_type
+	| ps_covergroup_identifier
+	| type_reference
+	;
+
+enum_base_type
+	: integer_atom_type
+	| integer_atom_type signing
+	| integer_vector_type
+	| integer_vector_type signing
+	| integer_vector_type packed_dimension
+	| integer_vector_type signing packed_dimension
+	| identifier
+	| identifier packed_dimension
+	;
+
+enum_name_declaration_recurse
+	: %empty
+	| enum_name_declaration
+	| enum_name_declaration_recurse ',' enum_name_declaration
+	;
+
+enum_name_declaration
+	: identifier
+	| identifier '[' integral_number ']'
+	| identifier '[' integral_number ':' integral_number ']'
+	| identifier '[' integral_number ':' integral_number ']' '=' constant_expression
+	| identifier '=' constant_expression
+	;
+
 class_scope
 	: class_type CLASS_SCOPE_OPERATOR
 	;
@@ -349,10 +467,180 @@ class_type
 	| ps_class_identifier class_type_ident_loop
 	;
 
+integer_atom_type
+	: SVLOG_BYTE
+	| SVLOG_SHORT_INT
+	| SVLOG_INT
+	| SVLOG_LONG_INT
+	| SVLOG_INT
+	| SVLOG_TIME
+	;
+
+integer_vector_type
+	: SVLOG_BIT
+	| SVLOG_LOGIC
+	| SVLOG_REG
+	;
+
+non_integer_type
+	: SVLOG_SHORT_REAL
+	| SVLOG_REAL
+	| SVLOG_REAL_TIME
+	;
+
+signing
+	:
+	| SVLOG_SIGNED
+	| SVLOG_UNSIGNED
+	;
+
+struct_union
+	: SVLOG_STRUCT
+	| SVLOG_UNION SVLOG_SOFT
+	| SVLOG_UNION SVLOG_TAGGED
+	;
+
+struct_union_member_recurse
+	: struct_union_member
+	| struct_union_member_recurse struct_union_member
+	;
+
+struct_union_member
+	: attribute_instances data_type_or_void list_of_variable_decl_assignments ';'
+	| attribute_instances random_qualifier data_type_or_void list_of_variable_decl_assignments ';'
+	;
+
+data_type_or_void
+	: data_type
+	| SVLOG_VOID
+	;
+
+type_reference
+	: SVLOG_TYPE '(' expression ')'
+	| SVLOG_TYPE '(' data_type_or_incomplete_class_scoped_type ')'
+	;
+
+data_type_or_incomplete_class_scoped_type
+	: data_type
+	| incomplete_class_scoped_type
+	;
+
+incomplete_class_scoped_type
+	: identifier CLASS_SCOPE_OPERATOR type_identifier_or_class_type
+	| incomplete_class_scoped_type CLASS_SCOPE_OPERATOR type_identifier_or_class_type
+	;
+
+type_identifier_or_class_type
+	: identifier
+	| class_type
+	;
+
 /********************************************************
  * End of 'Net and variable types' Grammer Rules        *
  * Based off section: (A.2.2.1 Net and variable types). *
  ********************************************************/
+
+
+/*************************************************
+ * Start of 'Declaration lists' Grammer Rules    *
+ * Based off section: (A.2.3 Declaration lists). *
+ *************************************************/
+
+list_of_variable_decl_assignments
+	: variable_decl_assignment
+	| list_of_variable_decl_assignments ',' variable_decl_assignment
+	;
+
+/*************************************************
+ * End of 'Declaration lists' Grammer Rules      *
+ * Based off section: (A.2.3 Declaration lists). *
+ *************************************************/
+
+
+/*******************************************************
+ * Start of 'Declaration assignments' Grammer Rules    *
+ * Based off section: (A.2.4 Declaration assignments). *
+ ******************************************************/
+
+variable_decl_assignment
+	: identifier
+	| identifier variable_dimension_recurse
+	| identifier variable_dimension_recurse '=' expression
+	| identifier unsized_dimension variable_dimension_recurse
+	| identifier unsized_dimension variable_dimension_recurse '=' dynamic_array_new
+	| identifier '=' class_new
+	;
+
+class_new
+	: SVLOG_NEW
+	| SVLOG_NEW '(' list_of_arguments ')'
+	| class_scope SVLOG_NEW '(' list_of_arguments ')'
+	| SVLOG_NEW expression
+	;
+
+dynamic_array_new
+	: SVLOG_NEW '[' expression ']'
+	| SVLOG_NEW '[' expression ']' '(' expression ')'
+	;
+
+/*******************************************************
+ * End of 'Declaration assignments' Grammer Rules      *
+ * Based off section: (A.2.4 Declaration assignments). *
+ *******************************************************/
+
+
+/**************************************************
+ * Start of 'Declaration ranges' Grammer Rules    *
+ * Based off section: (A.2.5 Declaration ranges). *
+ **************************************************/
+
+unpacked_dimension
+	: '[' constant_range ']'
+	| '[' constant_expression ']'
+	;
+
+packed_dimesion_recurse
+	: %empty
+	| packed_dimension
+	| packed_dimesion_recurse packed_dimension
+	;
+
+packed_dimension
+	: '[' constant_range ']'
+	| unsized_dimension
+	;
+
+associative_dimension
+	: '[' data_type ']'
+	| '[' '*' ']'
+	;
+
+variable_dimension_recurse
+	: %empty
+	| variable_dimension
+	| variable_dimension_recurse variable_dimension
+	;
+
+variable_dimension
+	: unsized_dimension
+	| unpacked_dimension
+	| associative_dimension
+	| queue_dimension
+	;
+
+queue_dimension
+	: '[' '$' ']'
+	| '[' '$' ':' constant_expression ']'
+	;
+
+unsized_dimension
+	: '[' ']'
+	;
+
+/**************************************************
+ * Start of 'Declaration ranges' Grammer Rules    *
+ * Based off section: (A.2.5 Declaration ranges). *
+ **************************************************/
 
 
 /*************************************************
@@ -1147,9 +1435,9 @@ string_escape_seq
  ******************************************/
 
 attribute_instances
-	: attribute_instance
+	: %empty
+	| attribute_instance
 	| attribute_instances attribute_instance
-	| %empty
 	;
 
 attribute_instance
@@ -1200,6 +1488,11 @@ package_scope
 	;
 
 ps_class_identifier
+	: identifier
+	| package_scope identifier
+	;
+
+ps_covergroup_identifier
 	: identifier
 	| package_scope identifier
 	;

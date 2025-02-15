@@ -88,6 +88,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 "std"          { return SVLOG_STD;           }
 "this"         { return SVLOG_THIS;          }
+"void"         { return SVLOG_VOID;          }
 "null"         { return SVLOG_NULL;          }
 "with"         { return SVLOG_WITH;          }
 "randomize"    { return SVLOG_RANDOMIZE;     }
@@ -99,6 +100,18 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "dist"         { return SVLOG_DIST;          }
 "default"      { return SVLOG_DEFAULT;       }
 "super"        { return SVLOG_SUPER;         }
+"struct"       { return SVLOG_STRUCT;        }
+"union"        { return SVLOG_UNION;         }
+"tagged"       { return SVLOG_TAGGED;        }
+"packed"       { return SVLOG_PACKED;        }
+"enum"         { return SVLOG_ENUM;          }
+"string"       { return SVLOG_STRING;        }
+"chandle"      { return SVLOG_CHANDLE;       }
+"virtual"      { return SVLOG_VIRTUAL;       }
+"event"        { return SVLOG_EVENT;         }
+"new"          { return SVLOG_NEW;           }
+"enum"         { return SVLOG_ENUM;          }
+"type"         { return SVLOG_TYPE;          }
 
 "if"           { return SVLOG_IF;            }
 "else"         { return SVLOG_ELSE;          }
@@ -120,6 +133,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "int"          { return SVLOG_INT;           }
 "longint"      { return SVLOG_LONG_INT;      }
 "shortreal"    { return SVLOG_SHORT_REAL;    }
+"signed"       { return SVLOG_SIGNED;        }
+"unsigned"     { return SVLOG_UNSIGNED;      }
+"rand"         { return SVLOG_RAND;          }
+"randc"        { return SVLOG_RANDC;         }
 
 "~"            { return BIT_WISE_NOT;        }
 "&"            { return BIT_WISE_AND;        }
