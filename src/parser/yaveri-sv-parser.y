@@ -1104,6 +1104,16 @@ randomize_call
 	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
 	;
 
+variable_identifier_list
+	: identifier
+	| variable_identifier_list ',' identifier
+	;
+
+identifier_list
+	: identifier
+	| identifier_list ',' identifier
+	;
+
 method_call_root
 	: primary
 	| implicit_class_handle
