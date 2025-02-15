@@ -467,17 +467,17 @@ class_scope
 	: class_type CLASS_SCOPE_OPERATOR
 	;
 
-class_type_ident_loop
+class_type_ident_recurse
 	: CLASS_SCOPE_OPERATOR identifier
 	| CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
-	| class_type_ident_loop CLASS_SCOPE_OPERATOR identifier
-	| class_type_ident_loop CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
+	| class_type_ident_recurse CLASS_SCOPE_OPERATOR identifier
+	| class_type_ident_recurse CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
 	;
 
 class_type
 	: ps_class_identifier
 	| ps_class_identifier parameter_value_assignment
-	| ps_class_identifier class_type_ident_loop
+	| ps_class_identifier class_type_ident_recurse
 	;
 
 integer_atom_type
@@ -519,8 +519,8 @@ struct_union_member_recurse
 	;
 
 struct_union_member
-	: attribute_instances data_type_or_void list_of_variable_decl_assignments ';'
-	| attribute_instances random_qualifier data_type_or_void list_of_variable_decl_assignments ';'
+	: attribute_instance_recurse data_type_or_void list_of_variable_decl_assignments ';'
+	| attribute_instance_recurse random_qualifier data_type_or_void list_of_variable_decl_assignments ';'
 	;
 
 data_type_or_void
@@ -750,22 +750,22 @@ parameter_value_assignment
 	;
 
 list_of_parameter_value_assignments
-	: ordered_parameter_assignment_loop
-	| named_parameter_assignment_loop
+	: ordered_parameter_assignment_recurse
+	| named_parameter_assignment_recurse
 	;
 
-ordered_parameter_assignment_loop
+ordered_parameter_assignment_recurse
 	: ordered_parameter_assignment
-	| ordered_parameter_assignment_loop ',' ordered_parameter_assignment
+	| ordered_parameter_assignment_recurse ',' ordered_parameter_assignment
 	;
 
 ordered_parameter_assignment
 	: param_expression
 	;
 
-named_parameter_assignment_loop
+named_parameter_assignment_recurse
 	: named_parameter_assignment
-	| named_parameter_assignment_loop ',' named_parameter_assignment
+	| named_parameter_assignment_recurse ',' named_parameter_assignment
 	;
 
 named_parameter_assignment
@@ -953,8 +953,8 @@ constant_function_call
 	;
 
 tf_call
-	: ps_or_hierarchical_tf_identifier attribute_instances
-	| ps_or_hierarchical_tf_identifier attribute_instances '(' list_of_arguments ')'
+	: ps_or_hierarchical_tf_identifier attribute_instance_recurse
+	| ps_or_hierarchical_tf_identifier attribute_instance_recurse '(' list_of_arguments ')'
 	;
 
 system_tf_call
@@ -993,7 +993,7 @@ method_call
 
 method_call_body
 	: identifier
-	| identifier attribute_instances '(' list_of_arguments ')'
+	| identifier attribute_instance_recurse '(' list_of_arguments ')'
 	| built_in_method_call
 	;
 
@@ -1007,22 +1007,22 @@ array_manipulation_call
 	| array_method_name '(' list_of_arguments ')'
 	| array_method_name '(' expression ')'
 	| array_method_name '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
-	| array_method_name attribute_instances
-	| array_method_name attribute_instances '(' list_of_arguments ')'
-	| array_method_name attribute_instances SVLOG_WITH '(' expression ')'
-	| array_method_name attribute_instances '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
+	| array_method_name attribute_instance_recurse
+	| array_method_name attribute_instance_recurse '(' list_of_arguments ')'
+	| array_method_name attribute_instance_recurse SVLOG_WITH '(' expression ')'
+	| array_method_name attribute_instance_recurse '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
 	;
 
 randomize_call
-	: SVLOG_RANDOMIZE attribute_instances
-	| SVLOG_RANDOMIZE attribute_instances '(' variable_identifier_list ')'
-	| SVLOG_RANDOMIZE attribute_instances '(' SVLOG_NULL ')'
-	| SVLOG_RANDOMIZE attribute_instances SVLOG_WITH constraint_block
-	| SVLOG_RANDOMIZE attribute_instances SVLOG_WITH '(' identifier_list ')' constraint_block
-	| SVLOG_RANDOMIZE attribute_instances '(' variable_identifier_list ')' SVLOG_WITH constraint_block
-	| SVLOG_RANDOMIZE attribute_instances '(' variable_identifier_list ')' SVLOG_WITH '(' identifier_list ')' constraint_block
-	| SVLOG_RANDOMIZE attribute_instances '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
-	| SVLOG_RANDOMIZE attribute_instances '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	: SVLOG_RANDOMIZE attribute_instance_recurse
+	| SVLOG_RANDOMIZE attribute_instance_recurse '(' variable_identifier_list ')'
+	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')'
+	| SVLOG_RANDOMIZE attribute_instance_recurse SVLOG_WITH constraint_block
+	| SVLOG_RANDOMIZE attribute_instance_recurse SVLOG_WITH '(' identifier_list ')' constraint_block
+	| SVLOG_RANDOMIZE attribute_instance_recurse '(' variable_identifier_list ')' SVLOG_WITH constraint_block
+	| SVLOG_RANDOMIZE attribute_instance_recurse '(' variable_identifier_list ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
+	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
 	;
 
 method_call_root
@@ -1051,19 +1051,19 @@ array_method_name
 
 inc_or_dec_expression
 	: inc_or_dec_operator variable_lvalue
-	| inc_or_dec_operator attribute_instances variable_lvalue
+	| inc_or_dec_operator attribute_instance_recurse variable_lvalue
 	| variable_lvalue inc_or_dec_operator
-	| variable_lvalue attribute_instances inc_or_dec_operator
+	| variable_lvalue attribute_instance_recurse inc_or_dec_operator
 	;
 
 constant_expression
 	: constant_primary
 	| unary_operator constant_primary
-	| unary_operator attribute_instances constant_primary
+	| unary_operator attribute_instance_recurse constant_primary
 	| constant_expression binary_operator constant_expression
-	| constant_expression binary_operator attribute_instances constant_expression
+	| constant_expression binary_operator attribute_instance_recurse constant_expression
 	| constant_expression '?' constant_expression ':' constant_expression
-	| constant_expression '?' attribute_instances constant_expression ':' constant_expression
+	| constant_expression '?' attribute_instance_recurse constant_expression ':' constant_expression
 	;
 
 param_expression
@@ -1090,11 +1090,11 @@ expression
 	:	
 	| primary
 	| unary_operator primary
-	| unary_operator attribute_instances primary
+	| unary_operator attribute_instance_recurse primary
 	| inc_or_dec_expression
 	| '(' operator_assignment ')'
 	| expression binary_operator expression
-	| expression binary_operator attribute_instances expression
+	| expression binary_operator attribute_instance_recurse expression
 	| conditional_expression
 	| inside_expression
 	| tagged_union_expression
@@ -1227,16 +1227,16 @@ constant_bit_select
 	| constant_bit_select '[' constant_expression ']'
 	;
 
-constant_select_loop
+constant_select_recurse
 	: '.' identifier constant_bit_select
-	| constant_select_loop '.' identifier constant_bit_select
+	| constant_select_recurse '.' identifier constant_bit_select
 	;
 
 constant_select
 	: constant_bit_select
 	| constant_bit_select '[' constant_part_select_range ']'
-	| constant_select_loop
-	| constant_select_loop '[' constant_part_select_range ']'
+	| constant_select_recurse
+	| constant_select_recurse '[' constant_part_select_range ']'
 	;
 
 /*****************************************
@@ -1545,10 +1545,10 @@ string_escape_seq
  * Based off section: (A.9.1 Attributes). *
  ******************************************/
 
-attribute_instances
+attribute_instance_recurse
 	: %empty
 	| attribute_instance
-	| attribute_instances attribute_instance
+	| attribute_instance_recurse attribute_instance
 	;
 
 attribute_instance
@@ -1558,7 +1558,7 @@ attribute_instance
 
 attribute_specs
 	: attr_spec
-	| attribute_instace_loop ',' attr_spec
+	| attribute_instance_recurse ',' attr_spec
 	;
 
 attr_spec
@@ -1637,18 +1637,18 @@ ps_or_hierarchical_tf_identifier
 	| hierarchical_identifier
 	;
 
-ps_param_ident_loop
+ps_param_ident_recurse
 	: generate_block_identifier '.'
 	| generate_block_identifier  '[' constant_expression ']' '.'
-	| ps_param_ident_loop generate_block_identifier '.'
-	| ps_param_ident_loop generate_block_identifier  '[' constant_expression ']' '.'
+	| ps_param_ident_recurse generate_block_identifier '.'
+	| ps_param_ident_recurse generate_block_identifier  '[' constant_expression ']' '.'
 	;
 
 ps_parameter_identifier
 	: identifier
 	| package_scope identifier
 	| class_scope identifier
-	| ps_param_ident_loop identifier
+	| ps_param_ident_recurse identifier
 	;
 
 system_tf_identifier
