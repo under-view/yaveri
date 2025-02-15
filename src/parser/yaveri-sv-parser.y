@@ -106,6 +106,8 @@
 %token <itoken> SVLOG_TYPE
 
 
+/* 'iff' If and only if keyword */
+%token <itoken> SVLOG_IF_AND_ONLY_IF
 /* 'if' keyword */
 %token <itoken> SVLOG_IF
 /* 'else' keyword */
@@ -759,6 +761,35 @@ assignment_operator
  *****************************************************************/
 
 
+/*********************************************************
+ * Start of 'Timing control statements' Grammer Rules    *
+ * Based off section: (A.6.5 Timing control statements). *
+ *********************************************************/
+
+clocking_event
+	: '@' ps_identifier
+	| '@' hierarchical_identifier
+	| '@' '(' event_expression ')'
+	;
+
+event_expression
+	: expression
+	| edge_identifier expression
+	| expression SVLOG_IF_AND_ONLY_IF expression
+	| edge_identifier expression SVLOG_IF_AND_ONLY_IF expression
+	| sequence_instance
+	| sequence_instance SVLOG_IF_AND_ONLY_IF expression
+	| event_expression SVLOG_OR event_expression
+	| event_expression ',' event_expression
+	| '(' event_expression ')'
+	;
+
+/*********************************************************
+ * End of 'Timing control statements' Grammer Rules      *
+ * Based off section: (A.6.5 Timing control statements). *
+ *********************************************************/
+
+
 /***********************************************
  * Start of 'Case statements' Grammer Rules    *
  * Based off section: (A.6.7 Case statements). *
@@ -795,9 +826,35 @@ loop_variables
 	;
 
 /**************************************************
- * Start of 'Looping statements' Grammer Rules    *
+ * End of 'Looping statements' Grammer Rules      *
  * Based off section: (A.6.8 Looping statements). *
  **************************************************/
+
+
+/*********************************************************
+ * Start of 'Specify path declarations' Grammer Rules    *
+ * Based off section: (A.7.2 Specify path declarations). *
+ *********************************************************/
+
+data_source_expression
+	: expression
+	;
+
+edge_identifier
+	: SVLOG_POSEDGE
+	| SVLOG_NEGEDGE
+	| SVLOG_EDGE
+	;
+
+polarity_operator
+	: '+'
+	| '-'
+	;
+
+/*********************************************************
+ * End of 'Specify path declarations' Grammer Rules      *
+ * Based off section: (A.7.2 Specify path declarations). *
+ *********************************************************/
 
 
 /**********************************************
@@ -1498,6 +1555,16 @@ ps_class_identifier
 	;
 
 ps_covergroup_identifier
+	: identifier
+	| package_scope identifier
+	;
+
+ps_checker_identifier
+	: identifier
+	| package_scope identifier
+	;
+
+ps_identifier
 	: identifier
 	| package_scope identifier
 	;

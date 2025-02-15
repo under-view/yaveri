@@ -113,12 +113,13 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "enum"         { return SVLOG_ENUM;          }
 "type"         { return SVLOG_TYPE;          }
 
-"if"           { return SVLOG_IF;            }
-"else"         { return SVLOG_ELSE;          }
-"foreach"      { return SVLOG_FOREACH;       }
-"and"          { return SVLOG_AND;           }
-"or"           { return SVLOG_OR;            }
-"xor"          { return SVLOG_XOR;           }
+"iff"          { return SVLOG_IF_AND_ONLY_IF; }
+"if"           { return SVLOG_IF;             }
+"else"         { return SVLOG_ELSE;           }
+"foreach"      { return SVLOG_FOREACH;        }
+"and"          { return SVLOG_AND;            }
+"or"           { return SVLOG_OR;             }
+"xor"          { return SVLOG_XOR;            }
 
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }
@@ -137,6 +138,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unsigned"     { return SVLOG_UNSIGNED;      }
 "rand"         { return SVLOG_RAND;          }
 "randc"        { return SVLOG_RANDC;         }
+"posedge"      { return SVLOG_POSEDGE;       }
+"negedge"      { return SVLOG_NEGEDGE;       }
+"edge"         { return SVLOG_EDGE;          }
 
 "~"            { return BIT_WISE_NOT;        }
 "&"            { return BIT_WISE_AND;        }
@@ -179,6 +183,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "<"            { return '<';                  }
 "<="           { return LT_OR_EQ;             }
 
+"@"            { return '@';                 }
 "$"            { return '$';                 }
 "#"            { return '#';                 }
 "="            { return '=';                 }
