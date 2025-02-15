@@ -156,6 +156,12 @@
 %token <itoken> SVLOG_RAND
 /* 'randc' keyword */
 %token <itoken> SVLOG_RANDC
+/* 'posedge' keyword */
+%token <itoken> SVLOG_POSEDGE
+/* 'negedge' keyword */
+%token <itoken> SVLOG_NEGEDGE
+/* 'edge' keyword */
+%token <itoken> SVLOG_EDGE
 
 
 /* exp lowercase 'e' or upercase 'E' */
@@ -645,9 +651,52 @@ unsized_dimension
 	;
 
 /**************************************************
- * Start of 'Declaration ranges' Grammer Rules    *
+ * End of 'Declaration ranges' Grammer Rules      *
  * Based off section: (A.2.5 Declaration ranges). *
  **************************************************/
+
+
+/*******************************************************
+ * Start of 'Assertion declarations' Grammer Rules     *
+ * Based off section: (A.2.10 Assertion declarations). *
+ *******************************************************/
+
+sequence_instance
+	: ps_or_hierarchical_sequence_identifier
+	| ps_or_hierarchical_sequence_identifier '(' ')'
+	| ps_or_hierarchical_sequence_identifier '(' sequence_list_of_arguments ')'
+	;
+
+sequence_list_of_arguments
+	: sequence_actual_arg_recurse ident_seq_actual_arg_recurse
+	| '.' identifier '(' ')' ident_seq_actual_arg_recurse
+	| '.' identifier '(' sequence_actual_arg ')' ident_seq_actual_arg_recurse
+	;
+
+ident_seq_actual_arg_recurse
+	: %empty
+	| ',' '.' identifier '(' ')'
+	| ',' '.' identifier '(' sequence_actual_arg ')'
+	| ident_seq_actual_arg_recurse ',' '.' identifier '(' ')'
+	| ident_seq_actual_arg_recurse ',' '.' identifier '(' sequence_actual_arg ')'
+	;
+
+sequence_actual_arg_recurse
+	: %empty
+	| sequence_actual_arg
+	| sequence_actual_arg_recurse ',' sequence_actual_arg
+	;
+
+sequence_actual_arg
+	: event_expression
+	| sequence_expr
+	| '$'
+	;
+
+/*******************************************************
+ * End of 'Assertion declarations' Grammer Rules       *
+ * Based off section: (A.2.10 Assertion declarations). *
+ *******************************************************/
 
 
 /*************************************************
@@ -1574,6 +1623,12 @@ ps_or_hierarchical_array_identifier
 	| implicit_class_handle '.' identifier
 	| class_scope identifier
 	| package_scope identifier
+	;
+
+ps_or_hierarchical_sequence_identifier
+	: identifier
+	| package_scope identifier
+	| hierarchical_identifier
 	;
 
 ps_or_hierarchical_tf_identifier
