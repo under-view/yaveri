@@ -308,6 +308,8 @@
 %token <itoken> INCREMENT_OPERATOR
 /* Decrement operation '--' */
 %token <itoken> DECREMENT_OPERATOR
+/* Non-blocking Implication operation '->>' */
+%token <itoken> NONBLOCK_IMPLICATION_OPERATOR
 /* Implication operation '->' */
 %token <itoken> IMPLICATION_OPERATOR
 /* Equivalance operation '<->' */
@@ -1131,6 +1133,12 @@ expression_or_cond_pattern
 
 cond_pattern
 	: expression SVLOG_MATCHES pattern
+	;
+
+event_trigger
+	: IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
+	| NONBLOCK_IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
+	| NONBLOCK_IMPLICATION_OPERATOR delay_or_event_control hierarchical_identifier nonrange_select ';'
 	;
 
 disable_statement

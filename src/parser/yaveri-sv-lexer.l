@@ -199,6 +199,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "**"           { return POWER_OF_OPERATOR;    }
 "++"           { return INCREMENT_OPERATOR;   }
 "--"           { return DECREMENT_OPERATOR;   }
+"->>"          { return NONBLOCK_IMPLICATION_OPERATOR; }
 "->"           { return IMPLICATION_OPERATOR; }
 "<->"          { return EQUIVALANCE_OPERATOR; }
 "<<"           { return LEFT_SHIFT;           }
