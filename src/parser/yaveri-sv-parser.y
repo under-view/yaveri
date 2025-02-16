@@ -56,6 +56,8 @@
 %token <itoken> SVLOG_1STEP
 
 
+/* 'var' keyword */
+%token <itoken> SVLOG_VAR
 /* 'std' keyword */
 %token <itoken> SVLOG_STD
 /* 'this' keyword */
@@ -118,8 +120,6 @@
 %token <itoken> SVLOG_THROUGHOUT
 /* 'within' keyword */
 %token <itoken> SVLOG_WITHIN
-/* 'repeat' keyword */
-%token <itoken> SVLOG_REPEAT
 
 
 /* 'iff'|'&&&' If and only if */
@@ -128,8 +128,6 @@
 %token <itoken> SVLOG_IF
 /* 'else' keyword */
 %token <itoken> SVLOG_ELSE
-/* 'foreach' keyword */
-%token <itoken> SVLOG_FOREACH
 /* 'and' keyword */
 %token <itoken> SVLOG_AND
 /* 'or' keyword */
@@ -152,6 +150,18 @@
 %token <itoken> SVLOG_RANDCASE
 /* 'endcase' keyword */
 %token <itoken> SVLOG_ENDCASE
+/* 'do' keyword */
+%token <itoken> SVLOG_DO
+/* 'for' keyword */
+%token <itoken> SVLOG_FOR
+/* 'repeat' keyword */
+%token <itoken> SVLOG_REPEAT
+/* 'foreach' keyword */
+%token <itoken> SVLOG_FOREACH
+/* 'forever' keyword */
+%token <itoken> SVLOG_FOREVER
+/* 'while' keyword */
+%token <itoken> SVLOG_WHILE
 
 
 /* 'assign' keyword */
@@ -922,6 +932,11 @@ named_parameter_assignment
  * Based off section: (A.6.1 Continuous assignment and net alias statements). *
  ******************************************************************************/
 
+list_of_variable_assignments
+	: variable_assignment
+	| list_of_variable_assignments ',' variable_assignment
+	;
+
 net_assignment
 	: net_lvalue '=' expression
 	;
@@ -1106,8 +1121,8 @@ cs_else
 
 cs_else_if_resurse
 	: %empty
-	| SVLOG_ELSE SLVOG_IF '(' cond_predicate ')' statement_or_null
-	| conditional_statement_else_if_resurse SVLOG_ELSE SLVOG_IF '(' cond_predicate ')' statement_or_null
+	| SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
+	| conditional_statement_else_if_resurse SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
 	;
 
 unique_priority
@@ -1248,6 +1263,49 @@ value_range
  * Start of 'Looping statements' Grammer Rules    *
  * Based off section: (A.6.8 Looping statements). *
  **************************************************/
+
+loop_statement
+	: SVLOG_FOREVER statement_or_null
+	| SVLOG_REPEAT '(' expression ')' statement_or_null
+	| SVLOG_WHILE '(' expression ')' statement_or_null
+	| SVLOG_FOR '(' for_initialization ';' expression ';' for_step ')' statement_or_null
+	| SVLOG_DO statement_or_null SVLOG_WHILE '(' expression ')' ';'
+	| SVLOG_FOREACH '(' ps_or_hierarchical_array_identifier '[' loop_variables ']' ')' statement
+	;
+
+for_initialization
+	: %empty
+	| list_of_variable_assignments
+	| for_variable_declaration_recurse
+	;
+
+for_variable_declaration_recurse
+	: for_variable_declaration
+	| for_variable_declaration_recurse ',' for_variable_declaration
+	;
+
+for_variable_declaration
+	: data_type identifier '=' expression variable_identifier_expression_recurse
+	| SVLOG_VAR data_type identifier '=' expression variable_identifier_expression_recurse
+	;
+
+variable_identifier_expression_recurse
+	: %empty
+	| ',' identifier '=' expression
+	| variable_identifier_expression_recurse ',' identifier '=' expression
+	;
+
+for_step
+	: %empty
+	| for_step_assignment
+	| for_step ',' for_step_assignment
+	;
+
+for_step_assignment
+	: operator_assignment
+	| inc_or_dec_expression
+	| function_subroutine_call
+	;
 
 loop_variables
 	: identifier

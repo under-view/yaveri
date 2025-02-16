@@ -87,6 +87,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "step"         { return SVLOG_STEP;          }
 "1step"        { return SVLOG_1STEP;         }
 
+
+"var"          { return SVLOG_VAR;           }
 "std"          { return SVLOG_STD;           }
 "this"         { return SVLOG_THIS;          }
 "void"         { return SVLOG_VOID;          }
@@ -119,13 +121,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "first_match"  { return SVLOG_FIRST_MATCH;   }
 "throughout"   { return SVLOG_THROUGHOUT;    }
 "within"       { return SVLOG_WITHIN;        }
-"repeat"       { return SVLOG_REPEAT;        }
 
 
 "iff"          { return SVLOG_IF_AND_ONLY_IF; }
 "if"           { return SVLOG_IF;             }
 "else"         { return SVLOG_ELSE;           }
-"foreach"      { return SVLOG_FOREACH;        }
 "and"          { return SVLOG_AND;            }
 "or"           { return SVLOG_OR;             }
 "xor"          { return SVLOG_XOR;            }
@@ -137,6 +137,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "casex"        { return SVLOG_CASEX;          }
 "randcase"     { return SVLOG_RANDCASE;       }
 "endcase"      { return SVLOG_ENDCASE;        }
+"do"           { return SVLOG_DO;             }
+"for"          { return SVLOG_FOR;            }
+"repeat"       { return SVLOG_REPEAT;         }
+"foreach"      { return SVLOG_FOREACH;        }
+"forever"      { return SVLOG_FOREVER;        }
+"while"        { return SVLOG_WHILE;          }
 
 
 "assign"       { return SVLOG_ASSIGN;         }
@@ -165,6 +171,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "posedge"      { return SVLOG_POSEDGE;       }
 "negedge"      { return SVLOG_NEGEDGE;       }
 "edge"         { return SVLOG_EDGE;          }
+
 
 "&&&"          { return IF_AND_ONLY_IF;      }
 "==="          { return CASE_EQUAL;          }
