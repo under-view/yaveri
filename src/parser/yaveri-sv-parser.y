@@ -754,6 +754,24 @@ unsized_dimension
 
 
 /*******************************************************
+ * Start of 'Block item declarations' Grammer Rules    *
+ * Based off section: (A.2.8 Block item declarations). *
+ *******************************************************/
+
+block_item_declaration
+	: attribute_instance_recurse data_declaration
+	| attribute_instance_recurse local_parameter_declaration ';'
+	| attribute_instance_recurse parameter_declaration ';'
+	| attribute_instance_recurse let_declaration
+	;
+
+/*******************************************************
+ * End of 'Block item declarations' Grammer Rules      *
+ * Based off section: (A.2.8 Block item declarations). *
+ *******************************************************/
+
+
+/*******************************************************
  * Start of 'Assertion declarations' Grammer Rules     *
  * Based off section: (A.2.10 Assertion declarations). *
  *******************************************************/
