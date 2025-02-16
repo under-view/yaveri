@@ -121,6 +121,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "first_match"  { return SVLOG_FIRST_MATCH;   }
 "throughout"   { return SVLOG_THROUGHOUT;    }
 "within"       { return SVLOG_WITHIN;        }
+"join"         { return SVLOG_JOIN;          }
+"join_any"     { return SVLOG_JOIN_ANY;      }
+"join_none"    { return SVLOG_JOIN_NONE;     }
 
 
 "iff"          { return SVLOG_IF_AND_ONLY_IF; }
@@ -148,6 +151,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "continue"     { return SVLOG_CONTINUE;       }
 "wait"         { return SVLOG_WAIT;           }
 "wait_order"   { return SVLOG_WAIT_ORDER;     }
+"begin"        { return SVLOG_BEGIN;          }
+"end"          { return SVLOG_END;            }
 
 
 "assign"       { return SVLOG_ASSIGN;         }

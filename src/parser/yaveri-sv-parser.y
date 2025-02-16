@@ -120,6 +120,12 @@
 %token <itoken> SVLOG_THROUGHOUT
 /* 'within' keyword */
 %token <itoken> SVLOG_WITHIN
+/* 'join' keyword */
+%token <itoken> SVLOG_JOIN
+/* 'join_any' keyword */
+%token <itoken> SVLOG_JOIN_ANY
+/* 'join_none' keyword */
+%token <itoken> SVLOG_JOIN_NONE
 
 
 /* 'iff'|'&&&' If and only if */
@@ -172,6 +178,10 @@
 %token <itoken> SVLOG_WAIT
 /* 'wait_order' keyword */
 %token <itoken> SVLOG_WAIT_ORDER
+/* 'begin' keyword */
+%token <itoken> SVLOG_BEGIN
+/* 'end' keyword */
+%token <itoken> SVLOG_END
 
 
 /* 'assign' keyword */
@@ -1014,6 +1024,54 @@ variable_assignment
  * End of 'Procedural blocks and assignments' Grammer Rules      *
  * Based off section: (A.6.2 Procedural blocks and assignments). *
  *****************************************************************/
+
+
+/**************************************************************
+ * Start of 'Parallel and sequential blocks' Grammer Rules    *
+ * Based off section: (A.6.3 Parallel and sequential blocks). *
+ **************************************************************/
+
+action_block
+	: statement_or_null
+	| SVLOG_ELSE statement_or_null
+	| statement SVLOG_ELSE statement_or_null
+	;
+
+seq_par_bident
+	: %empty
+	| ':' identifier
+	;
+
+seq_par_bid
+	: %empty
+	| block_item_declaration
+	| seq_par_bid block_item_declaration
+	;
+
+seq_par_sonull
+	: %empty
+	| statement_or_null
+	| seq_par_sonull statement_or_null
+	;
+
+seq_block
+	: SVLOG_BEGIN seq_par_bident seq_par_bid seq_par_sonull SVLOG_END seq_par_bident
+	;
+
+par_block
+	: SVLOG_FORK seq_par_bident seq_par_bid seq_par_sonull join_keyword seq_par_bident
+	;
+
+join_keyword
+	: SVLOG_JOIN
+	| SVLOG_JOIN_ANY
+	| SVLOG_JOIN_NONE
+	;
+
+/**************************************************************
+ * End of 'Parallel and sequential blocks' Grammer Rules      *
+ * Based off section: (A.6.3 Parallel and sequential blocks). *
+ **************************************************************/
 
 
 /******************************************
