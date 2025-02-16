@@ -68,6 +68,12 @@
 %token <itoken> SVLOG_NULL
 /* 'with' keyword */
 %token <itoken> SVLOG_WITH
+/* 'const' keyword */
+%token <itoken> SVLOG_CONST
+/* 'import' keyword */
+%token <itoken> SVLOG_IMPORT
+/* 'export' keyword */
+%token <itoken> SVLOG_EXPORT
 /* 'randomize' keyword */
 %token <itoken> SVLOG_RANDOMIZE
 /* 'unique' keyword */
@@ -112,8 +118,18 @@
 %token <itoken> SVLOG_EVENT
 /* 'new' keyword */
 %token <itoken> SVLOG_NEW
+/* 'class' keyword */
+%token <itoken> SVLOG_CLASS
 /* 'type' keyword */
 %token <itoken> SVLOG_TYPE
+/* 'typedef' keyword */
+%token <itoken> SVLOG_TYPEDEF
+/* 'nettype' keyword */
+%token <itoken> SVLOG_NETTYPE
+/* 'static' keyword */
+%token <itoken> SVLOG_STATIC
+/* 'automatic' keyword */
+%token <itoken> SVLOG_AUTOMATIC
 /* 'first_match' keyword */
 %token <itoken> SVLOG_FIRST_MATCH
 /* 'throughout' keyword */
@@ -184,6 +200,10 @@
 %token <itoken> SVLOG_END
 
 
+/* 'interconnect' keyword */
+%token <itoken> SVLOG_INTERCONNECT
+/* 'genvar' keyword */
+%token <itoken> SVLOG_GENVAR
 /* 'assign' keyword */
 %token <itoken> SVLOG_ASSIGN
 /* 'deassign' keyword */
@@ -234,6 +254,10 @@
 %token <itoken> SVLOG_NEGEDGE
 /* 'edge' keyword */
 %token <itoken> SVLOG_EDGE
+/* 'vectored' keyword */
+%token <itoken> SVLOG_VECTORED
+/* 'scalared' keyword */
+%token <itoken> SVLOG_SCALARED
 
 
 /* exp lowercase 'e' or upercase 'E' */
@@ -274,6 +298,10 @@
 %token <itoken> SVLOG_ROOT
 /* $unit */
 %token <itoken> SVLOG_UNIT
+
+
+/* Export Declaration '*::*' */
+%token <itoken> EXPORT_DECLARATION
 
 
 /* Case equality operator '===' */
@@ -469,6 +497,133 @@ dist_weight
  ********************************************/
 
 
+/***************************************************
+ * Start of 'Type declarations' Grammer Rules      *
+ * Based off section: (A.2.1.3 Type declarations). *
+ ***************************************************/
+
+data_declaration_options
+	: SVLOG_CONST
+	| SVLOG_VAR
+	| lifetime
+	| SVLOG_CONST SVLOG_VAR
+	| SVLOG_CONST lifetime
+	| SVLOG_CONST SVLOG_VAR lifetime
+	| SVLOG_VAR lifetime
+	;
+
+data_declaration
+	: data_declaration_options data_type_or_implicit list_of_variable_decl_assignments ';'
+	| type_declaration
+	| package_import_declaration
+	| nettype_declaration
+	;
+
+package_import_declaration
+	: SVLOG_IMPORT package_import_item_recurse ';'
+	;
+
+package_export_declaration
+	: SVLOG_EXPORT EXPORT_DECLARATION ';'
+	| SVLOG_EXPORT package_import_item_recurse ';'
+	;
+
+package_import_item_recurse
+	: package_import_item
+	| package_import_item_recurse ',' package_import_item
+	;
+
+package_import_item
+	: identifier CLASS_SCOPE_OPERATOR identifier
+	| identifier CLASS_SCOPE_OPERATOR '*'
+	;
+
+genvar_declaration
+	: SVLOG_GENVAR list_of_genvar_identifiers ';'
+	;
+
+drive_or_charge_strength
+	: %empty
+	| drive_strength
+	| charge_strength
+	;
+
+vectored_or_scalared
+	: %empty
+	| SVLOG_VECTORED
+	| SVLOG_SCALARED
+	;
+
+delay3_or_empty
+	: %empty
+	| delay3
+	;
+
+delay_control_or_empty
+	: %empty
+	| delay_control
+	;
+
+delay_value_or_empty
+	: %empty
+	| '#' delay_value
+	;
+
+net_ident_ud_recurse
+	: identifier unpacked_dimension_recurse
+	| net_ident_unpacked_dimension_recurse ',' identifier unpacked_dimension_recurse
+	;
+
+net_declaration
+	: net_type d_or_c_strength vectored_or_scalared data_type_or_implicit delay3_or_empty list_of_net_decl_assignments ';'
+	| identifier delay_control_or_empty list_of_net_decl_assignments ';'
+	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_empty net_ident_ud_recurse ';'
+	;
+
+forward_type_or_empty
+	: %empty
+	| forward_type
+	;
+
+type_declaration
+	: SVLOG_TYPEDEF data_type_or_incomplete_class_scoped_type identifier variable_dimension_recurse ';'
+	| SVLOG_TYPEDEF identifier constant_bit_select '.' identifier identifier ';'
+	| SVLOG_TYPEDEF forward_type_or_empty identifier ';'
+	;
+
+forward_type
+	: SVLOG_ENUM
+	| SVLOG_STRUCT
+	| SVLOG_UNION
+	| SVLOG_CLASS
+	| SVLOG_INTERFACE SVLOG_CLASS
+	;
+
+nettype_declaration_with_or_empty
+	: %empty
+	| SVLOG_WITH identifier
+	| SVLOG_WITH package_scope identifier
+	| SVLOG_WITH class_scope identifier
+	;
+
+nettype_declaration
+	: SVLOG_NETTYPE data_type identifier nettype_declaration_with_or_empty ';'
+	| SVLOG_NETTYPE identifier identifier ';'
+	| SVLOG_NETTYPE package_scope identifier identifier ';'
+	| SVLOG_NETTYPE class_scope identifier identifier ';'
+	;
+
+lifetime
+	: SVLOG_STATIC
+	| SVLOG_AUTOMATIC
+	;
+
+/***************************************************
+ * End of 'Type declarations' Grammer Rules        *
+ * Based off section: (A.2.1.3 Type declarations). *
+ ***************************************************/
+
+
 /********************************************************
  * Start of 'Net and variable types' Grammer Rules      *
  * Based off section: (A.2.2.1 Net and variable types). *
@@ -656,6 +811,11 @@ delay_value
  * Based off section: (A.2.3 Declaration lists). *
  *************************************************/
 
+list_of_genvar_identifiers
+	: identifier
+	| list_of_genvar_identifiers ',' identifier
+	;
+
 list_of_variable_decl_assignments
 	: variable_decl_assignment
 	| list_of_variable_decl_assignments ',' variable_decl_assignment
@@ -703,6 +863,12 @@ dynamic_array_new
  * Start of 'Declaration ranges' Grammer Rules    *
  * Based off section: (A.2.5 Declaration ranges). *
  **************************************************/
+
+unpacked_dimension_recurse
+	: %empty
+	| unpacked_dimension
+	| unpacked_dimension_recurse unpacked_dimension
+	;
 
 unpacked_dimension
 	: '[' constant_range ']'

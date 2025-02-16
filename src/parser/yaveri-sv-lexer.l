@@ -94,6 +94,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "void"         { return SVLOG_VOID;          }
 "null"         { return SVLOG_NULL;          }
 "with"         { return SVLOG_WITH;          }
+"const"        { return SVLOG_CONST;         }
+"import"       { return SVLOG_IMPORT;        }
+"export"       { return SVLOG_EXPORT;        }
 "randomize"    { return SVLOG_RANDOMIZE;     }
 "unique"       { return SVLOG_UNIQUE;        }
 "unique0"      { return SVLOG_UNIQUE0;       }
@@ -110,14 +113,18 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "union"        { return SVLOG_UNION;         }
 "tagged"       { return SVLOG_TAGGED;        }
 "packed"       { return SVLOG_PACKED;        }
-"enum"         { return SVLOG_ENUM;          }
 "string"       { return SVLOG_STRING;        }
 "chandle"      { return SVLOG_CHANDLE;       }
 "virtual"      { return SVLOG_VIRTUAL;       }
 "event"        { return SVLOG_EVENT;         }
 "new"          { return SVLOG_NEW;           }
+"class"        { return SVLOG_CLASS;         }
 "enum"         { return SVLOG_ENUM;          }
 "type"         { return SVLOG_TYPE;          }
+"typedef"      { return SVLOG_TYPEDEF;       }
+"nettype"      { return SVLOG_NETTYPE;       }
+"static"       { return SVLOG_STATIC;        }
+"automatic"    { return SVLOG_AUTOMATIC;     }
 "first_match"  { return SVLOG_FIRST_MATCH;   }
 "throughout"   { return SVLOG_THROUGHOUT;    }
 "within"       { return SVLOG_WITHIN;        }
@@ -155,6 +162,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "end"          { return SVLOG_END;            }
 
 
+"interconnect" { return SVLOG_INTERCONNECT;   }
+"genvar"       { return SVLOG_GENVAR;         }
 "assign"       { return SVLOG_ASSIGN;         }
 "deassign"     { return SVLOG_DEASSIGN;       }
 "force"        { return SVLOG_FORCE;          }
@@ -181,6 +190,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "posedge"      { return SVLOG_POSEDGE;       }
 "negedge"      { return SVLOG_NEGEDGE;       }
 "edge"         { return SVLOG_EDGE;          }
+"vectored"     { return SVLOG_VECTORED;      }
+"scalared"     { return SVLOG_SCALARED;      }
+
+
+"*::*"         { return EXPORT_DECLARATION;  }
 
 
 "&&&"          { return IF_AND_ONLY_IF;      }
