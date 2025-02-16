@@ -571,11 +571,11 @@ delay_value_or_empty
 
 net_ident_ud_recurse
 	: identifier unpacked_dimension_recurse
-	| net_ident_unpacked_dimension_recurse ',' identifier unpacked_dimension_recurse
+	| net_ident_ud_recurse ',' identifier unpacked_dimension_recurse
 	;
 
 net_declaration
-	: net_type d_or_c_strength vectored_or_scalared data_type_or_implicit delay3_or_empty list_of_net_decl_assignments ';'
+	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_empty list_of_net_decl_assignments ';'
 	| identifier delay_control_or_empty list_of_net_decl_assignments ';'
 	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_empty net_ident_ud_recurse ';'
 	;
@@ -634,15 +634,15 @@ data_type
 	| SVLOG_CHANDLE
 	| SVLOG_EVENT
 	| integer_vector_type
-	| integer_vector_type signing packed_dimesion_recurse
+	| integer_vector_type signing packed_dimension_recurse
 	| integer_atom_type
 	| integer_atom_type signing
 	| non_integer_type
-	| struct_union '{' struct_union_member_recurse '}' packed_dimesion_recurse
-	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimesion_recurse
-	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimesion_recurse
-	| SVLOG_ENUM enum_name_declaration_recurse packed_dimesion_recurse
-	| SVLOG_ENUM enum_base_type enum_name_declaration_recurse packed_dimesion_recurse
+	| struct_union '{' struct_union_member_recurse '}' packed_dimension_recurse
+	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimension_recurse
+	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimension_recurse
+	| SVLOG_ENUM enum_name_declaration_recurse packed_dimension_recurse
+	| SVLOG_ENUM enum_base_type enum_name_declaration_recurse packed_dimension_recurse
 	| SVLOG_VIRTUAL identifier
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier
 	| SVLOG_VIRTUAL identifier parameter_value_assignment
@@ -651,11 +651,21 @@ data_type
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier '.' identifier
 	| SVLOG_VIRTUAL identifier parameter_value_assignment '.' identifier
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier parameter_value_assignment '.' identifier
-	| class_scope identifier packed_dimesion_recurse
-	| package_scope identifier packed_dimesion_recurse
+	| class_scope identifier packed_dimension_recurse
+	| package_scope identifier packed_dimension_recurse
 	| class_type
 	| ps_covergroup_identifier
 	| type_reference
+	;
+
+data_type_or_implicit
+	: data_type
+	| implicit_data_type
+	;
+
+implicit_data_type
+	: packed_dimension_recurse
+	| signing packed_dimension_recurse
 	;
 
 enum_base_type
@@ -875,10 +885,10 @@ unpacked_dimension
 	| '[' constant_expression ']'
 	;
 
-packed_dimesion_recurse
+packed_dimension_recurse
 	: %empty
 	| packed_dimension
-	| packed_dimesion_recurse packed_dimension
+	| packed_dimension_recurse packed_dimension
 	;
 
 packed_dimension
