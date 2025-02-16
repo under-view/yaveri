@@ -100,6 +100,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "before"       { return SVLOG_BEFORE;        }
 "soft"         { return SVLOG_SOFT;          }
 "disable"      { return SVLOG_DISABLE;       }
+"fork"         { return SVLOG_FORK;          }
 "dist"         { return SVLOG_DIST;          }
 "default"      { return SVLOG_DEFAULT;       }
 "super"        { return SVLOG_SUPER;         }

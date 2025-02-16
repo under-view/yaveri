@@ -82,6 +82,8 @@
 %token <itoken> SVLOG_SOFT
 /* 'disable' keyword */
 %token <itoken> SVLOG_DISABLE
+/* 'fork' keyword */
+%token <itoken> SVLOG_FORK
 /* 'dist' keyword */
 %token <itoken> SVLOG_DIST
 /* 'default' keyword */
@@ -1131,6 +1133,11 @@ cond_pattern
 	: expression SVLOG_MATCHES pattern
 	;
 
+disable_statement
+	: SVLOG_DISABLE  hierarchical_identifier ';'
+	| SVLOG_DISABLE SVLOG_FORK ';'
+	;
+
 /******************************************************
  * End of 'Conditional statements' Grammer Rules      *
  * Based off section: (A.6.6 Conditional statements). *
@@ -1251,7 +1258,7 @@ loop_variables
  ******************************************/
 
 assignment_pattern_net_lvalue
-	: APOSTROPHE '{'  net_lvalue_recurse '}'
+	: APOSTROPHE '{' net_lvalue_recurse '}'
 	;
 
 assignment_pattern_variable_lvalue
