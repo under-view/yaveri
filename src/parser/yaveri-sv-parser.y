@@ -212,6 +212,32 @@
 %token <itoken> SVLOG_FORCE
 /* 'release' keyword */
 %token <itoken> SVLOG_RELEASE
+/* 'highz0' keyword */
+%token <itoken> SVLOG_HIGHZ0
+/* 'highz1' keyword */
+%token <itoken> SVLOG_HIGHZ1
+/* 'supply0' keyword */
+%token <itoken> SVLOG_SUPPLY0
+/* 'supply1' keyword */
+%token <itoken> SVLOG_SUPPLY1
+/* 'strong0' keyword */
+%token <itoken> SVLOG_STRONG0
+/* 'strong1' keyword */
+%token <itoken> SVLOG_STRONG1
+/* 'pull0' keyword */
+%token <itoken> SVLOG_PULL0
+/* 'pull1' keyword */
+%token <itoken> SVLOG_PULL1
+/* 'weak0' keyword */
+%token <itoken> SVLOG_WEAK0
+/* 'weak1' keyword */
+%token <itoken> SVLOG_WEAK1
+/* 'small' keyword */
+%token <itoken> SVLOG_SMALL
+/* 'medium' keyword */
+%token <itoken> SVLOG_MEDIUM
+/* 'large' keyword */
+%token <itoken> SVLOG_LARGE
 
 
 /* 'reg' keyword */
@@ -782,6 +808,46 @@ type_identifier_or_class_type
  * End of 'Net and variable types' Grammer Rules        *
  * Based off section: (A.2.2.1 Net and variable types). *
  ********************************************************/
+
+
+/*******************************************
+ * Start of 'Strengths' Grammer Rules      *
+ * Based off section: (A.2.2.2 Strengths). *
+ *******************************************/
+
+drive_strength
+	: '(' strength0 ',' strength1 ')'
+	| '(' strength1 ',' strength0 ')'
+	| '(' strength0 ',' SVLOG_HIGHZ1 ')'
+	| '(' strength1 ',' SVLOG_HIGHZ0 ')'
+	| '(' SVLOG_HIGHZ0 ',' strength1 ')'
+	| '(' SVLOG_HIGHZ1 ',' strength0 ')'
+	;
+
+strength0
+	: SVLOG_SUPPLY0
+	| SVLOG_STRONG0
+	| SVLOG_PULL0
+	| SVLOG_WEAK0
+	;
+
+strength1
+	: SVLOG_SUPPLY1
+	| SVLOG_STRONG1
+	| SVLOG_PULL1
+	| SVLOG_WEAK1
+	;
+
+charge_strength
+	: '(' SVLOG_SMALL ')'
+	| '(' SVLOG_MEDIUM ')'
+	| '(' SVLOG_LARGE ')'
+	;
+
+/*******************************************
+ * End of 'Strengths' Grammer Rules        *
+ * Based off section: (A.2.2.2 Strengths). *
+ *******************************************/
 
 
 /****************************************

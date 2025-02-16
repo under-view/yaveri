@@ -168,6 +168,19 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "deassign"     { return SVLOG_DEASSIGN;       }
 "force"        { return SVLOG_FORCE;          }
 "release"      { return SVLOG_RELEASE;        }
+"highz0"       { return SVLOG_HIGHZ0;         }
+"highz1"       { return SVLOG_HIGHZ1;         }
+"supply0"      { return SVLOG_SUPPLY0;        }
+"supply1"      { return SVLOG_SUPPLY1;        }
+"strong0"      { return SVLOG_STRONG0;        }
+"strong1"      { return SVLOG_STRONG1;        }
+"pull0"        { return SVLOG_PULL0;          }
+"pull1"        { return SVLOG_PULL1;          }
+"weak0"        { return SVLOG_WEAK0;          }
+"weak1"        { return SVLOG_WEAK1;          }
+"small"        { return SVLOG_SMALL;          }
+"medium"       { return SVLOG_MEDIUM;         }
+"large"        { return SVLOG_LARGE;          }
 
 
 "reg"          { return SVLOG_REG;           }
