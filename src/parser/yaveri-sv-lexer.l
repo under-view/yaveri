@@ -143,6 +143,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "foreach"      { return SVLOG_FOREACH;        }
 "forever"      { return SVLOG_FOREVER;        }
 "while"        { return SVLOG_WHILE;          }
+"return"       { return SVLOG_RETURN;         }
+"break"        { return SVLOG_BREAK;          }
+"continue"     { return SVLOG_CONTINUE;       }
+"wait"         { return SVLOG_WAIT;           }
+"wait_order"   { return SVLOG_WAIT_ORDER;     }
 
 
 "assign"       { return SVLOG_ASSIGN;         }

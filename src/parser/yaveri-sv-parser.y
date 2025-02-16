@@ -162,6 +162,16 @@
 %token <itoken> SVLOG_FOREVER
 /* 'while' keyword */
 %token <itoken> SVLOG_WHILE
+/* 'return' keyword */
+%token <itoken> SVLOG_RETURN
+/* 'break' keyword */
+%token <itoken> SVLOG_BREAK
+/* 'continue' keyword */
+%token <itoken> SVLOG_CONTINUE
+/* 'wait' keyword */
+%token <itoken> SVLOG_WAIT
+/* 'wait_order' keyword */
+%token <itoken> SVLOG_WAIT_ORDER
 
 
 /* 'assign' keyword */
@@ -1098,6 +1108,36 @@ event_expression
 	| '(' event_expression ')'
 	;
 
+procedural_timing_control
+	: delay_control
+	| event_control
+	| cycle_delay
+	;
+
+jump_statement
+	: SVLOG_RETURN ';'
+	| SVLOG_RETURN expression ';'
+	| SVLOG_BREAK ';'
+	| SVLOG_CONTINUE ';'
+	;
+
+wait_statement
+	: SVLOG_WAIT '(' expression ')' statement_or_null
+	| SVLOG_WAIT SVLOG_FORK ';'
+	| SVLOG_WAIT_ORDER '(' hierarchical_identifier_recurse ')' action_block
+	;
+
+event_trigger
+	: IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
+	| NONBLOCK_IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
+	| NONBLOCK_IMPLICATION_OPERATOR delay_or_event_control hierarchical_identifier nonrange_select ';'
+	;
+
+disable_statement
+	: SVLOG_DISABLE  hierarchical_identifier ';'
+	| SVLOG_DISABLE SVLOG_FORK ';'
+	;
+
 /*********************************************************
  * End of 'Timing control statements' Grammer Rules      *
  * Based off section: (A.6.5 Timing control statements). *
@@ -1148,17 +1188,6 @@ expression_or_cond_pattern
 
 cond_pattern
 	: expression SVLOG_MATCHES pattern
-	;
-
-event_trigger
-	: IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
-	| NONBLOCK_IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
-	| NONBLOCK_IMPLICATION_OPERATOR delay_or_event_control hierarchical_identifier nonrange_select ';'
-	;
-
-disable_statement
-	: SVLOG_DISABLE  hierarchical_identifier ';'
-	| SVLOG_DISABLE SVLOG_FORK ';'
 	;
 
 /******************************************************
@@ -2107,6 +2136,11 @@ hierarchical_identifier
 	| identifier
 	| SVLOG_ROOT '.' identifier
 	| hierarchical_identifier identifier constant_bit_select '.'
+	;
+
+hierarchical_identifier_recurse
+	: hierarchical_identifier
+	| hierarchical_identifier_recurse ',' hierarchical_identifier
 	;
 
 identifier
