@@ -75,8 +75,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "config"       { return SVLOG_CONFIG;        }
 "endconfig"    { return SVLOG_ENDCONFIG;     }
 
-"$root"        { return SVLOG_ROOT;           }
-"$unit"        { return SVLOG_UNIT;           }
+
+"$root"        { return SVLOG_ROOT;          }
+"$unit"        { return SVLOG_UNIT;          }
+"PATHPULSE$"   { return SVLOG_PATHPULSE;     }
+
 
 "s"            { return SVLOG_SEC;           }
 "ms"           { return SVLOG_MILLISEC;      }
@@ -131,6 +134,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "join"         { return SVLOG_JOIN;          }
 "join_any"     { return SVLOG_JOIN_ANY;      }
 "join_none"    { return SVLOG_JOIN_NONE;     }
+"parameter"    { return SVLOG_PARAMETER;     }
+"specparam"    { return SVLOG_SPECPARAM;     }
+"localparam"   { return SVLOG_LOCALPARAM;    }
 
 
 "iff"          { return SVLOG_IF_AND_ONLY_IF; }

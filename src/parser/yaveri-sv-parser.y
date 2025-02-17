@@ -142,6 +142,12 @@
 %token <itoken> SVLOG_JOIN_ANY
 /* 'join_none' keyword */
 %token <itoken> SVLOG_JOIN_NONE
+/* 'parameter' keyword */
+%token <itoken> SVLOG_PARAMETER
+/* 'specparam' keyword */
+%token <itoken> SVLOG_SPECPARAM
+/* 'localparam' keyword */
+%token <itoken> SVLOG_LOCALPARAM
 
 
 /* 'iff'|'&&&' If and only if */
@@ -340,10 +346,12 @@
 %token <itoken> SVLOG_DIGIT
 
 
-/* $root */
+/* '$root' keyword */
 %token <itoken> SVLOG_ROOT
-/* $unit */
+/* '$unit' keyword */
 %token <itoken> SVLOG_UNIT
+/* 'PATHPULSE$' keyword */
+%token <itoken> SVLOG_PATHPULSE
 
 
 /* Export Declaration '*::*' */
@@ -541,6 +549,37 @@ dist_weight
  * End of 'Constraints' Grammer Rules       *
  * Based off section: (A.1.10 Constraints). *
  ********************************************/
+
+
+/***************************************************************
+ * Start of 'Module parameter declarations' Grammer Rules      *
+ * Based off section: (A.2.1.1 Module parameter declarations). *
+ ***************************************************************/
+
+local_parameter_declaration
+	: SVLOG_LOCALPARAM data_type_or_implicit list_of_param_assignments
+	| SVLOG_PARAMETER type_parameter_declaration
+	;
+
+parameter_declaration
+	: SVLOG_PARAMETER data_type_or_implicit list_of_param_assignments
+	| SVLOG_PARAMETER type_parameter_declaration
+	;
+
+type_parameter_declaration
+	: SVLOG_TYPE list_of_type_assignments
+	| SVLOG_TYPE forward_type list_of_type_assignments
+	;
+
+specparam_declaration
+	: SVLOG_SPECPARAM list_of_specparam_assignments ';'
+	| SVLOG_SPECPARAM packed_dimension list_of_specparam_assignments ';'
+	;
+
+/***************************************************************
+ * End of 'Module parameter declarations' Grammer Rules        *
+ * Based off section: (A.2.1.1 Module parameter declarations). *
+ ***************************************************************/
 
 
 /***************************************************
@@ -937,6 +976,21 @@ list_of_net_decl_assignments
 	| list_of_net_decl_assignments ',' net_decl_assignment
 	;
 
+list_of_param_assignments
+	: param_assignment
+	| list_of_param_assignments ',' param_assignment
+	;
+
+list_of_specparam_assignments
+	: specparam_assignment
+	| list_of_specparam_assignments ',' specparam_assignment
+	;
+
+list_of_type_assignments
+	: type_assignment
+	| list_of_type_assignments ',' type_assignment
+	;
+
 list_of_variable_decl_assignments
 	: variable_decl_assignment
 	| list_of_variable_decl_assignments ',' variable_decl_assignment
@@ -956,6 +1010,36 @@ list_of_variable_decl_assignments
 net_decl_assignment
 	: identifier unpacked_dimension_recurse
 	| identifier unpacked_dimension_recurse '=' expression
+	;
+
+param_assignment
+	: identifier variable_dimension_recurse
+	| identifier variable_dimension_recurse '=' constant_param_expression
+	;
+
+specparam_assignment
+	: identifier '=' constant_mintypmax_expression
+	| pulse_control_specparam
+	;
+
+pulse_control_specparam
+	: SVLOG_PATHPULSE '=' '(' reject_limit_value ')'
+	| SVLOG_PATHPULSE '=' '(' reject_limit_value ',' error_limit_value ')'
+	| SVLOG_PATHPULSE specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ')'
+	| SVLOG_PATHPULSE specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ',' error_limit_value ')'
+	;
+
+error_limit_value
+	: constant_mintypmax_expression
+	;
+
+reject_limit_value
+	: constant_mintypmax_expression
+	;
+
+type_assignment
+	: identifier
+	| identifier '=' data_type_or_incomplete_class_scoped_type
 	;
 
 variable_decl_assignment
@@ -1948,6 +2032,17 @@ constant_expression
 	| constant_expression binary_operator attribute_instance_recurse constant_expression
 	| constant_expression '?' constant_expression ':' constant_expression
 	| constant_expression '?' attribute_instance_recurse constant_expression ':' constant_expression
+	;
+
+constant_mintypmax_expression
+	: constant_expression
+	| constant_expression ':' constant_expression ':' constant_expression
+	;
+
+constant_param_expression
+	: constant_mintypmax_expression
+	| data_type
+	| '$'
 	;
 
 param_expression
