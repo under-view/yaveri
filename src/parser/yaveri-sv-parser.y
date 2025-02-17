@@ -212,6 +212,14 @@
 %token <itoken> SVLOG_FORCE
 /* 'release' keyword */
 %token <itoken> SVLOG_RELEASE
+/* 'small' keyword */
+%token <itoken> SVLOG_SMALL
+/* 'medium' keyword */
+%token <itoken> SVLOG_MEDIUM
+/* 'large' keyword */
+%token <itoken> SVLOG_LARGE
+
+
 /* 'highz0' keyword */
 %token <itoken> SVLOG_HIGHZ0
 /* 'highz1' keyword */
@@ -232,18 +240,30 @@
 %token <itoken> SVLOG_WEAK0
 /* 'weak1' keyword */
 %token <itoken> SVLOG_WEAK1
-/* 'small' keyword */
-%token <itoken> SVLOG_SMALL
-/* 'medium' keyword */
-%token <itoken> SVLOG_MEDIUM
-/* 'large' keyword */
-%token <itoken> SVLOG_LARGE
+/* 'tri' keyword */
+%token <itoken> SVLOG_TRI
+/* 'tri0' keyword */
+%token <itoken> SVLOG_TRI0
+/* 'tri1' keyword */
+%token <itoken> SVLOG_TRI1
+/* 'triand' keyword */
+%token <itoken> SVLOG_TRIAND
+/* 'trior' keyword */
+%token <itoken> SVLOG_TRIOR
+/* 'trireg' keyword */
+%token <itoken> SVLOG_TRIREG
+/* 'wand' keyword */
+%token <itoken> SVLOG_WAND
+/* 'wor' keyword */
+%token <itoken> SVLOG_WOR
 
 
 /* 'reg' keyword */
 %token <itoken> SVLOG_REG
 /* 'wire' keyword */
 %token <itoken> SVLOG_WIRE
+/* 'unwire' keyword */
+%token <itoken> SVLOG_UNWIRE
 /* 'integer' keyword */
 %token <itoken> SVLOG_INTEGER
 /* 'real' keyword */
@@ -736,6 +756,11 @@ class_type
 	| ps_class_identifier class_type_ident_recurse
 	;
 
+integer_type
+	: integer_vector_type
+	| integer_atom_type
+	;
+
 integer_atom_type
 	: SVLOG_BYTE
 	| SVLOG_SHORT_INT
@@ -755,6 +780,21 @@ non_integer_type
 	: SVLOG_SHORT_REAL
 	| SVLOG_REAL
 	| SVLOG_REAL_TIME
+	;
+
+net_type
+	: SVLOG_SUPPLY0
+	| SVLOG_SUPPLY1
+	| SVLOG_TRI
+	| SVLOG_TRIAND
+	| SVLOG_TRIOR
+	| SVLOG_TRIREG
+	| SVLOG_TRI0
+	| SVLOG_TRI1
+	| SVLOG_UNWIRE
+	| SVLOG_WIRE
+	| SVLOG_WAND
+	| SVLOG_WOR
 	;
 
 signing

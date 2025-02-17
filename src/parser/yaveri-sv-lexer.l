@@ -168,6 +168,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "deassign"     { return SVLOG_DEASSIGN;       }
 "force"        { return SVLOG_FORCE;          }
 "release"      { return SVLOG_RELEASE;        }
+"small"        { return SVLOG_SMALL;          }
+"medium"       { return SVLOG_MEDIUM;         }
+"large"        { return SVLOG_LARGE;          }
+
+
 "highz0"       { return SVLOG_HIGHZ0;         }
 "highz1"       { return SVLOG_HIGHZ1;         }
 "supply0"      { return SVLOG_SUPPLY0;        }
@@ -178,13 +183,19 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "pull1"        { return SVLOG_PULL1;          }
 "weak0"        { return SVLOG_WEAK0;          }
 "weak1"        { return SVLOG_WEAK1;          }
-"small"        { return SVLOG_SMALL;          }
-"medium"       { return SVLOG_MEDIUM;         }
-"large"        { return SVLOG_LARGE;          }
+"tri"          { return SVLOG_TRI;           }
+"tri0"         { return SVLOG_TRI0;          }
+"tri1"         { return SVLOG_TRI1;          }
+"triand"       { return SVLOG_TRIAND;        }
+"trior"        { return SVLOG_TRIOR;         }
+"trireg"       { return SVLOG_TRIREG;        }
+"wand"         { return SVLOG_WAND;          }
+"wor"          { return SVLOG_WOR;           }
 
 
 "reg"          { return SVLOG_REG;           }
 "wire"         { return SVLOG_WIRE;          }
+"unwire"       { return SVLOG_UNWIRE;        }
 "integer"      { return SVLOG_INTEGER;       }
 "real"         { return SVLOG_REAL;          }
 "time"         { return SVLOG_TIME;          }
