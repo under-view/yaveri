@@ -1860,6 +1860,47 @@ polarity_operator
  *********************************************************/
 
 
+/*******************************************************
+ * Start of 'Specify block terminals' Grammer Rules    *
+ * Based off section: (A.7.3 Specify block terminals). *
+ *******************************************************/
+
+list_of_path_inputs
+	: specify_input_terminal_descriptor
+	| list_of_path_inputs ',' specify_input_terminal_descriptor
+	;
+
+list_of_path_outputs
+	: specify_output_terminal_descriptor
+	| list_of_path_outputs ',' specify_output_terminal_descriptor
+	;
+
+specify_input_terminal_descriptor
+	: input_identifier
+	| input_identifier '[' constant_range_expression ']'
+	;
+
+specify_output_terminal_descriptor
+	: output_identifier
+	| output_identifier '[' constant_range_expression ']'
+	;
+
+input_identifier
+	: identifier
+	| identifier '.' identifier
+	;
+
+output_identifier
+	: identifier
+	| identifier '.' identifier
+	;
+
+/*******************************************************
+ * End of 'Specify block terminals' Grammer Rules      *
+ * Based off section: (A.7.3 Specify block terminals). *
+ *******************************************************/
+
+
 /**********************************************
  * Start of 'Concatenations' Grammer Rules    *
  * Based off section: (A.8.1 Concatenations). *
