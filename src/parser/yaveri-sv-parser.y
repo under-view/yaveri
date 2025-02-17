@@ -932,6 +932,11 @@ list_of_genvar_identifiers
 	| list_of_genvar_identifiers ',' identifier
 	;
 
+list_of_net_decl_assignments
+	: net_decl_assignment
+	| list_of_net_decl_assignments ',' net_decl_assignment
+	;
+
 list_of_variable_decl_assignments
 	: variable_decl_assignment
 	| list_of_variable_decl_assignments ',' variable_decl_assignment
@@ -947,6 +952,11 @@ list_of_variable_decl_assignments
  * Start of 'Declaration assignments' Grammer Rules    *
  * Based off section: (A.2.4 Declaration assignments). *
  ******************************************************/
+
+net_decl_assignment
+	: identifier unpacked_dimension_recurse
+	| identifier unpacked_dimension_recurse '=' expression
+	;
 
 variable_decl_assignment
 	: identifier
