@@ -56,6 +56,8 @@
 %token <itoken> SVLOG_1STEP
 
 
+/* 'let' keyword */
+%token <itoken> SVLOG_LET
 /* 'var' keyword */
 %token <itoken> SVLOG_VAR
 /* 'std' keyword */
@@ -122,6 +124,8 @@
 %token <itoken> SVLOG_CLASS
 /* 'type' keyword */
 %token <itoken> SVLOG_TYPE
+/* 'untyped' keyword */
+%token <itoken> SVLOG_UNTYPED
 /* 'typedef' keyword */
 %token <itoken> SVLOG_TYPEDEF
 /* 'nettype' keyword */
@@ -1265,6 +1269,27 @@ cycle_delay_const_range_expression
  * Start of 'Let declarations' Grammer Rules     *
  * Based off section: (A.2.12 Let declarations). *
  *************************************************/
+
+let_declaration
+	: SVLOG_LET identifier '=' expression ';'
+	| SVLOG_LET identifier '(' ')' '=' expression ';'
+	| SVLOG_LET identifier '(' let_port_list ')' '=' expression ';'
+	;
+
+let_port_list
+	: let_port_item
+	| let_port_list ',' let_port_item
+	;
+
+let_port_item
+	: attribute_instance_recurse let_formal_type identifier variable_dimension_recurse
+	| attribute_instance_recurse let_formal_type identifier variable_dimension_recurse '=' expression
+	;
+
+let_formal_type
+	: data_type_or_implicit
+	| SVLOG_UNTYPED
+	;
 
 let_expression
 	: identifier

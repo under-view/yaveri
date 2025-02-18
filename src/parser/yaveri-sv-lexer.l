@@ -91,6 +91,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "1step"        { return SVLOG_1STEP;         }
 
 
+"let"          { return SVLOG_LET;           }
 "var"          { return SVLOG_VAR;           }
 "std"          { return SVLOG_STD;           }
 "this"         { return SVLOG_THIS;          }
@@ -124,6 +125,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "class"        { return SVLOG_CLASS;         }
 "enum"         { return SVLOG_ENUM;          }
 "type"         { return SVLOG_TYPE;          }
+"untyped"      { return SVLOG_UNTYPED;       }
 "typedef"      { return SVLOG_TYPEDEF;       }
 "nettype"      { return SVLOG_NETTYPE;       }
 "static"       { return SVLOG_STATIC;        }
