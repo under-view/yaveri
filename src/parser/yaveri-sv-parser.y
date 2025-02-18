@@ -1550,6 +1550,10 @@ function_statement_or_null
  * Based off section: (A.6.5 Timing control statements). *
  *********************************************************/
 
+procedural_timing_control_statement
+	: procedural_timing_control statement_or_null
+	;
+
 delay_or_event_control
 	: delay_control
 	| event_control
