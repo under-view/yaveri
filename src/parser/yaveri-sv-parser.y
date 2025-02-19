@@ -36,6 +36,9 @@
 /* Design Element 'config' */
 %token <itoken> SVLOG_CONFIG
 %token <itoken> SVLOG_ENDCONFIG
+/* 'clocking' keyword */
+%token <itoken> SVLOG_CLOCKING
+%token <itoken> SVLOG_ENDCLOCKING
 
 
 /* second 's' */
@@ -72,6 +75,8 @@
 %token <itoken> SVLOG_WITH
 /* 'const' keyword */
 %token <itoken> SVLOG_CONST
+/* 'global' keyword */
+%token <itoken> SVLOG_GLOBAL
 /* 'import' keyword */
 %token <itoken> SVLOG_IMPORT
 /* 'export' keyword */
@@ -208,6 +213,12 @@
 %token <itoken> SVLOG_BEGIN
 /* 'end' keyword */
 %token <itoken> SVLOG_END
+/* 'input' keyword */
+%token <itoken> SVLOG_INPUT
+/* 'output' keyword */
+%token <itoken> SVLOG_OUTPUT
+/* 'inout' keyword */
+%token <itoken> SVLOG_INOUT
 
 
 /* 'interconnect' keyword */
@@ -658,7 +669,7 @@ delay3_or_empty
 	| delay3
 	;
 
-delay_control_or_empty
+delay_control_or_null
 	: %empty
 	| delay_control
 	;
@@ -675,7 +686,7 @@ net_ident_ud_recurse
 
 net_declaration
 	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_empty list_of_net_decl_assignments ';'
-	| identifier delay_control_or_empty list_of_net_decl_assignments ';'
+	| identifier delay_control_or_null list_of_net_decl_assignments ';'
 	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_empty net_ident_ud_recurse ';'
 	;
 
@@ -1942,6 +1953,104 @@ deferred_immediate_cover_statement
  * End of 'Assertion statements' Grammer Rules       *
  * Based off section: (A.6.10 Assertion statements). *
  *****************************************************/
+
+
+/***********************************************
+ * Start of 'Clocking block' Grammer Rules     *
+ * Based off section: (A.6.11 Clocking block). *
+ ***********************************************/
+
+default_or_null
+	: %empty
+	| SVLOG_DEFAULT
+	;
+
+clocking_identifier
+	: %empty
+	| identifier
+	| ':' identifier
+	;
+
+clocking_declaration
+	: default_or_null SVLOG_CLOCKING clocking_identifier clocking_event ';'
+		clocking_item_recurse
+	  SVLOG_ENDCLOCKING clocking_identifier
+	| SVLOG_GLOBAL SVLOG_CLOCKING clocking_identifier clocking_event ';'
+	  SVLOG_ENDCLOCKING clocking_identifier
+	;
+
+clocking_item_recurse
+	: %empty
+	| clocking_item
+	| clocking_item_recurse clocking_item
+	;
+
+clocking_item
+	: SVLOG_DEFAULT default_skew ';'
+	| clocking_direction list_of_clocking_decl_assign ';'
+	| attribute_instance_recurse assertion_item_declaration
+	;
+
+default_skew
+	: SVLOG_INPUT clocking_skew
+	| SVLOG_OUTPUT clocking_skew
+	| SVLOG_INPUT clocking_skew SVLOG_OUTPUT clocking_skew
+	;
+
+clocking_direction
+	: SVLOG_INPUT clocking_skew_or_null
+	| SVLOG_OUTPUT clocking_skew_or_null
+	| SVLOG_INPUT clocking_skew_or_null SVLOG_OUTPUT clocking_skew_or_null
+	| SVLOG_INOUT
+	;
+
+list_of_clocking_decl_assign
+	: clocking_decl_assign
+	| list_of_clocking_decl_assign ',' clocking_decl_assign
+	;
+
+clocking_decl_assign
+	: identifier
+	| identifier '=' expression
+	;
+
+clocking_skew_or_null
+	: %empty
+	| clocking_skew
+	;
+
+clocking_skew
+	: edge_identifier delay_control_or_null
+	| delay_control
+	;
+
+clocking_drive
+	: clockvar_expression LT_OR_EQ cycle_delay_or_null expression
+	;
+
+cycle_delay
+	: '#' '#' integral_number
+	| '#' '#' identifier
+	| '#' '#' '(' expression ')'
+	;
+
+cycle_delay_or_null
+	: %empty
+	| cycle_delay
+	;
+
+clockvar
+	: hierarchical_identifier
+	;
+
+clockvar_expression
+	: clockvar select
+	;
+
+/***********************************************
+ * End of 'Clocking block' Grammer Rules       *
+ * Based off section: (A.6.11 Clocking block). *
+ ***********************************************/
 
 
 /*********************************************************

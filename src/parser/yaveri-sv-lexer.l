@@ -74,6 +74,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endprimitive" { return SVLOG_ENDPRIMITIVE;  }
 "config"       { return SVLOG_CONFIG;        }
 "endconfig"    { return SVLOG_ENDCONFIG;     }
+"clocking"     { return SVLOG_CLOCKING;      }
+"endclocking"  { return SVLOG_ENDCLOCKING;   }
 
 
 "$root"        { return SVLOG_ROOT;          }
@@ -99,6 +101,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "null"         { return SVLOG_NULL;          }
 "with"         { return SVLOG_WITH;          }
 "const"        { return SVLOG_CONST;         }
+"global"       { return SVLOG_GLOBAL;        }
 "import"       { return SVLOG_IMPORT;        }
 "export"       { return SVLOG_EXPORT;        }
 "randomize"    { return SVLOG_RANDOMIZE;     }
@@ -168,6 +171,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "wait_order"   { return SVLOG_WAIT_ORDER;     }
 "begin"        { return SVLOG_BEGIN;          }
 "end"          { return SVLOG_END;            }
+"input"        { return SVLOG_INPUT;          }
+"output"       { return SVLOG_OUTPUT;         }
+"inout"        { return SVLOG_INOUT;          }
 
 
 "interconnect" { return SVLOG_INTERCONNECT;   }
