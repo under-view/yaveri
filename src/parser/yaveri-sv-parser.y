@@ -664,7 +664,7 @@ vectored_or_scalared
 	| SVLOG_SCALARED
 	;
 
-delay3_or_empty
+delay3_or_null
 	: %empty
 	| delay3
 	;
@@ -674,7 +674,7 @@ delay_control_or_null
 	| delay_control
 	;
 
-delay_value_or_empty
+delay_value_or_null
 	: %empty
 	| '#' delay_value
 	;
@@ -685,12 +685,12 @@ net_ident_ud_recurse
 	;
 
 net_declaration
-	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_empty list_of_net_decl_assignments ';'
+	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_null list_of_net_decl_assignments ';'
 	| identifier delay_control_or_null list_of_net_decl_assignments ';'
-	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_empty net_ident_ud_recurse ';'
+	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_null net_ident_ud_recurse ';'
 	;
 
-forward_type_or_empty
+forward_type_or_null
 	: %empty
 	| forward_type
 	;
@@ -698,7 +698,7 @@ forward_type_or_empty
 type_declaration
 	: SVLOG_TYPEDEF data_type_or_incomplete_class_scoped_type identifier variable_dimension_recurse ';'
 	| SVLOG_TYPEDEF identifier constant_bit_select '.' identifier identifier ';'
-	| SVLOG_TYPEDEF forward_type_or_empty identifier ';'
+	| SVLOG_TYPEDEF forward_type_or_null identifier ';'
 	;
 
 forward_type
@@ -709,7 +709,7 @@ forward_type
 	| SVLOG_INTERFACE SVLOG_CLASS
 	;
 
-nettype_declaration_with_or_empty
+nettype_declaration_with_or_null
 	: %empty
 	| SVLOG_WITH identifier
 	| SVLOG_WITH package_scope identifier
@@ -717,7 +717,7 @@ nettype_declaration_with_or_empty
 	;
 
 nettype_declaration
-	: SVLOG_NETTYPE data_type identifier nettype_declaration_with_or_empty ';'
+	: SVLOG_NETTYPE data_type identifier nettype_declaration_with_or_null ';'
 	| SVLOG_NETTYPE identifier identifier ';'
 	| SVLOG_NETTYPE package_scope identifier identifier ';'
 	| SVLOG_NETTYPE class_scope identifier identifier ';'
