@@ -214,10 +214,18 @@
 %token <itoken> SVLOG_INTERCONNECT
 /* 'genvar' keyword */
 %token <itoken> SVLOG_GENVAR
+/* 'cover' keyword */
+%token <itoken> SVLOG_COVER
+/* 'assert' keyword */
+%token <itoken> SVLOG_ASSERT
+/* 'assume' keyword */
+%token <itoken> SVLOG_ASSUME
 /* 'assign' keyword */
 %token <itoken> SVLOG_ASSIGN
 /* 'deassign' keyword */
 %token <itoken> SVLOG_DEASSIGN
+/* 'final' keyword */
+%token <itoken> SVLOG_FINAL
 /* 'force' keyword */
 %token <itoken> SVLOG_FORCE
 /* 'release' keyword */
@@ -358,6 +366,8 @@
 %token <itoken> SVLOG_PATHPULSE
 
 
+/* Pound Zero '#0' */
+%token <itoken> POUND_ZERO
 /* Export Declaration '*::*' */
 %token <itoken> EXPORT_DECLARATION
 
@@ -1861,6 +1871,77 @@ subroutine_call_statement
  * End of 'Subroutine call statements' Grammer Rules      *
  * Based off section: (A.6.9 Subroutine call statements). *
  **********************************************************/
+
+
+/*****************************************************
+ * Start of 'Assertion statements' Grammer Rules     *
+ * Based off section: (A.6.10 Assertion statements). *
+ *****************************************************/
+
+assertion_item
+	: concurrent_assertion_item
+	| deferred_immediate_assertion_item
+	;
+
+deferred_immediate_assertion_item
+	: deferred_immediate_assertion_statement
+	| identifier ':' deferred_immediate_assertion_statement
+	;
+
+procedural_assertion_statement
+	: concurrent_assertion_statement
+	| immediate_assertion_statement
+	| checker_instantiation
+	;
+
+immediate_assertion_statement
+	: simple_immediate_assertion_statement
+	| deferred_immediate_assertion_statement
+	;
+
+simple_immediate_assertion_statement
+	: simple_immediate_assert_statement
+	| simple_immediate_assume_statement
+	| simple_immediate_cover_statement
+	;
+
+deferred_immediate_assertion_statement
+	: deferred_immediate_assert_statement
+	| deferred_immediate_assume_statement
+	| deferred_immediate_cover_statement
+	;
+
+simple_immediate_assert_statement
+	: SVLOG_ASSERT '(' expression ')' action_block
+	;
+
+simple_immediate_assume_statement
+	: SVLOG_ASSUME '(' expression ')' action_block
+	;
+
+simple_immediate_cover_statement
+	: SVLOG_COVER '(' expression ')' statement_or_null
+	;
+
+deferred_immediate_assert_statement
+	: SVLOG_ASSERT POUND_ZERO '(' expression ')' action_block
+	| SVLOG_ASSERT SVLOG_FINAL '(' expression ')' action_block
+	;
+
+deferred_immediate_assume_statement
+	: SVLOG_ASSUME POUND_ZERO '(' expression ')' action_block
+	| SVLOG_ASSUME SVLOG_FINAL '(' expression ')' action_block
+	;
+
+deferred_immediate_cover_statement
+	: SVLOG_COVER POUND_ZERO '(' expression ')' statement_or_null
+	| SVLOG_COVER SVLOG_FINAL '(' expression ')' statement_or_null
+	;
+
+/*****************************************************
+ * End of 'Assertion statements' Grammer Rules       *
+ * Based off section: (A.6.10 Assertion statements). *
+ *****************************************************/
 
 
 /*********************************************************

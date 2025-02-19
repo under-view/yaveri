@@ -172,8 +172,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 "interconnect" { return SVLOG_INTERCONNECT;   }
 "genvar"       { return SVLOG_GENVAR;         }
+"cover"        { return SVLOG_COVER;          }
+"assert"       { return SVLOG_ASSERT;         }
+"assume"       { return SVLOG_ASSUME;         }
 "assign"       { return SVLOG_ASSIGN;         }
 "deassign"     { return SVLOG_DEASSIGN;       }
+"final"        { return SVLOG_FINAL;          }
 "force"        { return SVLOG_FORCE;          }
 "release"      { return SVLOG_RELEASE;        }
 "small"        { return SVLOG_SMALL;          }
@@ -226,6 +230,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "scalared"     { return SVLOG_SCALARED;      }
 
 
+"#0"           { return POUND_ZERO;          }
 "*::*"         { return EXPORT_DECLARATION;  }
 
 
