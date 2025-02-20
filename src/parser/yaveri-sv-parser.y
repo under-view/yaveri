@@ -630,17 +630,17 @@ data_declaration
 	;
 
 package_import_declaration
-	: SVLOG_IMPORT package_import_item_recurse ';'
+	: SVLOG_IMPORT list_of_package_import_items ';'
 	;
 
 package_export_declaration
 	: SVLOG_EXPORT EXPORT_DECLARATION ';'
-	| SVLOG_EXPORT package_import_item_recurse ';'
+	| SVLOG_EXPORT list_of_package_import_items ';'
 	;
 
-package_import_item_recurse
+list_of_package_import_items
 	: package_import_item
-	| package_import_item_recurse ',' package_import_item
+	| list_of_package_import_items ',' package_import_item
 	;
 
 package_import_item
@@ -679,15 +679,15 @@ delay_value_or_null
 	| '#' delay_value
 	;
 
-net_ident_ud_recurse
+list_of_net_ident_ud
 	: identifier unpacked_dimension_recurse
-	| net_ident_ud_recurse ',' identifier unpacked_dimension_recurse
+	| list_of_net_ident_ud ',' identifier unpacked_dimension_recurse
 	;
 
 net_declaration
 	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_null list_of_net_decl_assignments ';'
 	| identifier delay_control_or_null list_of_net_decl_assignments ';'
-	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_null net_ident_ud_recurse ';'
+	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_null list_of_net_ident_ud ';'
 	;
 
 forward_type_or_null
@@ -751,8 +751,8 @@ data_type
 	| struct_union '{' struct_union_member_recurse '}' packed_dimension_recurse
 	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimension_recurse
 	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimension_recurse
-	| SVLOG_ENUM enum_name_declaration_recurse packed_dimension_recurse
-	| SVLOG_ENUM enum_base_type enum_name_declaration_recurse packed_dimension_recurse
+	| SVLOG_ENUM list_of_enum_name_declaration packed_dimension_recurse
+	| SVLOG_ENUM enum_base_type list_of_enum_name_declaration packed_dimension_recurse
 	| SVLOG_VIRTUAL identifier
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier
 	| SVLOG_VIRTUAL identifier parameter_value_assignment
@@ -789,10 +789,10 @@ enum_base_type
 	| identifier packed_dimension
 	;
 
-enum_name_declaration_recurse
+list_of_enum_name_declaration
 	: %empty
 	| enum_name_declaration
-	| enum_name_declaration_recurse ',' enum_name_declaration
+	| list_of_enum_name_declaration ',' enum_name_declaration
 	;
 
 enum_name_declaration
@@ -1184,12 +1184,12 @@ sequence_expr
 	| expression_or_dist boolean_abbrev
 	| sequence_instance
 	| sequence_instance sequence_abbrev
-	| '(' sequence_expr sequence_match_item_recurse ')'
-	| '(' sequence_expr sequence_match_item_recurse ')' sequence_abbrev
+	| '(' sequence_expr list_of_sequence_match_items ')'
+	| '(' sequence_expr list_of_sequence_match_items ')' sequence_abbrev
 	| sequence_expr SVLOG_AND sequence_expr
 	| sequence_expr SVLOG_INTERSECT sequence_expr
 	| sequence_expr SVLOG_OR sequence_expr
-	| SVLOG_FIRST_MATCH '(' sequence_expr sequence_match_item_recurse ')'
+	| SVLOG_FIRST_MATCH '(' sequence_expr list_of_sequence_match_items ')'
 	| expression_or_dist SVLOG_THROUGHOUT sequence_expr
 	| sequence_expr SVLOG_WITHIN sequence_expr
 	| clocking_event sequence_expr
@@ -1202,10 +1202,10 @@ cycle_delay_range
 	| '#' '#' '[' '+' ']'
 	;
 
-sequence_match_item_recurse
+list_of_sequence_match_items
 	: %empty
 	| ',' sequence_match_item
-	| sequence_match_item_recurse ',' sequence_match_item
+	| list_of_sequence_match_items ',' sequence_match_item
 	;
 
 sequence_match_item
@@ -1221,23 +1221,23 @@ sequence_instance
 	;
 
 sequence_list_of_arguments
-	: sequence_actual_arg_recurse ident_seq_actual_arg_recurse
-	| '.' identifier '(' ')' ident_seq_actual_arg_recurse
-	| '.' identifier '(' sequence_actual_arg ')' ident_seq_actual_arg_recurse
+	: list_of_sequence_actual_args list_of_ident_seq_actual_args
+	| '.' identifier '(' ')' list_of_ident_seq_actual_args
+	| '.' identifier '(' sequence_actual_arg ')' list_of_ident_seq_actual_args
 	;
 
-ident_seq_actual_arg_recurse
+list_of_ident_seq_actual_args
 	: %empty
 	| ',' '.' identifier '(' ')'
 	| ',' '.' identifier '(' sequence_actual_arg ')'
-	| ident_seq_actual_arg_recurse ',' '.' identifier '(' ')'
-	| ident_seq_actual_arg_recurse ',' '.' identifier '(' sequence_actual_arg ')'
+	| list_of_ident_seq_actual_args ',' '.' identifier '(' ')'
+	| list_of_ident_seq_actual_args ',' '.' identifier '(' sequence_actual_arg ')'
 	;
 
-sequence_actual_arg_recurse
+list_of_sequence_actual_args
 	: %empty
 	| sequence_actual_arg
-	| sequence_actual_arg_recurse ',' sequence_actual_arg
+	| list_of_sequence_actual_args ',' sequence_actual_arg
 	;
 
 sequence_actual_arg
@@ -1321,19 +1321,19 @@ let_expression
 
 let_list_of_arguments
 	: %empty
-	| let_actual_arg_recurse let_list_of_arguments_ident_recurse
-	| '.' identifier '(' let_actual_arg ')' let_list_of_arguments_ident_recurse
+	| list_of_let_actual_arg list_of_let_list_of_arguments_ident
+	| '.' identifier '(' let_actual_arg ')' list_of_let_list_of_arguments_ident
 	;
 
-let_list_of_arguments_ident_recurse
+list_of_let_list_of_arguments_ident
 	: %empty
 	| ',' '.' identifier '(' let_actual_arg ')'
-	| let_list_of_arguments_ident_recurse ',' '.' identifier '(' let_actual_arg ')'
+	| list_of_let_list_of_arguments_ident ',' '.' identifier '(' let_actual_arg ')'
 	;
 
-let_actual_arg_recurse
+list_of_let_actual_arg
 	: let_actual_arg
-	| let_actual_arg_recurse ',' let_actual_arg
+	| list_of_let_actual_arg ',' let_actual_arg
 	;
 
 let_actual_arg
