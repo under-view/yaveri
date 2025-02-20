@@ -76,6 +76,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endconfig"    { return SVLOG_ENDCONFIG;     }
 "clocking"     { return SVLOG_CLOCKING;      }
 "endclocking"  { return SVLOG_ENDCLOCKING;   }
+"randsequence" { return SVLOG_RANDSEQUENCE;  }
+"endsequence"  { return SVLOG_ENDSEQUENCE;   }
 
 
 "$root"        { return SVLOG_ROOT;          }

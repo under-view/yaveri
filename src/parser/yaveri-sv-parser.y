@@ -39,6 +39,9 @@
 /* 'clocking' keyword */
 %token <itoken> SVLOG_CLOCKING
 %token <itoken> SVLOG_ENDCLOCKING
+/* 'randsequence' keyword */
+%token <itoken> SVLOG_RANDSEQUENCE
+%token <itoken> SVLOG_ENDSEQUENCE
 
 
 /* second 's' */
@@ -629,6 +632,12 @@ data_declaration
 	| nettype_declaration
 	;
 
+data_declaration_recurse
+	: %empty
+	| data_declaration
+	| data_declaration_recurse data_declaration
+	;
+
 package_import_declaration
 	: SVLOG_IMPORT list_of_package_import_items ';'
 	;
@@ -886,6 +895,11 @@ struct_union_member
 data_type_or_void
 	: data_type
 	| SVLOG_VOID
+	;
+
+data_type_or_void_or_null
+	: %empty
+	| data_type_or_void
 	;
 
 type_reference
@@ -1524,6 +1538,12 @@ statement_or_null
 	| attribute_instance_recurse ';'
 	;
 
+statement_or_null_recurse
+	: %empty
+	| statement_or_null
+	| statement_or_null_recurse statement_or_null
+	;
+
 statement
 	: attribute_instance_recurse statement_item
 	| identifier ':' attribute_instance_recurse statement_item
@@ -2053,6 +2073,108 @@ clockvar_expression
  ***********************************************/
 
 
+/*********************************************
+ * Start of 'Randsequence' Grammer Rules     *
+ * Based off section: (A.6.12 Randsequence). *
+ *********************************************/
+
+randsequence_statement
+	: SVLOG_RANDSEQUENCE '(' rs_production_identifier_or_null ')'
+		rs_production_recurse
+	  SVLOG_ENDSEQUENCE
+	;
+
+rs_production_recurse
+	: rs_production
+	| rs_production_recurse rs_production
+	;
+
+rs_production
+	: data_type_or_void_or_null identifier ':' list_of_rs_rules ';'
+	| data_type_or_void_or_null identifier '(' tf_port_list ')' ':' list_of_rs_rules ';'
+	;
+
+list_of_rs_rules
+	: rs_rule
+	| list_of_rs_rules '|' rs_rule
+	;
+
+rs_rule
+	: rs_production_list
+	| rs_production_list EQUAL_WEIGHT_OPERATOR rs_weight_specification
+	| rs_production_list EQUAL_WEIGHT_OPERATOR rs_weight_specification rs_code_block
+	;
+
+rs_production_list
+	: rs_prod_recurse
+	| SVLOG_RAND SVLOG_JOIN rs_production_item rs_production_item rs_production_item_recurse
+	| SVLOG_RAND SVLOG_JOIN '(' expression ')' rs_production_item rs_production_item rs_production_item_recurse
+	;
+
+rs_weight_specification
+	: integral_number
+	| ps_identifier
+	| '(' expression ')'
+	;
+
+rs_code_block
+	: '{' data_declaration_recurse statement_or_null_recurse '}'
+	;
+
+rs_prod
+	: rs_production_item
+	| rs_code_block
+	| rs_if_else
+	| rs_repeat
+	| rs_case
+	;
+
+rs_prod_recurse
+	: rs_prod
+	| rs_prod_recurse rs_prod
+	;
+
+rs_production_item
+	: identifier
+	| identifier '(' list_of_arguments ')'
+	;
+
+rs_production_item_recurse
+	: %empty
+	| rs_production_item
+	| rs_production_item_recurse rs_production_item
+	;
+
+rs_if_else
+	: SVLOG_IF '(' expression ')' rs_production_item
+	| SVLOG_IF '(' expression ')' rs_production_item SVLOG_ELSE rs_production_item
+	;
+
+rs_repeat
+	: SVLOG_REPEAT '(' expression ')' rs_production_item
+	;
+
+rs_case
+	: SVLOG_CASE '(' expression ')' rs_case_item_recurse SVLOG_ENDCASE
+	;
+
+rs_case_item
+	: list_of_expressions ':' rs_production_item ';'
+	| SVLOG_DEFAULT rs_production_item ';'
+	| SVLOG_DEFAULT ':' rs_production_item ';'
+	;
+
+rs_case_item_recurse
+	: rs_case_item
+	| rs_case_item_recurse rs_case_item
+	;
+
+/*********************************************
+ * End of 'Randsequence' Grammer Rules       *
+ * Based off section: (A.6.12 Randsequence). *
+ *********************************************/
+
+
 /*********************************************************
  * Start of 'Specify path declarations' Grammer Rules    *
  * Based off section: (A.7.2 Specify path declarations). *
@@ -2337,6 +2459,11 @@ expression
 	| conditional_expression
 	| inside_expression
 	| tagged_union_expression
+	;
+
+list_of_expression
+	: expression
+	| list_of_expression ',' expression
 	;
 
 mintypmax_expression
@@ -2919,6 +3046,11 @@ ps_or_hierarchical_tf_identifier
 	: identifier
 	| package_scope identifier
 	| hierarchical_identifier
+	;
+
+rs_production_identifier_or_null
+	: %empty
+	| identifier
 	;
 
 ps_param_ident_recurse
