@@ -185,6 +185,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "assume"       { return SVLOG_ASSUME;         }
 "assign"       { return SVLOG_ASSIGN;         }
 "deassign"     { return SVLOG_DEASSIGN;       }
+"property"     { return SVLOG_PROPERTY;       }
+"expect"       { return SVLOG_EXPECT;         }
+"sequence"     { return SVLOG_SEQUENCE;       }
+"restrict"     { return SVLOG_RESTRICT;       }
 "final"        { return SVLOG_FINAL;          }
 "force"        { return SVLOG_FORCE;          }
 "release"      { return SVLOG_RELEASE;        }

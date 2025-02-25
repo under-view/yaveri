@@ -238,6 +238,14 @@
 %token <itoken> SVLOG_ASSIGN
 /* 'deassign' keyword */
 %token <itoken> SVLOG_DEASSIGN
+/* 'property' keyword */
+%token <itoken> SVLOG_PROPERTY
+/* 'expect' keyword */
+%token <itoken> SVLOG_EXPECT
+/* 'sequence' keyword */
+%token <itoken> SVLOG_SEQUENCE
+/* 'restrict' keyword */
+%token <itoken> SVLOG_RESTRICT
 /* 'final' keyword */
 %token <itoken> SVLOG_FINAL
 /* 'force' keyword */
@@ -1190,6 +1198,95 @@ block_item_declaration
  * Start of 'Assertion declarations' Grammer Rules     *
  * Based off section: (A.2.10 Assertion declarations). *
  *******************************************************/
+
+concurrent_assertion_item
+	: concurrent_assertion_statement
+	| identifier ':' concurrent_assertion_statement
+	| checker_instantiation
+	;
+
+concurrent_assertion_statement
+	: assert_property_statement
+	| assume_property_statement
+	| cover_property_statement
+	| cover_sequence_statement
+	| restrict_property_statement
+	;
+
+assert_property_statement
+	: SVLOG_ASSERT SVLOG_PROPERTY '(' property_spec ')' action_block
+	;
+
+assume_property_statement
+	: SVLOG_ASSUME SVLOG_PROPERTY '(' property_spec ')' action_block
+	;
+
+cover_property_statement
+	: SVLOG_COVER SVLOG_PROPERTY '(' property_spec ')' statement_or_null
+	;
+
+expect_property_statement
+	: SVLOG_EXPECT '(' property_spec ')' action_block
+	;
+
+cover_sequence_statement
+	: SVLOG_COVER SVLOG_SEQUENCE '(' sequence_expr ')' statement_or_null
+	| SVLOG_COVER SVLOG_SEQUENCE '('
+		clocking_event sequence_expr
+	  ')' statement_or_null
+	| SVLOG_COVER SVLOG_SEQUENCE '('
+		clocking_event SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF '(' expression_or_dist ')' sequence_expr
+	  ')' statement_or_null
+	| SVLOG_COVER SVLOG_SEQUENCE '('
+		SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF '(' expression_or_dist ')' sequence_expr
+	  ')' statement_or_null
+	;
+
+restrict_property_statement
+	: SVLOG_RESTRICT SVLOG_PROPERTY '(' property_spec ')' ';'
+	;
+
+property_instance
+	: ps_or_hierarchical_property_identifier
+	| ps_or_hierarchical_property_identifier '(' property_list_of_arguments_or_null ')'
+	;
+
+property_list_of_arguments_or_null
+	: %empty
+	| property_list_of_arguments
+	;
+
+property_list_of_arguments
+	: list_of_property_actual_arg list_of_ident_property_actual_arg
+	| '.' identifier '(' property_actual_arg_or_null ')' list_of_ident_property_actual_arg
+	;
+
+list_of_property_actual_arg
+	: property_actual_arg
+	| list_of_property_actual_arg ',' property_actual_arg
+	;
+
+list_of_ident_property_actual_arg
+	: %empty
+	| ',' '.' identifier '(' property_actual_arg_or_null ')'
+	| list_of_ident_property_actual_arg ',' '.' identifier '(' property_actual_arg_or_null ')'
+	;
+
+property_actual_arg_or_null
+	: %empty
+	| property_actual_arg
+	;
+
+property_actual_arg
+	: property_expr
+	| sequence_actual_arg
+	;
+
+assertion_item_declaration
+	: property_declaration
+	| sequence_declaration
+	| let_declaration
+	;
 
 sequence_expr
 	: cycle_delay_range sequence_expr
@@ -3034,6 +3131,12 @@ ps_or_hierarchical_net_identifier
 	: identifier
 	| package_scope identifier
 	| hierarchical_identifier
+	;
+
+ps_or_hierarchical_property_identifier
+	: identifier
+	| package_scope identifier
+	| hierarchical_property_identifier
 	;
 
 ps_or_hierarchical_sequence_identifier
