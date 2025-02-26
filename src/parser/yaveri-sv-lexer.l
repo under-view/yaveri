@@ -78,6 +78,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endclocking"  { return SVLOG_ENDCLOCKING;   }
 "randsequence" { return SVLOG_RANDSEQUENCE;  }
 "endsequence"  { return SVLOG_ENDSEQUENCE;   }
+"property"     { return SVLOG_PROPERTY;      }
+"endproperty"  { return SVLOG_ENDPROPERTY;   }
 
 
 "$root"        { return SVLOG_ROOT;          }
@@ -104,6 +106,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "with"         { return SVLOG_WITH;          }
 "const"        { return SVLOG_CONST;         }
 "global"       { return SVLOG_GLOBAL;        }
+"local"        { return SVLOG_LOCAL;         }
 "import"       { return SVLOG_IMPORT;        }
 "export"       { return SVLOG_EXPORT;        }
 "randomize"    { return SVLOG_RANDOMIZE;     }
@@ -185,7 +188,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "assume"       { return SVLOG_ASSUME;         }
 "assign"       { return SVLOG_ASSIGN;         }
 "deassign"     { return SVLOG_DEASSIGN;       }
-"property"     { return SVLOG_PROPERTY;       }
 "expect"       { return SVLOG_EXPECT;         }
 "sequence"     { return SVLOG_SEQUENCE;       }
 "restrict"     { return SVLOG_RESTRICT;       }

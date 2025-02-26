@@ -42,6 +42,9 @@
 /* 'randsequence' keyword */
 %token <itoken> SVLOG_RANDSEQUENCE
 %token <itoken> SVLOG_ENDSEQUENCE
+/* 'property' keyword */
+%token <itoken> SVLOG_PROPERTY
+%token <itoken> SVLOG_ENDPROPERTY
 
 
 /* second 's' */
@@ -80,6 +83,8 @@
 %token <itoken> SVLOG_CONST
 /* 'global' keyword */
 %token <itoken> SVLOG_GLOBAL
+/* 'local' keyword */
+%token <itoken> SVLOG_LOCAL
 /* 'import' keyword */
 %token <itoken> SVLOG_IMPORT
 /* 'export' keyword */
@@ -238,8 +243,6 @@
 %token <itoken> SVLOG_ASSIGN
 /* 'deassign' keyword */
 %token <itoken> SVLOG_DEASSIGN
-/* 'property' keyword */
-%token <itoken> SVLOG_PROPERTY
 /* 'expect' keyword */
 %token <itoken> SVLOG_EXPECT
 /* 'sequence' keyword */
@@ -1235,10 +1238,10 @@ cover_sequence_statement
 		clocking_event sequence_expr
 	  ')' statement_or_null
 	| SVLOG_COVER SVLOG_SEQUENCE '('
-		clocking_event SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF '(' expression_or_dist ')' sequence_expr
+		clocking_event disable_iff_expr_or_dist sequence_expr
 	  ')' statement_or_null
 	| SVLOG_COVER SVLOG_SEQUENCE '('
-		SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF '(' expression_or_dist ')' sequence_expr
+		disable_iff_expr_or_dist sequence_expr
 	  ')' statement_or_null
 	;
 
@@ -1286,6 +1289,46 @@ assertion_item_declaration
 	: property_declaration
 	| sequence_declaration
 	| let_declaration
+	;
+
+property_declaration
+	: SVLOG_PROPERTY identifier property_decl_pp_list_or_null ';'
+		assertion_variable_declaration_recurse
+		property_spec semicolon_or_null
+	  SVLOG_ENDPROPERTY colon_ident_or_null
+	;
+
+property_decl_pp_list_or_null
+	: '(' ')'
+	| '(' property_port_list ')'
+	| %empty
+	;
+
+property_port_list
+	: property_port_item
+	| property_port_list ',' property_port_item
+	;
+
+property_port_item
+	: attribute_instance_recurse pp_item_local_direction_or_null property_formal_type
+	  identifier variable_dimension_recurse
+	| attribute_instance_recurse pp_item_local_direction_or_null property_formal_type
+	  identifier variable_dimension_recurse '=' property_actual_arg
+	;
+
+pp_item_local_direction_or_null
+	: SVLOG_LOCAL
+	| SVLOG_LOCAL SVLOG_INPUT
+	| %empty
+	;
+
+property_formal_type
+	: sequence_formal_type
+	| SVLOG_PROPERTY
+	;
+
+property_spec
+	: clocking_event_or_null disable_iff_expr_or_dist_or_null property_expr
 	;
 
 sequence_expr
@@ -1389,6 +1432,11 @@ const_or_range_expression
 cycle_delay_const_range_expression
 	: constant_expression ':' constant_expression
 	| constant_expression ':' '$'
+	;
+
+assertion_variable_declaration_recurse
+	: assertion_variable_declaration
+	| assertion_variable_declaration_recurse assertion_variable_declaration
 	;
 
 /*******************************************************
@@ -1713,6 +1761,11 @@ clocking_event
 	: '@' ps_identifier
 	| '@' hierarchical_identifier
 	| '@' '(' event_expression ')'
+	;
+
+clocking_event_or_null
+	: clocking_event
+	| %empty
 	;
 
 event_expression
@@ -2891,18 +2944,14 @@ size
 
 real_number
 	: fixed_point_number
-	| unsigned_number exp unsigned_number
-	| unsigned_number exp sign unsigned_number
-	| unsigned_number '.' unsigned_number exp unsigned_number
-	| unsigned_number '.' unsigned_number exp sign unsigned_number
+	| unsigned_number SVLOG_EXP unsigned_number
+	| unsigned_number SVLOG_EXP sign unsigned_number
+	| unsigned_number '.' unsigned_number SVLOG_EXP unsigned_number
+	| unsigned_number '.' unsigned_number SVLOG_EXP sign unsigned_number
 	;
 
 fixed_point_number
 	: unsigned_number '.' unsigned_number
-	;
-
-exp
-	: SVLOG_EXP
 	;
 
 unsigned_number
@@ -3178,5 +3227,33 @@ system_tf_identifier
  * End of 'Identifiers' grammer rules.     *
  * Based off section: (A.9.3 Identifiers). *
  *******************************************/
+
+
+/***********************************
+ * Start of 'helper' grammer rules *
+ ***********************************/
+
+semicolon_or_null
+	: ';'
+	| %empty
+	;
+
+colon_ident_or_null
+	: ':' identifier
+	| %empty
+	;
+
+disable_iff_expr_or_dist
+	: SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF '(' expression_or_dist ')'
+	;
+
+disable_iff_expr_or_dist_or_null
+	: disable_iff_expr_or_dist
+	| %empty
+	;
+
+/*********************************
+ * End of 'helper' grammer rules *
+ *********************************/
 
 %%
