@@ -15,338 +15,235 @@
 
 /* declare tokens */
 
-/* Design Element 'module' */
-%token <itoken> SVLOG_MODULE
-%token <itoken> SVLOG_ENDMODULE
-/* Design Element 'program' */
-%token <itoken> SVLOG_PROGRAM
-%token <itoken> SVLOG_ENDPROGRAM
-/* Design Element 'interface' */
-%token <itoken> SVLOG_INTERFACE
+%token <itoken> SVLOG_SYNC_ACCEPT_ON
+%token <itoken> SVLOG_SYNC_REJECT_ON
 %token <itoken> SVLOG_ENDINTERFACE
-/* Design Element 'checker' */
-%token <itoken> SVLOG_CHECKER
-%token <itoken> SVLOG_ENDCHECKER
-/* Design Element 'package' */
-%token <itoken> SVLOG_PACKAGE
-%token <itoken> SVLOG_ENDPACKAGE
-/* Design Element 'primitive' */
-%token <itoken> SVLOG_PRIMITIVE
 %token <itoken> SVLOG_ENDPRIMITIVE
-/* Design Element 'config' */
-%token <itoken> SVLOG_CONFIG
-%token <itoken> SVLOG_ENDCONFIG
-/* 'clocking' keyword */
-%token <itoken> SVLOG_CLOCKING
-%token <itoken> SVLOG_ENDCLOCKING
-/* 'randsequence' keyword */
-%token <itoken> SVLOG_RANDSEQUENCE
-%token <itoken> SVLOG_ENDSEQUENCE
-/* 'property' keyword */
-%token <itoken> SVLOG_PROPERTY
-%token <itoken> SVLOG_ENDPROPERTY
-
-
-/* second 's' */
-%token <itoken> SVLOG_SEC
-/* millisecond 'ms' */
-%token <itoken> SVLOG_MILLISEC
-/* microsecond 'us' */
-%token <itoken> SVLOG_MICROSEC
-/* nanosecond 'ns' */
-%token <itoken> SVLOG_NANOSEC
-/* picosecond 'ps' */
-%token <itoken> SVLOG_PICOSEC
-/* femtosecond 'fs' */
-%token <itoken> SVLOG_fEMTOSEC
-/* step 'step' */
-%token <itoken> SVLOG_STEP
-/* 1step '1step' */
-%token <itoken> SVLOG_1STEP
-
-
-/* 'let' keyword */
-%token <itoken> SVLOG_LET
-/* 'var' keyword */
-%token <itoken> SVLOG_VAR
-/* 'std' keyword */
-%token <itoken> SVLOG_STD
-/* 'this' keyword */
-%token <itoken> SVLOG_THIS
-/* 'void' keyword */
-%token <itoken> SVLOG_VOID
-/* 'null' keyword */
-%token <itoken> SVLOG_NULL
-/* 'with' keyword */
-%token <itoken> SVLOG_WITH
-/* 'const' keyword */
-%token <itoken> SVLOG_CONST
-/* 'global' keyword */
-%token <itoken> SVLOG_GLOBAL
-/* 'local' keyword */
-%token <itoken> SVLOG_LOCAL
-/* 'import' keyword */
-%token <itoken> SVLOG_IMPORT
-/* 'export' keyword */
-%token <itoken> SVLOG_EXPORT
-/* 'randomize' keyword */
-%token <itoken> SVLOG_RANDOMIZE
-/* 'unique' keyword */
-%token <itoken> SVLOG_UNIQUE
-/* 'unique0' keyword */
-%token <itoken> SVLOG_UNIQUE0
-/* 'priority' keyword */
-%token <itoken> SVLOG_PRIORITY
-/* 'solve' keyword */
-%token <itoken> SVLOG_SOLVE
-/* 'before' keyword */
-%token <itoken> SVLOG_BEFORE
-/* 'soft' keyword */
-%token <itoken> SVLOG_SOFT
-/* 'disable' keyword */
-%token <itoken> SVLOG_DISABLE
-/* 'fork' keyword */
-%token <itoken> SVLOG_FORK
-/* 'dist' keyword */
-%token <itoken> SVLOG_DIST
-/* 'default' keyword */
-%token <itoken> SVLOG_DEFAULT
-/* 'super' keyword */
-%token <itoken> SVLOG_SUPER
-/* 'struct' keyword */
-%token <itoken> SVLOG_STRUCT
-/* 'union' keyword */
-%token <itoken> SVLOG_UNION
-/* 'tagged' keyword */
-%token <itoken> SVLOG_TAGGED
-/* 'packed' keyword */
-%token <itoken> SVLOG_PACKED
-/* 'enum' keyword */
-%token <itoken> SVLOG_ENUM
-/* 'string' keyword */
-%token <itoken> SVLOG_STRING
-/* 'chandle' keyword */
-%token <itoken> SVLOG_CHANDLE
-/* 'virtual' keyword */
-%token <itoken> SVLOG_VIRTUAL
-/* 'event' keyword */
-%token <itoken> SVLOG_EVENT
-/* 'new' keyword */
-%token <itoken> SVLOG_NEW
-/* 'class' keyword */
-%token <itoken> SVLOG_CLASS
-/* 'type' keyword */
-%token <itoken> SVLOG_TYPE
-/* 'untyped' keyword */
-%token <itoken> SVLOG_UNTYPED
-/* 'typedef' keyword */
-%token <itoken> SVLOG_TYPEDEF
-/* 'nettype' keyword */
-%token <itoken> SVLOG_NETTYPE
-/* 'static' keyword */
-%token <itoken> SVLOG_STATIC
-/* 'automatic' keyword */
-%token <itoken> SVLOG_AUTOMATIC
-/* 'first_match' keyword */
-%token <itoken> SVLOG_FIRST_MATCH
-/* 'throughout' keyword */
-%token <itoken> SVLOG_THROUGHOUT
-/* 'within' keyword */
-%token <itoken> SVLOG_WITHIN
-/* 'join' keyword */
-%token <itoken> SVLOG_JOIN
-/* 'join_any' keyword */
-%token <itoken> SVLOG_JOIN_ANY
-/* 'join_none' keyword */
-%token <itoken> SVLOG_JOIN_NONE
-/* 'parameter' keyword */
-%token <itoken> SVLOG_PARAMETER
-/* 'specparam' keyword */
-%token <itoken> SVLOG_SPECPARAM
-/* 'localparam' keyword */
-%token <itoken> SVLOG_LOCALPARAM
-
-
-/* 'iff'|'&&&' If and only if */
-%token <itoken> SVLOG_IF_AND_ONLY_IF
-/* 'if' keyword */
-%token <itoken> SVLOG_IF
-/* 'else' keyword */
-%token <itoken> SVLOG_ELSE
-/* 'and' keyword */
-%token <itoken> SVLOG_AND
-/* 'or' keyword */
-%token <itoken> SVLOG_OR
-/* 'xor' keyword */
-%token <itoken> SVLOG_XOR
-/* 'intersect' keyword */
-%token <itoken> SVLOG_INTERSECT
-/* 'matches' keyword */
-%token <itoken> SVLOG_MATCHES
-/* 'inside' keyword */
-%token <itoken> SVLOG_INSIDE
-/* 'case' keyword */
-%token <itoken> SVLOG_CASE
-/* 'casez' keyword */
-%token <itoken> SVLOG_CASEZ
-/* 'casex' keyword */
-%token <itoken> SVLOG_CASEX
-/* 'randcase' keyword */
-%token <itoken> SVLOG_RANDCASE
-/* 'endcase' keyword */
-%token <itoken> SVLOG_ENDCASE
-/* 'do' keyword */
-%token <itoken> SVLOG_DO
-/* 'for' keyword */
-%token <itoken> SVLOG_FOR
-/* 'repeat' keyword */
-%token <itoken> SVLOG_REPEAT
-/* 'foreach' keyword */
-%token <itoken> SVLOG_FOREACH
-/* 'forever' keyword */
-%token <itoken> SVLOG_FOREVER
-/* 'while' keyword */
-%token <itoken> SVLOG_WHILE
-/* 'return' keyword */
-%token <itoken> SVLOG_RETURN
-/* 'break' keyword */
-%token <itoken> SVLOG_BREAK
-/* 'continue' keyword */
-%token <itoken> SVLOG_CONTINUE
-/* 'wait' keyword */
-%token <itoken> SVLOG_WAIT
-/* 'wait_order' keyword */
-%token <itoken> SVLOG_WAIT_ORDER
-/* 'begin' keyword */
-%token <itoken> SVLOG_BEGIN
-/* 'end' keyword */
-%token <itoken> SVLOG_END
-/* 'input' keyword */
-%token <itoken> SVLOG_INPUT
-/* 'output' keyword */
-%token <itoken> SVLOG_OUTPUT
-/* 'inout' keyword */
-%token <itoken> SVLOG_INOUT
-
-
-/* 'interconnect' keyword */
 %token <itoken> SVLOG_INTERCONNECT
-/* 'genvar' keyword */
-%token <itoken> SVLOG_GENVAR
-/* 'cover' keyword */
-%token <itoken> SVLOG_COVER
-/* 'assert' keyword */
-%token <itoken> SVLOG_ASSERT
-/* 'assume' keyword */
-%token <itoken> SVLOG_ASSUME
-/* 'assign' keyword */
-%token <itoken> SVLOG_ASSIGN
-/* 'deassign' keyword */
-%token <itoken> SVLOG_DEASSIGN
-/* 'expect' keyword */
-%token <itoken> SVLOG_EXPECT
-/* 'sequence' keyword */
-%token <itoken> SVLOG_SEQUENCE
-/* 'restrict' keyword */
-%token <itoken> SVLOG_RESTRICT
-/* 'final' keyword */
-%token <itoken> SVLOG_FINAL
-/* 'force' keyword */
-%token <itoken> SVLOG_FORCE
-/* 'release' keyword */
-%token <itoken> SVLOG_RELEASE
-/* 'small' keyword */
-%token <itoken> SVLOG_SMALL
-/* 'medium' keyword */
-%token <itoken> SVLOG_MEDIUM
-/* 'large' keyword */
-%token <itoken> SVLOG_LARGE
-
-
-/* 'highz0' keyword */
-%token <itoken> SVLOG_HIGHZ0
-/* 'highz1' keyword */
-%token <itoken> SVLOG_HIGHZ1
-/* 'supply0' keyword */
-%token <itoken> SVLOG_SUPPLY0
-/* 'supply1' keyword */
-%token <itoken> SVLOG_SUPPLY1
-/* 'strong0' keyword */
-%token <itoken> SVLOG_STRONG0
-/* 'strong1' keyword */
-%token <itoken> SVLOG_STRONG1
-/* 'pull0' keyword */
-%token <itoken> SVLOG_PULL0
-/* 'pull1' keyword */
-%token <itoken> SVLOG_PULL1
-/* 'weak0' keyword */
-%token <itoken> SVLOG_WEAK0
-/* 'weak1' keyword */
-%token <itoken> SVLOG_WEAK1
-/* 'tri' keyword */
-%token <itoken> SVLOG_TRI
-/* 'tri0' keyword */
-%token <itoken> SVLOG_TRI0
-/* 'tri1' keyword */
-%token <itoken> SVLOG_TRI1
-/* 'triand' keyword */
-%token <itoken> SVLOG_TRIAND
-/* 'trior' keyword */
-%token <itoken> SVLOG_TRIOR
-/* 'trireg' keyword */
-%token <itoken> SVLOG_TRIREG
-/* 'wand' keyword */
-%token <itoken> SVLOG_WAND
-/* 'wor' keyword */
-%token <itoken> SVLOG_WOR
-
-
-/* 'reg' keyword */
-%token <itoken> SVLOG_REG
-/* 'wire' keyword */
-%token <itoken> SVLOG_WIRE
-/* 'unwire' keyword */
-%token <itoken> SVLOG_UNWIRE
-/* 'integer' keyword */
-%token <itoken> SVLOG_INTEGER
-/* 'real' keyword */
-%token <itoken> SVLOG_REAL
-/* 'time' keyword */
-%token <itoken> SVLOG_TIME
-/* 'realtime' keyword */
-%token <itoken> SVLOG_REAL_TIME
-/* 'logic' keyword */
-%token <itoken> SVLOG_LOGIC
-/* 'bit' keyword */
-%token <itoken> SVLOG_BIT
-/* 'byte' keyword */
-%token <itoken> SVLOG_BYTE
-/* 'shortint' keyword */
-%token <itoken> SVLOG_SHORT_INT
-/* 'int' keyword */
-%token <itoken> SVLOG_INT
-/* 'longint' keyword */
-%token <itoken> SVLOG_LONG_INT
-/* 'shortreal' keyword */
+%token <itoken> SVLOG_RANDSEQUENCE
+%token <itoken> SVLOG_S_EVENTUALLY
+%token <itoken> SVLOG_S_UNTIL_WITH
+%token <itoken> SVLOG_ENDCLOCKING
+%token <itoken> SVLOG_ENDPROPERTY
+%token <itoken> SVLOG_ENDSEQUENCE
+%token <itoken> SVLOG_FIRST_MATCH
+%token <itoken> SVLOG_ENDCHECKER
+%token <itoken> SVLOG_ENDPACKAGE
+%token <itoken> SVLOG_ENDPROGRAM
+%token <itoken> SVLOG_EVENTUALLY
+%token <itoken> SVLOG_LOCALPARAM
+%token <itoken> SVLOG_PATHPULSE
+%token <itoken> SVLOG_S_NEXTTIME
+%token <itoken> SVLOG_THROUGHOUT
+%token <itoken> SVLOG_UNTIL_WITH
+%token <itoken> SVLOG_WAIT_ORDER
+%token <itoken> SVLOG_ACCEPT_ON
+%token <itoken> SVLOG_AUTOMATIC
+%token <itoken> SVLOG_ENDCONFIG
+%token <itoken> SVLOG_ENDMODULE
+%token <itoken> SVLOG_INTERFACE
+%token <itoken> SVLOG_INTERSECT
+%token <itoken> SVLOG_JOIN_NONE
+%token <itoken> SVLOG_PARAMETER
+%token <itoken> SVLOG_PRIMITIVE
+%token <itoken> SVLOG_RANDOMIZE
+%token <itoken> SVLOG_REJECT_ON
 %token <itoken> SVLOG_SHORT_REAL
-/* 'signed' keyword */
-%token <itoken> SVLOG_SIGNED
-/* 'unsigned' keyword */
-%token <itoken> SVLOG_UNSIGNED
-/* 'rand' keyword */
-%token <itoken> SVLOG_RAND
-/* 'randc' keyword */
-%token <itoken> SVLOG_RANDC
-/* 'posedge' keyword */
-%token <itoken> SVLOG_POSEDGE
-/* 'negedge' keyword */
-%token <itoken> SVLOG_NEGEDGE
-/* 'edge' keyword */
-%token <itoken> SVLOG_EDGE
-/* 'vectored' keyword */
-%token <itoken> SVLOG_VECTORED
-/* 'scalared' keyword */
+%token <itoken> SVLOG_SPECPARAM
+%token <itoken> SVLOG_CLOCKING
+%token <itoken> SVLOG_CONTINUE
+%token <itoken> SVLOG_DEASSIGN
+%token <itoken> SVLOG_JOIN_ANY
+%token <itoken> SVLOG_NEXTTIME
+%token <itoken> SVLOG_PRIORITY
+%token <itoken> SVLOG_PROPERTY
+%token <itoken> SVLOG_RANDCASE
+%token <itoken> SVLOG_REAL_TIME
+%token <itoken> SVLOG_RESTRICT
 %token <itoken> SVLOG_SCALARED
+%token <itoken> SVLOG_SEQUENCE
+%token <itoken> SVLOG_SHORT_INT
+%token <itoken> SVLOG_S_ALWAYS
+%token <itoken> SVLOG_UNSIGNED
+%token <itoken> SVLOG_VECTORED
+%token <itoken> SVLOG_CHANDLE
+%token <itoken> SVLOG_CHECKER
+%token <itoken> SVLOG_DEFAULT
+%token <itoken> SVLOG_DISABLE
+%token <itoken> SVLOG_ENDCASE
+%token <itoken> SVLOG_FOREACH
+%token <itoken> SVLOG_FOREVER
+%token <itoken> SVLOG_IMPLIES
+%token <itoken> SVLOG_INTEGER
+%token <itoken> SVLOG_LONG_INT
+%token <itoken> SVLOG_MATCHES
+%token <itoken> SVLOG_NEGEDGE
+%token <itoken> SVLOG_NETTYPE
+%token <itoken> SVLOG_PACKAGE
+%token <itoken> SVLOG_POSEDGE
+%token <itoken> SVLOG_PROGRAM
+%token <itoken> SVLOG_RELEASE
+%token <itoken> SVLOG_TYPEDEF
+%token <itoken> SVLOG_STRONG0
+%token <itoken> SVLOG_STRONG1
+%token <itoken> SVLOG_SUPPLY0
+%token <itoken> SVLOG_SUPPLY1
+%token <itoken> SVLOG_S_UNTIL
+%token <itoken> SVLOG_UNIQUE0
+%token <itoken> SVLOG_UNTYPED
+%token <itoken> SVLOG_VIRTUAL
+%token <itoken> SVLOG_ALWAYS
+%token <itoken> SVLOG_ASSERT
+%token <itoken> SVLOG_ASSIGN
+%token <itoken> SVLOG_ASSUME
+%token <itoken> SVLOG_BEFORE
+%token <itoken> SVLOG_CONFIG
+%token <itoken> SVLOG_EXPECT
+%token <itoken> SVLOG_EXPORT
+%token <itoken> SVLOG_GENVAR
+%token <itoken> SVLOG_GLOBAL
+%token <itoken> SVLOG_HIGHZ0
+%token <itoken> SVLOG_HIGHZ1
+%token <itoken> SVLOG_IMPORT
+%token <itoken> SVLOG_INSIDE
+%token <itoken> SVLOG_MEDIUM
+%token <itoken> SVLOG_MODULE
+%token <itoken> SVLOG_OUTPUT
+%token <itoken> SVLOG_PACKED
+%token <itoken> SVLOG_REPEAT
+%token <itoken> SVLOG_RETURN
+%token <itoken> SVLOG_SIGNED
+%token <itoken> SVLOG_STATIC
+%token <itoken> SVLOG_STRING
+%token <itoken> SVLOG_STRONG
+%token <itoken> SVLOG_STRUCT
+%token <itoken> SVLOG_TAGGED
+%token <itoken> SVLOG_TRIAND
+%token <itoken> SVLOG_TRIREG
+%token <itoken> SVLOG_UNIQUE
+%token <itoken> SVLOG_UNWIRE
+%token <itoken> SVLOG_WITHIN
+%token <itoken> SVLOG_BEGIN
+%token <itoken> SVLOG_BREAK
+%token <itoken> SVLOG_CASEX
+%token <itoken> SVLOG_CASEZ
+%token <itoken> SVLOG_CLASS
+%token <itoken> SVLOG_CONST
+%token <itoken> SVLOG_COVER
+%token <itoken> SVLOG_EVENT
+%token <itoken> SVLOG_FORCE
+%token <itoken> SVLOG_FINAL
+%token <itoken> SVLOG_INOUT
+%token <itoken> SVLOG_INPUT
+%token <itoken> SVLOG_LARGE
+%token <itoken> SVLOG_LOCAL
+%token <itoken> SVLOG_LOGIC
+%token <itoken> SVLOG_PULL0
+%token <itoken> SVLOG_PULL1
+%token <itoken> SVLOG_RANDC
+%token <itoken> SVLOG_SOLVE
+%token <itoken> SVLOG_SMALL
+%token <itoken> SVLOG_SUPER
+%token <itoken> SVLOG_TRIOR
+%token <itoken> SVLOG_UNION
+%token <itoken> SVLOG_UNTIL
+%token <itoken> SVLOG_WEAK0
+%token <itoken> SVLOG_WEAK1
+%token <itoken> SVLOG_WHILE
+%token <itoken> SVLOG_1STEP
+%token <itoken> SVLOG_ROOT
+%token <itoken> SVLOG_UNIT
+%token <itoken> SVLOG_BYTE
+%token <itoken> SVLOG_CASE
+%token <itoken> SVLOG_DIST
+%token <itoken> SVLOG_EDGE
+%token <itoken> SVLOG_ELSE
+%token <itoken> SVLOG_ENUM
+%token <itoken> SVLOG_FORK
+%token <itoken> SVLOG_JOIN
+%token <itoken> SVLOG_NULL
+%token <itoken> SVLOG_RAND
+%token <itoken> SVLOG_REAL
+%token <itoken> SVLOG_SOFT
+%token <itoken> SVLOG_STEP
+%token <itoken> SVLOG_THIS
+%token <itoken> SVLOG_TIME
+%token <itoken> SVLOG_TRI0
+%token <itoken> SVLOG_TRI1
+%token <itoken> SVLOG_TYPE
+%token <itoken> SVLOG_VOID
+%token <itoken> SVLOG_WAIT
+%token <itoken> SVLOG_WAND
+%token <itoken> SVLOG_WEAK
+%token <itoken> SVLOG_WIRE
+%token <itoken> SVLOG_WITH
+%token <itoken> SVLOG_AND
+%token <itoken> SVLOG_BIT
+%token <itoken> SVLOG_END
+%token <itoken> SVLOG_FOR
+%token <itoken> SVLOG_IF_AND_ONLY_IF
+%token <itoken> SVLOG_INT
+%token <itoken> SVLOG_LET
+%token <itoken> SVLOG_NEW
+%token <itoken> SVLOG_NOT
+%token <itoken> SVLOG_REG
+%token <itoken> SVLOG_STD
+%token <itoken> SVLOG_TRI
+%token <itoken> SVLOG_VAR
+%token <itoken> SVLOG_WOR
+%token <itoken> SVLOG_XOR
+%token <itoken> SVLOG_DO
+%token <itoken> SVLOG_fEMTOSEC
+%token <itoken> SVLOG_IF
+%token <itoken> SVLOG_MILLISEC
+%token <itoken> SVLOG_NANOSEC
+%token <itoken> SVLOG_OR
+%token <itoken> SVLOG_PICOSEC
+%token <itoken> SVLOG_MICROSEC
+%token <itoken> SVLOG_SEC
+
+
+
+%token <itoken> EXPORT_DECLARATION
+%token <itoken> CASE_EQUAL
+%token <itoken> CASE_NOT_EQUAL
+%token <itoken> LOGICAL_LEFT_SHIFT
+%token <itoken> LOGICAL_RIGHT_SHIFT
+%token <itoken> OVERLAPPED_OPERATOR
+%token <itoken> OVERLAPPED_OPERATOR_FOLLOWED_BY
+%token <itoken> NONOVERLAPPED_OPERATOR
+%token <itoken> NONOVERLAPPED_OPERATOR_FOLLOWED_BY
+%token <itoken> NONBLOCK_IMPLICATION_OPERATOR
+%token <itoken> EQUIVALANCE_OPERATOR
+%token <itoken> WILDCARD_EQUAL
+%token <itoken> WILDCARD_NOT_EQUAL
+%token <itoken> BIT_WISE_NAND
+%token <itoken> BIT_WISE_NOR
+%token <itoken> POUND_ZERO
+%token <itoken> BIT_WISE_XNOR
+%token <itoken> LOGICAL_EQUAL
+%token <itoken> LOGICAL_INEQUAL
+%token <itoken> LOGICAL_AND
+%token <itoken> LOGICAL_OR
+%token <itoken> ADDITION_OPERATOR
+%token <itoken> REDUCTION_OPERATOR
+%token <itoken> CLASS_SCOPE_OPERATOR
+%token <itoken> DISTRIBUTED_WEIGHT_OPERATOR
+%token <itoken> EQUAL_WEIGHT_OPERATOR
+%token <itoken> POWER_OF_OPERATOR
+%token <itoken> INCREMENT_OPERATOR
+%token <itoken> DECREMENT_OPERATOR
+%token <itoken> IMPLICATION_OPERATOR
+%token <itoken> LEFT_SHIFT
+%token <itoken> RIGHT_SHIFT
+%token <itoken> GT_OR_EQ
+%token <itoken> LT_OR_EQ
+%token <itoken> LOGICAL_NOT
+%token <itoken> BIT_WISE_XOR
+%token <itoken> BIT_WISE_OR
+%token <itoken> BIT_WISE_NOT
+%token <itoken> BIT_WISE_AND
+%token <itoken> APOSTROPHE
 
 
 /* exp lowercase 'e' or upercase 'E' */
@@ -381,102 +278,6 @@
 %token <stoken> SVLOG_TRIPLE_QUOTED_STRING
 /* numbers between 0-9 */
 %token <itoken> SVLOG_DIGIT
-
-
-/* '$root' keyword */
-%token <itoken> SVLOG_ROOT
-/* '$unit' keyword */
-%token <itoken> SVLOG_UNIT
-/* 'PATHPULSE$' keyword */
-%token <itoken> SVLOG_PATHPULSE
-
-
-/* Pound Zero '#0' */
-%token <itoken> POUND_ZERO
-/* Export Declaration '*::*' */
-%token <itoken> EXPORT_DECLARATION
-
-
-/* Case equality operator '===' */
-%token <itoken> CASE_EQUAL
-/* Case inequality operator '!==' */
-%token <itoken> CASE_NOT_EQUAL
-
-
-/* Wildcard equality operator '==?' */
-%token <itoken> WILDCARD_EQUAL
-/* Wildcard inequality operator '!=?' */
-%token <itoken> WILDCARD_NOT_EQUAL
-
-
-/* Bit Wise NOT '~' */
-%token <itoken> BIT_WISE_NOT
-/* Bit Wise AND '&' */
-%token <itoken> BIT_WISE_AND
-/* Bit Wise NAND '~&' */
-%token <itoken> BIT_WISE_NAND
-/* Bit Wise OR '|' */
-%token <itoken> BIT_WISE_OR
-/* Bit Wise NOR '~|' */
-%token <itoken> BIT_WISE_NOR
-/* Bit Wise XOR '^' */
-%token <itoken> BIT_WISE_XOR
-/* Bit Wise XNOR '~^' */
-%token <itoken> BIT_WISE_XNOR
-
-
-/* Logical NOT '!' */
-%token <itoken> LOGICAL_NOT
-/* Logical Equality '==' */
-%token <itoken> LOGICAL_EQUAL
-/* Logical Inequality '!=' */
-%token <itoken> LOGICAL_INEQUAL
-/* Logical And '&&' */
-%token <itoken> LOGICAL_AND
-/* Logical Or '||' */
-%token <itoken> LOGICAL_OR
-/* Logical Left Shift '<<<' */
-%token <itoken> LOGICAL_LEFT_SHIFT
-/* Logical Right Shift '>>>' */
-%token <itoken> LOGICAL_RIGHT_SHIFT
-
-
-/* Addition Operator '+:' */
-%token <itoken> ADDITION_OPERATOR
-/* Reduction Operator '-:' */
-%token <itoken> REDUCTION_OPERATOR
-/* Class Scope Operator '::' */
-%token <itoken> CLASS_SCOPE_OPERATOR
-/* Distributed Weight Operator used by dist ':/' */
-%token <itoken> DISTRIBUTED_WEIGHT_OPERATOR
-/* Equal Weight Operator used by dist ':=' */
-%token <itoken> EQUAL_WEIGHT_OPERATOR
-
-
-/* Power Of operation '**' */
-%token <itoken> POWER_OF_OPERATOR
-/* Increment operation '++' */
-%token <itoken> INCREMENT_OPERATOR
-/* Decrement operation '--' */
-%token <itoken> DECREMENT_OPERATOR
-/* Non-blocking Implication operation '->>' */
-%token <itoken> NONBLOCK_IMPLICATION_OPERATOR
-/* Implication operation '->' */
-%token <itoken> IMPLICATION_OPERATOR
-/* Equivalance operation '<->' */
-%token <itoken> EQUIVALANCE_OPERATOR
-/* Left Shift '<<' */
-%token <itoken> LEFT_SHIFT
-/* Right Shift '>>' */
-%token <itoken> RIGHT_SHIFT
-/* Greater Than Or Equal '>=' */
-%token <itoken> GT_OR_EQ
-/* Less Than Or Equal '<=' */
-%token <itoken> LT_OR_EQ
-
-
-/* apostrophe token ' */
-%token <itoken> APOSTROPHE
 
 
 %start svlog
