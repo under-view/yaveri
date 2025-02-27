@@ -1132,6 +1132,43 @@ property_spec
 	: clocking_event_or_null disable_iff_expr_or_dist_or_null property_expr
 	;
 
+property_expr
+	: sequence_expr
+	| SVLOG_STRONG '(' sequence_expr ')'
+	| SVLOG_WEAK '(' sequence_expr ')'
+	| '(' property_expr ')'
+	| SVLOG_NOT property_expr
+	| property_expr SVLOG_OR property_expr
+	| property_expr SVLOG_AND property_expr
+	| sequence_expr OVERLAPPED_OPERATOR property_expr
+	| sequence_expr NONOVERLAPPED_OPERATOR property_expr
+	| SVLOG_IF '(' expression_or_dist ')' property_expr
+	| SVLOG_IF '(' expression_or_dist ')' property_expr SVLOG_ELSE property_expr
+	| SVLOG_CASE '(' expression_or_dist ')' property_case_item_recurse SVLOG_ENDCASE
+	| SVLOG_NEXTTIME property_expr
+	| SVLOG_NEXTTIME '[' constant_expression ']' property_expr
+	| SVLOG_S_NEXTTIME property_expr
+	| SVLOG_S_NEXTTIME '[' constant_expression ']' property_expr
+	| SVLOG_ALWAYS property_expr
+	| SVLOG_ALWAYS '[' cycle_delay_const_range_expression ']' property_expr
+	| SVLOG_S_ALWAYS '[' constant_range ']' property_expr
+	| SVLOG_S_EVENTUALLY property_expr
+	| SVLOG_EVENTUALLY '[' constant_range ']' property_expr
+	| SVLOG_S_EVENTUALLY '[' cycle_delay_const_range_expression ']' property_expr
+	| property_expr SVLOG_UNTIL property_expr
+	| property_expr SVLOG_S_UNTIL property_expr
+	| property_expr SVLOG_UNTIL_WITH property_expr
+	| property_expr SVLOG_S_UNTIL_WITH property_expr
+	| property_expr SVLOG_IMPLIES property_expr
+	| property_expr SVLOG_IF_AND_ONLY_IF property_expr
+	| SVLOG_ACCEPT_ON '(' expression_or_dist ')' property_expr
+	| SVLOG_REJECT_ON '(' expression_or_dist ')' property_expr
+	| SVLOG_SYNC_ACCEPT_ON '(' expression_or_dist ')' property_expr
+	| SVLOG_SYNC_REJECT_ON '(' expression_or_dist ')' property_expr
+	| property_instance
+	| clocking_event property_exr
+	;
+
 sequence_expr
 	: cycle_delay_range sequence_expr
 	| sequence_expr cycle_delay_range sequence_expr
