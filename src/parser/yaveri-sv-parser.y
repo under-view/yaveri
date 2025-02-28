@@ -1145,6 +1145,8 @@ property_expr
 	| SVLOG_IF '(' expression_or_dist ')' property_expr
 	| SVLOG_IF '(' expression_or_dist ')' property_expr SVLOG_ELSE property_expr
 	| SVLOG_CASE '(' expression_or_dist ')' property_case_item_recurse SVLOG_ENDCASE
+	| sequence_expr OVERLAPPED_OPERATOR_FOLLOWED_BY property_expr
+	| sequence_expr NONOVERLAPPED_OPERATOR_FOLLOWED_BY property_expr
 	| SVLOG_NEXTTIME property_expr
 	| SVLOG_NEXTTIME '[' constant_expression ']' property_expr
 	| SVLOG_S_NEXTTIME property_expr
