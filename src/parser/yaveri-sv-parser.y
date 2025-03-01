@@ -935,15 +935,19 @@ dynamic_array_new
  * Based off section: (A.2.5 Declaration ranges). *
  **************************************************/
 
-unpacked_dimension_recurse
-	: %empty
-	| unpacked_dimension
-	| unpacked_dimension_recurse unpacked_dimension
-	;
-
 unpacked_dimension
 	: '[' constant_range ']'
 	| '[' constant_expression ']'
+	;
+
+unpacked_dimension_recurse
+	: unpacked_dimension
+	| unpacked_dimension_recurse unpacked_dimension
+	;
+
+unpacked_dimension_recurse_or_null
+	: %empty
+	| unpacked_dimension_recurse
 	;
 
 packed_dimension_recurse
@@ -1444,6 +1448,11 @@ let_actual_arg_seq_list
  * Based off section: (A.4.1.1 Module instantiation). *
  ******************************************************/
 
+module_instantiation
+	: identifier hierarchical_instance_seq_list
+	| identifier parameter_value_assignment hierarchical_instance_seq_list
+	;
+
 parameter_value_assignment
 	: '#' '(' ')'
 	| '#' '(' list_of_parameter_value_assignments ')'
@@ -1471,6 +1480,45 @@ named_parameter_assignment
 named_parameter_assignment_seq_list
 	: named_parameter_assignment
 	| named_parameter_assignment_seq_list ',' named_parameter_assignment
+	;
+
+hierarchical_instance
+	: name_of_instance '(' ')'
+	| name_of_instance '(' list_of_port_connections ')'
+	;
+
+hierarchical_instance_seq_list
+	: hierarchical_instance
+	| hierarchical_instance_seq_list ',' hierarchical_instance
+	;
+
+name_of_instance
+	: identifier unpacked_dimension_recurse_or_null
+	;
+
+list_of_port_connections
+	: ordered_port_connection_seq_list
+	| named_port_connection_seq_list
+	;
+
+ordered_port_connection
+	: attribute_instance_recurse_or_null expression_or_null
+	;
+
+ordered_port_connection_seq_list
+	: ordered_port_connection
+	| ordered_port_connection_seq_list ',' ordered_port_connection
+	;
+
+named_port_connection
+	: attribute_instance_recurse_or_null '.' identifier
+	| attribute_instance_recurse_or_null '.' identifier '(' expression_or_null ')'
+	| attribute_instance_recurse_or_null '.' '*'
+	;
+
+named_port_connection_seq_list
+	: named_port_connection
+	| named_port_connection_seq_list ',' named_port_connection
 	;
 
 /******************************************************
@@ -2585,6 +2633,11 @@ expression
 	| tagged_union_expression
 	;
 
+expression_or_null
+	: %empty
+	| expression
+	;
+
 expression_seq_list
 	: expression
 	| expression_seq_list ',' expression
@@ -3065,8 +3118,7 @@ attribute_instance
 	;
 
 attribute_instance_recurse
-	: %empty
-	| attribute_instance
+	: attribute_instance
 	| attribute_instance_recurse attribute_instance
 	;
 
