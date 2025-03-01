@@ -2291,8 +2291,8 @@ rs_rule_seq_list
 
 rs_production_list
 	: rs_prod_recurse
-	| SVLOG_RAND SVLOG_JOIN rs_production_item rs_production_item rs_production_item_recurse
-	| SVLOG_RAND SVLOG_JOIN '(' expression ')' rs_production_item rs_production_item rs_production_item_recurse
+	| SVLOG_RAND SVLOG_JOIN rs_production_item rs_production_item rs_production_item_recurse_or_null
+	| SVLOG_RAND SVLOG_JOIN '(' expression ')' rs_production_item rs_production_item rs_production_item_recurse_or_null
 	;
 
 rs_weight_specification
@@ -2324,9 +2324,13 @@ rs_production_item
 	;
 
 rs_production_item_recurse
-	: %empty
-	| rs_production_item
+	: rs_production_item
 	| rs_production_item_recurse rs_production_item
+	;
+
+rs_production_item_recurse_or_null
+	: %empty
+	| rs_production_item_recurse
 	;
 
 rs_if_else
