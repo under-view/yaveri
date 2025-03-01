@@ -455,9 +455,13 @@ data_declaration
 	;
 
 data_declaration_recurse
-	: %empty
-	| data_declaration
+	: data_declaration
 	| data_declaration_recurse data_declaration
+	;
+
+data_declaration_recurse_or_null
+	: %empty
+	| data_declaration_recurse
 	;
 
 package_import_declaration
@@ -2294,7 +2298,7 @@ rs_weight_specification
 	;
 
 rs_code_block
-	: '{' data_declaration_recurse statement_or_null_recurse '}'
+	: '{' data_declaration_recurse_or_null statement_or_null_recurse_or_null '}'
 	;
 
 rs_prod
