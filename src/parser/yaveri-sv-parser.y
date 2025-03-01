@@ -578,16 +578,16 @@ data_type
 	: SVLOG_STRING
 	| SVLOG_CHANDLE
 	| SVLOG_EVENT
-	| integer_vector_type
-	| integer_vector_type signing packed_dimension_recurse
+	| integer_vector_type packed_dimension_recurse_or_null
+	| integer_vector_type signing packed_dimension_recurse_or_null
 	| integer_atom_type
 	| integer_atom_type signing
 	| non_integer_type
-	| struct_union '{' struct_union_member_recurse '}' packed_dimension_recurse
-	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimension_recurse
-	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimension_recurse
-	| SVLOG_ENUM enum_name_declaration_seq_list packed_dimension_recurse
-	| SVLOG_ENUM enum_base_type enum_name_declaration_seq_list packed_dimension_recurse
+	| struct_union '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
+	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
+	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
+	| SVLOG_ENUM enum_name_declaration_seq_list packed_dimension_recurse_or_null
+	| SVLOG_ENUM enum_base_type enum_name_declaration_seq_list packed_dimension_recurse_or_null
 	| SVLOG_VIRTUAL identifier
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier
 	| SVLOG_VIRTUAL identifier parameter_value_assignment
@@ -596,8 +596,8 @@ data_type
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier '.' identifier
 	| SVLOG_VIRTUAL identifier parameter_value_assignment '.' identifier
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier parameter_value_assignment '.' identifier
-	| class_scope identifier packed_dimension_recurse
-	| package_scope identifier packed_dimension_recurse
+	| class_scope identifier packed_dimension_recurse_or_null
+	| package_scope identifier packed_dimension_recurse_or_null
 	| class_type
 	| ps_covergroup_identifier
 	| type_reference
@@ -609,8 +609,8 @@ data_type_or_implicit
 	;
 
 implicit_data_type
-	: packed_dimension_recurse
-	| signing packed_dimension_recurse
+	: packed_dimension_recurse_or_null
+	| signing packed_dimension_recurse_or_null
 	;
 
 enum_base_type
@@ -954,20 +954,31 @@ unpacked_dimension_recurse_or_null
 	| unpacked_dimension_recurse
 	;
 
-packed_dimension_recurse
-	: %empty
-	| packed_dimension
-	| packed_dimension_recurse packed_dimension
-	;
-
 packed_dimension
 	: '[' constant_range ']'
 	| unsized_dimension
 	;
 
+packed_dimension_recurse
+	: packed_dimension
+	| packed_dimension_recurse packed_dimension
+	;
+
+packed_dimension_recurse_or_null
+	: %empty
+	| packed_dimension_recurse
+	;
+
 associative_dimension
 	: '[' data_type ']'
 	| '[' '*' ']'
+	;
+
+variable_dimension
+	: unsized_dimension
+	| unpacked_dimension
+	| associative_dimension
+	| queue_dimension
 	;
 
 variable_dimension_recurse
@@ -978,13 +989,6 @@ variable_dimension_recurse
 variable_dimension_recurse_or_null
 	: %empty
 	| variable_dimension_recurse
-	;
-
-variable_dimension
-	: unsized_dimension
-	| unpacked_dimension
-	| associative_dimension
-	| queue_dimension
 	;
 
 queue_dimension
