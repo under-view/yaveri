@@ -710,8 +710,8 @@ struct_union_member_recurse
 	;
 
 struct_union_member
-	: attribute_instance_recurse data_type_or_void list_of_variable_decl_assignments ';'
-	| attribute_instance_recurse random_qualifier data_type_or_void list_of_variable_decl_assignments ';'
+	: attribute_instance_recurse_or_null data_type_or_void list_of_variable_decl_assignments ';'
+	| attribute_instance_recurse_or_null random_qualifier data_type_or_void list_of_variable_decl_assignments ';'
 	;
 
 data_type_or_void
@@ -1004,10 +1004,10 @@ unsized_dimension
  *******************************************************/
 
 block_item_declaration
-	: attribute_instance_recurse data_declaration
-	| attribute_instance_recurse local_parameter_declaration ';'
-	| attribute_instance_recurse parameter_declaration ';'
-	| attribute_instance_recurse let_declaration
+	: attribute_instance_recurse_or_null data_declaration
+	| attribute_instance_recurse_or_null local_parameter_declaration ';'
+	| attribute_instance_recurse_or_null parameter_declaration ';'
+	| attribute_instance_recurse_or_null let_declaration
 	;
 
 /*******************************************************
@@ -1118,9 +1118,9 @@ property_declaration
 	;
 
 property_decl_pp_list_or_null
-	: '(' ')'
+	: %empty
+	| '(' ')'
 	| '(' property_port_list ')'
-	| %empty
 	;
 
 property_port_list
@@ -1129,9 +1129,9 @@ property_port_list
 	;
 
 property_port_item
-	: attribute_instance_recurse pp_item_local_direction_or_null property_formal_type
+	: attribute_instance_recurse_or_null pp_item_local_direction_or_null property_formal_type
 	  identifier variable_dimension_recurse_or_null
-	| attribute_instance_recurse pp_item_local_direction_or_null property_formal_type
+	| attribute_instance_recurse_or_null pp_item_local_direction_or_null property_formal_type
 	  identifier variable_dimension_recurse_or_null '=' property_actual_arg
 	;
 
@@ -1399,8 +1399,8 @@ let_port_list
 	;
 
 let_port_item
-	: attribute_instance_recurse let_formal_type identifier variable_dimension_recurse
-	| attribute_instance_recurse let_formal_type identifier variable_dimension_recurse '=' expression
+	: attribute_instance_recurse_or_null let_formal_type identifier variable_dimension_recurse
+	| attribute_instance_recurse_or_null let_formal_type identifier variable_dimension_recurse '=' expression
 	;
 
 let_formal_type
@@ -1702,18 +1702,22 @@ join_keyword
 
 statement_or_null
 	: statement
-	| attribute_instance_recurse ';'
+	| attribute_instance_recurse_or_null ';'
 	;
 
 statement_or_null_recurse
-	: %empty
-	| statement_or_null
+	: statement_or_null
 	| statement_or_null_recurse statement_or_null
 	;
 
+statement_or_null_recurse_or_null
+	: %empty
+	| statement_or_null
+	;
+
 statement
-	: attribute_instance_recurse statement_item
-	| identifier ':' attribute_instance_recurse statement_item
+	: attribute_instance_recurse_or_null statement_item
+	| identifier ':' attribute_instance_recurse_or_null statement_item
 	;
 
 statement_item
@@ -1744,7 +1748,7 @@ function_statement
 
 function_statement_or_null
 	: function_statement
-	| attribute_instance_recurse ';'
+	| attribute_instance_recurse_or_null ';'
 	;
 
 /******************************************
@@ -2174,7 +2178,7 @@ clocking_declaration
 clocking_item
 	: SVLOG_DEFAULT default_skew ';'
 	| clocking_direction list_of_clocking_decl_assign ';'
-	| attribute_instance_recurse assertion_item_declaration
+	| attribute_instance_recurse_or_null assertion_item_declaration
 	;
 
 clocking_item_recurse
@@ -2461,8 +2465,8 @@ constant_function_call
 	;
 
 tf_call
-	: ps_or_hierarchical_tf_identifier attribute_instance_recurse
-	| ps_or_hierarchical_tf_identifier attribute_instance_recurse '(' list_of_arguments ')'
+	: ps_or_hierarchical_tf_identifier attribute_instance_recurse_or_null
+	| ps_or_hierarchical_tf_identifier attribute_instance_recurse_or_null '(' list_of_arguments ')'
 	;
 
 system_tf_call
@@ -2501,7 +2505,7 @@ method_call
 
 method_call_body
 	: identifier
-	| identifier attribute_instance_recurse '(' list_of_arguments ')'
+	| identifier attribute_instance_recurse_or_null '(' list_of_arguments ')'
 	| built_in_method_call
 	;
 
@@ -2510,27 +2514,38 @@ built_in_method_call
 	| randomize_call
 	;
 
+am_call_helper
+	: %empty
+	| '(' list_of_arguments ')'
+	| SVLOG_WITH '(' expression ')'
+	| '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
+	;
+
 array_manipulation_call
-	: array_method_name
-	| array_method_name '(' list_of_arguments ')'
-	| array_method_name '(' expression ')'
-	| array_method_name '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
-	| array_method_name attribute_instance_recurse
-	| array_method_name attribute_instance_recurse '(' list_of_arguments ')'
-	| array_method_name attribute_instance_recurse SVLOG_WITH '(' expression ')'
-	| array_method_name attribute_instance_recurse '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
+	: array_method_name attribute_instance_recurse_or_null am_call_helper
+	;
+
+randomize_call_helper
+	: %empty
+	| '(' ')'
+	| '(' ')' SVLOG_WITH constraint_block
+	| '(' ')' SVLOG_WITH '(' ')' constraint_block
+	| '(' ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| '(' variable_identifier_list ')'
+	| '(' variable_identifier_list ')' SVLOG_WITH constraint_block
+	| '(' variable_identifier_list ')' SVLOG_WITH '(' ')' constraint_block
+	| '(' variable_identifier_list ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| '(' SVLOG_NULL ')'
+	| '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
+	| '(' SVLOG_NULL ')' SVLOG_WITH '(' ')' constraint_block
+	| '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| SVLOG_WITH constraint_block
+	| SVLOG_WITH '(' ')' constraint_block
+	| SVLOG_WITH '(' identifier_list ')' constraint_block
 	;
 
 randomize_call
-	: SVLOG_RANDOMIZE attribute_instance_recurse
-	| SVLOG_RANDOMIZE attribute_instance_recurse '(' variable_identifier_list ')'
-	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')'
-	| SVLOG_RANDOMIZE attribute_instance_recurse SVLOG_WITH constraint_block
-	| SVLOG_RANDOMIZE attribute_instance_recurse SVLOG_WITH '(' identifier_list ')' constraint_block
-	| SVLOG_RANDOMIZE attribute_instance_recurse '(' variable_identifier_list ')' SVLOG_WITH constraint_block
-	| SVLOG_RANDOMIZE attribute_instance_recurse '(' variable_identifier_list ')' SVLOG_WITH '(' identifier_list ')' constraint_block
-	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
-	| SVLOG_RANDOMIZE attribute_instance_recurse '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	: SVLOG_RANDOMIZE attribute_instance_recurse_or_null randomize_call_helper
 	;
 
 variable_identifier_list
@@ -2568,24 +2583,19 @@ array_method_name
  *******************************************/
 
 inc_or_dec_expression
-	: inc_or_dec_operator variable_lvalue
-	| inc_or_dec_operator attribute_instance_recurse variable_lvalue
-	| variable_lvalue inc_or_dec_operator
-	| variable_lvalue attribute_instance_recurse inc_or_dec_operator
+	: inc_or_dec_operator attribute_instance_recurse_or_null variable_lvalue
+	| variable_lvalue attribute_instance_recurse_or_null inc_or_dec_operator
 	;
 
 conditional_expression
-	: cond_predicate '?' attribute_instance_recurse expression ':' expression
+	: cond_predicate '?' attribute_instance_recurse_or_null expression ':' expression
 	;
 
 constant_expression
 	: constant_primary
-	| unary_operator constant_primary
-	| unary_operator attribute_instance_recurse constant_primary
-	| constant_expression binary_operator constant_expression
-	| constant_expression binary_operator attribute_instance_recurse constant_expression
-	| constant_expression '?' constant_expression ':' constant_expression
-	| constant_expression '?' attribute_instance_recurse constant_expression ':' constant_expression
+	| unary_operator attribute_instance_recurse_or_null constant_primary
+	| constant_expression binary_operator attribute_instance_recurse_or_null constant_expression
+	| constant_expression '?' attribute_instance_recurse_or_null constant_expression ':' constant_expression
 	;
 
 constant_mintypmax_expression
@@ -2622,12 +2632,10 @@ constant_indexed_range
 expression
 	:	
 	| primary
-	| unary_operator primary
-	| unary_operator attribute_instance_recurse primary
+	| unary_operator attribute_instance_recurse_or_null primary
 	| inc_or_dec_expression
 	| '(' operator_assignment ')'
-	| expression binary_operator expression
-	| expression binary_operator attribute_instance_recurse expression
+	| expression binary_operator attribute_instance_recurse_or_null expression
 	| conditional_expression
 	| inside_expression
 	| tagged_union_expression
@@ -3113,8 +3121,7 @@ string_escape_seq
  ******************************************/
 
 attribute_instance
-	:
-	| '(' '*' attribute_spec_seq_list '*' ')'
+	: '(' '*' attribute_spec_seq_list '*' ')'
 	;
 
 attribute_instance_recurse
@@ -3153,8 +3160,7 @@ attr_name
  *******************************************/
 
 hierarchical_identifier
-	:
-	| identifier
+	: identifier
 	| SVLOG_ROOT '.' identifier
 	| hierarchical_identifier identifier constant_bit_select '.'
 	;
