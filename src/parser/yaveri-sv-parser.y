@@ -369,6 +369,11 @@ expression_or_dist
 	| expression SVLOG_DIST '{' dist_list '}'
 	;
 
+expression_or_dist_seq_list
+	: expression_or_dist
+	| expression_or_dist_seq_list ',' expression_or_dist
+	;
+
 dist_list
 	: dist_item
 	| dist_list ',' dist_item
@@ -1168,7 +1173,18 @@ property_expr
 	| SVLOG_SYNC_ACCEPT_ON '(' expression_or_dist ')' property_expr
 	| SVLOG_SYNC_REJECT_ON '(' expression_or_dist ')' property_expr
 	| property_instance
-	| clocking_event property_exr
+	| clocking_event property_expr
+	;
+
+property_case_item
+	: expression_or_dist_seq_list ':' property_expr ';'
+	| SVLOG_DEFAULT property_expr ';'
+	| SVLOG_DEFAULT ':' property_expr ';'
+	;
+
+property_case_item_recurse
+	: property_case_item
+	| property_case_item_recurse property_case_item
 	;
 
 sequence_expr
