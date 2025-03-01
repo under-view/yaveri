@@ -263,8 +263,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "<->"          { return EQUIVALANCE_OPERATOR;               }
 "==?"          { return WILDCARD_EQUAL;                     }
 "!=?"          { return WILDCARD_NOT_EQUAL;                 }
-"[*]"          { return REPEAT_ZERO_OR_MORE;                }
-"[+]"          { return REPEAT_ONE_OR_MORE;                 }
+"[$]"          { return QUEUE_INITIALIZE;                   }
+"[$:"          { return BOUNDED_QUEUE_INITIALIZE;           }
+"[*]"          { return REPEAT_ZERO_OR_MORE; /* [*0:$] */   }
+"[+]"          { return REPEAT_ONE_OR_MORE; /* [*1:$] */    }
 "[*"           { return CONSECUTIVE_REPEAT_OPERATOR;        }
 "[="           { return NON_CONSECUTIVE_REPEAT_OPERATOR;    }
 "~&"           { return BIT_WISE_NAND;                      }

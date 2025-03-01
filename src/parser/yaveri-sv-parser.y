@@ -218,6 +218,8 @@
 %token <itoken> EQUIVALANCE_OPERATOR
 %token <itoken> WILDCARD_EQUAL
 %token <itoken> WILDCARD_NOT_EQUAL
+%token <itoken> QUEUE_INITIALIZE
+%token <itoken> BOUNDED_QUEUE_INITIALIZE
 %token <itoken> REPEAT_ZERO_OR_MORE /* [*] is an abbreviation for [*0:$] */
 %token <itoken> REPEAT_ONE_OR_MORE  /* [+] is an abbreviation for [*1:$] */
 %token <itoken> CONSECUTIVE_REPEAT_OPERATOR
@@ -992,8 +994,8 @@ variable_dimension_recurse_or_null
 	;
 
 queue_dimension
-	: '[' '$' ']'
-	| '[' '$' ':' constant_expression ']'
+	: QUEUE_INITIALIZE
+	| BOUNDED_QUEUE_INITIALIZE constant_expression ']'
 	;
 
 unsized_dimension
