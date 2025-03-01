@@ -873,13 +873,13 @@ list_of_variable_decl_assignments
  ******************************************************/
 
 net_decl_assignment
-	: identifier unpacked_dimension_recurse
-	| identifier unpacked_dimension_recurse '=' expression
+	: identifier unpacked_dimension_recurse_or_null
+	| identifier unpacked_dimension_recurse_or_null '=' expression
 	;
 
 param_assignment
-	: identifier variable_dimension_recurse
-	| identifier variable_dimension_recurse '=' constant_param_expression
+	: identifier variable_dimension_recurse_or_null
+	| identifier variable_dimension_recurse_or_null '=' constant_param_expression
 	;
 
 specparam_assignment
@@ -911,8 +911,8 @@ variable_decl_assignment
 	: identifier
 	| identifier variable_dimension_recurse
 	| identifier variable_dimension_recurse '=' expression
-	| identifier unsized_dimension variable_dimension_recurse
-	| identifier unsized_dimension variable_dimension_recurse '=' dynamic_array_new
+	| identifier unsized_dimension variable_dimension_recurse_or_null
+	| identifier unsized_dimension variable_dimension_recurse_or_null '=' dynamic_array_new
 	| identifier '=' class_new
 	;
 
