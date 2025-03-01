@@ -48,7 +48,7 @@
 %token <itoken> SVLOG_PRIMITIVE
 %token <itoken> SVLOG_RANDOMIZE
 %token <itoken> SVLOG_REJECT_ON
-%token <itoken> SVLOG_SHORT_REAL
+%token <itoken> SVLOG_SHORTREAL
 %token <itoken> SVLOG_SPECPARAM
 %token <itoken> SVLOG_CLOCKING
 %token <itoken> SVLOG_CONTINUE
@@ -58,11 +58,11 @@
 %token <itoken> SVLOG_PRIORITY
 %token <itoken> SVLOG_PROPERTY
 %token <itoken> SVLOG_RANDCASE
-%token <itoken> SVLOG_REAL_TIME
+%token <itoken> SVLOG_REALTIME
 %token <itoken> SVLOG_RESTRICT
 %token <itoken> SVLOG_SCALARED
 %token <itoken> SVLOG_SEQUENCE
-%token <itoken> SVLOG_SHORT_INT
+%token <itoken> SVLOG_SHORTINT
 %token <itoken> SVLOG_S_ALWAYS
 %token <itoken> SVLOG_UNSIGNED
 %token <itoken> SVLOG_VECTORED
@@ -75,7 +75,7 @@
 %token <itoken> SVLOG_FOREVER
 %token <itoken> SVLOG_IMPLIES
 %token <itoken> SVLOG_INTEGER
-%token <itoken> SVLOG_LONG_INT
+%token <itoken> SVLOG_LONGINT
 %token <itoken> SVLOG_MATCHES
 %token <itoken> SVLOG_NEGEDGE
 %token <itoken> SVLOG_NETTYPE
@@ -576,31 +576,34 @@ lifetime
  * Based off section: (A.2.2.1 Net and variable types). *
  ********************************************************/
 
+casting_type
+	: simple_type
+	| constant_primary
+	| signing
+	| SVLOG_STRING
+	| SVLOG_CONST
+	;
+
+packed_signed_or_null
+	: %empty
+	| SVLOG_PACKED
+	| SVLOG_PACKED signing
+	;
+
 data_type
-	: SVLOG_STRING
-	| SVLOG_CHANDLE
-	| SVLOG_EVENT
-	| integer_vector_type packed_dimension_recurse_or_null
+	: integer_vector_type packed_dimension_recurse_or_null
 	| integer_vector_type signing packed_dimension_recurse_or_null
 	| integer_atom_type
 	| integer_atom_type signing
 	| non_integer_type
-	| struct_union '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
-	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
-	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
-	| SVLOG_ENUM enum_name_declaration_seq_list packed_dimension_recurse_or_null
-	| SVLOG_ENUM enum_base_type enum_name_declaration_seq_list packed_dimension_recurse_or_null
-	| SVLOG_VIRTUAL identifier
-	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier
-	| SVLOG_VIRTUAL identifier parameter_value_assignment
-	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier parameter_value_assignment
-	| SVLOG_VIRTUAL identifier '.' identifier
-	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier '.' identifier
-	| SVLOG_VIRTUAL identifier parameter_value_assignment '.' identifier
-	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier parameter_value_assignment '.' identifier
-	| class_scope identifier packed_dimension_recurse_or_null
-	| package_scope identifier packed_dimension_recurse_or_null
+	| struct_union packed_signed_or_null '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
+	| SVLOG_ENUM enum_base_type_or_null '{' enum_name_declaration_seq_list '}' packed_dimension_recurse_or_null
+	| SVLOG_STRING
+	| SVLOG_CHANDLE
+	| SVLOG_VIRTUAL interface_or_null identifier parameter_value_assignment_or_null period_ident_or_null
+	| class_or_package_scope_or_null identifier packed_dimension_recurse_or_null
 	| class_type
+	| SVLOG_EVENT
 	| ps_covergroup_identifier
 	| type_reference
 	;
@@ -626,6 +629,11 @@ enum_base_type
 	| identifier packed_dimension
 	;
 
+enum_base_type_or_null
+	: %empty
+	| enum_base_type
+	;
+
 enum_name_declaration
 	: identifier
 	| identifier '[' integral_number ']'
@@ -644,17 +652,22 @@ class_scope
 	: class_type CLASS_SCOPE_OPERATOR
 	;
 
-class_type_ident_recurse
-	: CLASS_SCOPE_OPERATOR identifier
-	| CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
-	| class_type_ident_recurse CLASS_SCOPE_OPERATOR identifier
-	| class_type_ident_recurse CLASS_SCOPE_OPERATOR identifier parameter_value_assignment
+class_type_ident_seq_list
+	: CLASS_SCOPE_OPERATOR identifier parameter_value_assignment_or_null
+	| class_type_ident_seq_list CLASS_SCOPE_OPERATOR identifier parameter_value_assignment_or_null
+	;
+
+class_type_ident_seq_list_or_null
+	: %empty
+	| class_type_ident_seq_list
 	;
 
 class_type
-	: ps_class_identifier
-	| ps_class_identifier parameter_value_assignment
-	| ps_class_identifier class_type_ident_recurse
+	: ps_class_identifier parameter_value_assignment_or_null class_type_ident_seq_list_or_null
+	;
+
+interface_class_type
+	: ps_class_identifier parameter_value_assignment_or_null
 	;
 
 integer_type
@@ -664,10 +677,10 @@ integer_type
 
 integer_atom_type
 	: SVLOG_BYTE
-	| SVLOG_SHORT_INT
+	| SVLOG_SHORTINT
 	| SVLOG_INT
-	| SVLOG_LONG_INT
-	| SVLOG_INT
+	| SVLOG_LONGINT
+	| SVLOG_INTEGER
 	| SVLOG_TIME
 	;
 
@@ -678,9 +691,9 @@ integer_vector_type
 	;
 
 non_integer_type
-	: SVLOG_SHORT_REAL
+	: SVLOG_SHORTREAL
 	| SVLOG_REAL
-	| SVLOG_REAL_TIME
+	| SVLOG_REALTIME
 	;
 
 net_type
@@ -698,10 +711,33 @@ net_type
 	| SVLOG_WOR
 	;
 
+net_port_type
+	: data_type_or_implicit
+	| net_type data_type_or_implicit
+	| identifier
+	| SVLOG_INTERCONNECT implicit_data_type
+	;
+
+variable_port_type
+	: var_data_type
+	;
+
+var_data_type
+	: data_type
+	| SVLOG_VAR data_type_or_implicit
+	;
+
 signing
 	:
 	| SVLOG_SIGNED
 	| SVLOG_UNSIGNED
+	;
+
+simple_type
+	: integer_type
+	| non_integer_type
+	| ps_type_identifier
+	| ps_parameter_identifier
 	;
 
 struct_union
@@ -1466,6 +1502,11 @@ module_instantiation
 parameter_value_assignment
 	: '#' '(' ')'
 	| '#' '(' list_of_parameter_value_assignments ')'
+	;
+
+parameter_value_assignment_or_null
+	: %empty
+	| parameter_value_assignment
 	;
 
 list_of_parameter_value_assignments
@@ -3082,7 +3123,7 @@ z_digit
 
 // make sure digit between 0 and 1
 unbased_unsized_literal
-	: '\'' SVLOG_DIGIT
+	: APOSTROPHE SVLOG_DIGIT
 	;
 
 /***************************************
@@ -3219,10 +3260,8 @@ ps_identifier
 	;
 
 ps_or_hierarchical_array_identifier
-	: identifier
+	: class_or_package_scope_or_null identifier
 	| implicit_class_handle '.' identifier
-	| class_scope identifier
-	| package_scope identifier
 	;
 
 ps_or_hierarchical_net_identifier
@@ -3255,9 +3294,7 @@ rs_production_identifier_or_null
 	;
 
 ps_parameter_identifier
-	: identifier
-	| package_scope identifier
-	| class_scope identifier
+	: class_or_package_scope_or_null identifier
 	| ps_param_ident_seq_list identifier
 	;
 
@@ -3266,6 +3303,11 @@ ps_param_ident_seq_list
 	| generate_block_identifier  '[' constant_expression ']' '.'
 	| ps_param_ident_seq_list generate_block_identifier '.'
 	| ps_param_ident_seq_list generate_block_identifier  '[' constant_expression ']' '.'
+	;
+
+ps_type_identifier
+	: class_or_package_scope_or_null identifier
+	| SVLOG_LOCAL CLASS_SCOPE_OPERATOR identifier
 	;
 
 system_tf_identifier
@@ -3298,6 +3340,22 @@ disable_iff_expr_or_dist
 
 disable_iff_expr_or_dist_or_null
 	: disable_iff_expr_or_dist
+	| %empty
+	;
+
+interface_or_null
+	: SVLOG_INTERFACE
+	| %empty
+	;
+
+period_ident_or_null
+	: '.' identifier
+	| %empty
+	;
+
+class_or_package_scope_or_null
+	: class_scope
+	| package_scope
 	| %empty
 	;
 

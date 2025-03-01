@@ -93,7 +93,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "primitive"      { return SVLOG_PRIMITIVE;      }
 "randomize"      { return SVLOG_RANDOMIZE;      }
 "reject_on"      { return SVLOG_REJECT_ON;      }
-"shortreal"      { return SVLOG_SHORT_REAL;     }
+"shortreal"      { return SVLOG_SHORTREAL;      }
 "specparam"      { return SVLOG_SPECPARAM;      }
 "clocking"       { return SVLOG_CLOCKING;       }
 "continue"       { return SVLOG_CONTINUE;       }
@@ -103,11 +103,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "priority"       { return SVLOG_PRIORITY;       }
 "property"       { return SVLOG_PROPERTY;       }
 "randcase"       { return SVLOG_RANDCASE;       }
-"realtime"       { return SVLOG_REAL_TIME;      }
+"realtime"       { return SVLOG_REALTIME;       }
 "restrict"       { return SVLOG_RESTRICT;       }
 "scalared"       { return SVLOG_SCALARED;       }
 "sequence"       { return SVLOG_SEQUENCE;       }
-"shortint"       { return SVLOG_SHORT_INT;      }
+"shortint"       { return SVLOG_SHORTINT;       }
 "s_always"       { return SVLOG_S_ALWAYS;       }
 "unsigned"       { return SVLOG_UNSIGNED;       }
 "vectored"       { return SVLOG_VECTORED;       }
@@ -120,7 +120,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "forever"        { return SVLOG_FOREVER;        }
 "implies"        { return SVLOG_IMPLIES;        }
 "integer"        { return SVLOG_INTEGER;        }
-"longint"        { return SVLOG_LONG_INT;       }
+"longint"        { return SVLOG_LONGINT;        }
 "matches"        { return SVLOG_MATCHES;        }
 "negedge"        { return SVLOG_NEGEDGE;        }
 "nettype"        { return SVLOG_NETTYPE;        }
