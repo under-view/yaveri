@@ -1479,6 +1479,47 @@ named_parameter_assignment_seq_list
  ******************************************************/
 
 
+/*******************************************************
+ * Start of 'Checker instantiation' Grammer Rules      *
+ * Based off section: (A.4.1.4 Checker instantiation). *
+ *******************************************************/
+
+checker_instantiation
+	: ps_checker_identifier name_of_instance '(' ')' ';'
+	| ps_checker_identifier name_of_instance '(' list_of_checker_port_connections ')' ';'
+	;
+
+list_of_checker_port_connections
+	: ordered_checker_port_connection_seq_list
+	| named_checker_port_connection_seq_list
+	;
+
+ordered_checker_port_connection
+	: attribute_instance_recurse_or_null property_actual_arg_or_null
+	;
+
+ordered_checker_port_connection_seq_list
+	: ordered_checker_port_connection
+	| ordered_checker_port_connection_seq_list ',' ordered_checker_port_connection
+	;
+
+named_checker_port_connection
+	: attribute_instance_recurse_or_null '.' identifier
+	| attribute_instance_recurse_or_null '.' identifier '(' property_actual_arg_or_null ')'
+	| attribute_instance_recurse_or_null '.' '*'
+	;
+
+named_checker_port_connection_seq_list
+	: named_checker_port_connection
+	| named_checker_port_connection_seq_list ',' named_checker_port_connection
+	;
+
+/*******************************************************
+ * End of 'Checker instantiation' Grammer Rules        *
+ * Based off section: (A.4.1.4 Checker instantiation). *
+ *******************************************************/
+
+
 /******************************************************************************
  * Start of 'Continuous assignment and net alias statements' Grammer Rules    *
  * Based off section: (A.6.1 Continuous assignment and net alias statements). *
