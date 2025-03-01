@@ -456,22 +456,22 @@ data_declaration_recurse
 	;
 
 package_import_declaration
-	: SVLOG_IMPORT list_of_package_import_items ';'
+	: SVLOG_IMPORT package_import_item_seq_list ';'
 	;
 
 package_export_declaration
 	: SVLOG_EXPORT EXPORT_DECLARATION ';'
-	| SVLOG_EXPORT list_of_package_import_items ';'
-	;
-
-list_of_package_import_items
-	: package_import_item
-	| list_of_package_import_items ',' package_import_item
+	| SVLOG_EXPORT package_import_item_seq_list ';'
 	;
 
 package_import_item
 	: identifier CLASS_SCOPE_OPERATOR identifier
 	| identifier CLASS_SCOPE_OPERATOR '*'
+	;
+
+package_import_item_seq_list
+	: package_import_item
+	| package_import_item_seq_list ',' package_import_item
 	;
 
 genvar_declaration
@@ -505,20 +505,15 @@ delay_value_or_null
 	| '#' delay_value
 	;
 
-list_of_net_ident_ud
+net_ident_ud_seq_list
 	: identifier unpacked_dimension_recurse
-	| list_of_net_ident_ud ',' identifier unpacked_dimension_recurse
+	| net_ident_ud_seq_list ',' identifier unpacked_dimension_recurse
 	;
 
 net_declaration
 	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_null list_of_net_decl_assignments ';'
 	| identifier delay_control_or_null list_of_net_decl_assignments ';'
-	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_null list_of_net_ident_ud ';'
-	;
-
-forward_type_or_null
-	: %empty
-	| forward_type
+	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_null net_ident_ud_seq_list ';'
 	;
 
 type_declaration
@@ -533,6 +528,11 @@ forward_type
 	| SVLOG_UNION
 	| SVLOG_CLASS
 	| SVLOG_INTERFACE SVLOG_CLASS
+	;
+
+forward_type_or_null
+	: %empty
+	| forward_type
 	;
 
 nettype_declaration_with_or_null
@@ -577,8 +577,8 @@ data_type
 	| struct_union '{' struct_union_member_recurse '}' packed_dimension_recurse
 	| struct_union SVLOG_TAGGED '{' struct_union_member_recurse '}' packed_dimension_recurse
 	| struct_union SVLOG_TAGGED signing '{' struct_union_member_recurse '}' packed_dimension_recurse
-	| SVLOG_ENUM list_of_enum_name_declaration packed_dimension_recurse
-	| SVLOG_ENUM enum_base_type list_of_enum_name_declaration packed_dimension_recurse
+	| SVLOG_ENUM enum_name_declaration_seq_list packed_dimension_recurse
+	| SVLOG_ENUM enum_base_type enum_name_declaration_seq_list packed_dimension_recurse
 	| SVLOG_VIRTUAL identifier
 	| SVLOG_VIRTUAL SVLOG_INTERFACE identifier
 	| SVLOG_VIRTUAL identifier parameter_value_assignment
@@ -615,18 +615,18 @@ enum_base_type
 	| identifier packed_dimension
 	;
 
-list_of_enum_name_declaration
-	: %empty
-	| enum_name_declaration
-	| list_of_enum_name_declaration ',' enum_name_declaration
-	;
-
 enum_name_declaration
 	: identifier
 	| identifier '[' integral_number ']'
 	| identifier '[' integral_number ':' integral_number ']'
 	| identifier '[' integral_number ':' integral_number ']' '=' constant_expression
 	| identifier '=' constant_expression
+	;
+
+enum_name_declaration_seq_list
+	: %empty
+	| enum_name_declaration
+	| enum_name_declaration_seq_list ',' enum_name_declaration
 	;
 
 class_scope
@@ -1060,25 +1060,14 @@ property_instance
 	| ps_or_hierarchical_property_identifier '(' property_list_of_arguments_or_null ')'
 	;
 
+property_list_of_arguments
+	: property_actual_arg_seq_list ident_property_actual_arg_seq_list
+	| '.' identifier '(' property_actual_arg_or_null ')' ident_property_actual_arg_seq_list
+	;
+
 property_list_of_arguments_or_null
 	: %empty
 	| property_list_of_arguments
-	;
-
-property_list_of_arguments
-	: list_of_property_actual_arg list_of_ident_property_actual_arg
-	| '.' identifier '(' property_actual_arg_or_null ')' list_of_ident_property_actual_arg
-	;
-
-list_of_property_actual_arg
-	: property_actual_arg
-	| list_of_property_actual_arg ',' property_actual_arg
-	;
-
-list_of_ident_property_actual_arg
-	: %empty
-	| ',' '.' identifier '(' property_actual_arg_or_null ')'
-	| list_of_ident_property_actual_arg ',' '.' identifier '(' property_actual_arg_or_null ')'
 	;
 
 property_actual_arg_or_null
@@ -1089,6 +1078,17 @@ property_actual_arg_or_null
 property_actual_arg
 	: property_expr
 	| sequence_actual_arg
+	;
+
+property_actual_arg_seq_list
+	: property_actual_arg
+	| property_actual_arg_seq_list ',' property_actual_arg
+	;
+
+ident_property_actual_arg_seq_list
+	: %empty
+	| ',' '.' identifier '(' property_actual_arg_or_null ')'
+	| ident_property_actual_arg_seq_list ',' '.' identifier '(' property_actual_arg_or_null ')'
 	;
 
 assertion_item_declaration
@@ -1194,12 +1194,12 @@ sequence_expr
 	| expression_or_dist boolean_abbrev
 	| sequence_instance
 	| sequence_instance sequence_abbrev
-	| '(' sequence_expr list_of_sequence_match_items ')'
-	| '(' sequence_expr list_of_sequence_match_items ')' sequence_abbrev
+	| '(' sequence_expr sequence_match_item_seq_list ')'
+	| '(' sequence_expr sequence_match_item_seq_list ')' sequence_abbrev
 	| sequence_expr SVLOG_AND sequence_expr
 	| sequence_expr SVLOG_INTERSECT sequence_expr
 	| sequence_expr SVLOG_OR sequence_expr
-	| SVLOG_FIRST_MATCH '(' sequence_expr list_of_sequence_match_items ')'
+	| SVLOG_FIRST_MATCH '(' sequence_expr sequence_match_item_seq_list ')'
 	| expression_or_dist SVLOG_THROUGHOUT sequence_expr
 	| sequence_expr SVLOG_WITHIN sequence_expr
 	| clocking_event sequence_expr
@@ -1212,16 +1212,16 @@ cycle_delay_range
 	| '#' '#' '[' '+' ']'
 	;
 
-list_of_sequence_match_items
-	: %empty
-	| ',' sequence_match_item
-	| list_of_sequence_match_items ',' sequence_match_item
-	;
-
 sequence_match_item
 	: operator_assignment
 	| inc_or_dec_expression
 	| subroutine_call
+	;
+
+sequence_match_item_seq_list
+	: %empty
+	| ',' sequence_match_item
+	| sequence_match_item_seq_list ',' sequence_match_item
 	;
 
 sequence_instance
@@ -1231,29 +1231,29 @@ sequence_instance
 	;
 
 sequence_list_of_arguments
-	: list_of_sequence_actual_args list_of_ident_seq_actual_args
-	| '.' identifier '(' ')' list_of_ident_seq_actual_args
-	| '.' identifier '(' sequence_actual_arg ')' list_of_ident_seq_actual_args
-	;
-
-list_of_ident_seq_actual_args
-	: %empty
-	| ',' '.' identifier '(' ')'
-	| ',' '.' identifier '(' sequence_actual_arg ')'
-	| list_of_ident_seq_actual_args ',' '.' identifier '(' ')'
-	| list_of_ident_seq_actual_args ',' '.' identifier '(' sequence_actual_arg ')'
-	;
-
-list_of_sequence_actual_args
-	: %empty
-	| sequence_actual_arg
-	| list_of_sequence_actual_args ',' sequence_actual_arg
+	: sequence_actual_arg_seq_list ident_sequence_actual_arg_seq_list
+	| '.' identifier '(' ')' ident_sequence_actual_arg_seq_list
+	| '.' identifier '(' sequence_actual_arg ')' ident_sequence_actual_arg_seq_list
 	;
 
 sequence_actual_arg
 	: event_expression
 	| sequence_expr
 	| '$'
+	;
+
+ident_sequence_actual_arg_seq_list
+	: %empty
+	| ',' '.' identifier '(' ')'
+	| ',' '.' identifier '(' sequence_actual_arg ')'
+	| ident_sequence_actual_arg_seq_list ',' '.' identifier '(' ')'
+	| ident_sequence_actual_arg_seq_list ',' '.' identifier '(' sequence_actual_arg ')'
+	;
+
+sequence_actual_arg_seq_list
+	: %empty
+	| sequence_actual_arg
+	| sequence_actual_arg_seq_list ',' sequence_actual_arg
 	;
 
 boolean_abbrev
@@ -1336,24 +1336,24 @@ let_expression
 
 let_list_of_arguments
 	: %empty
-	| list_of_let_actual_arg list_of_let_list_of_arguments_ident
-	| '.' identifier '(' let_actual_arg ')' list_of_let_list_of_arguments_ident
+	| let_actual_arg_seq_list let_list_of_arguments_ident_seq_list
+	| '.' identifier '(' let_actual_arg ')' let_list_of_arguments_ident_seq_list
 	;
 
-list_of_let_list_of_arguments_ident
+let_list_of_arguments_ident_seq_list
 	: %empty
 	| ',' '.' identifier '(' let_actual_arg ')'
-	| list_of_let_list_of_arguments_ident ',' '.' identifier '(' let_actual_arg ')'
-	;
-
-list_of_let_actual_arg
-	: let_actual_arg
-	| list_of_let_actual_arg ',' let_actual_arg
+	| let_list_of_arguments_ident_seq_list ',' '.' identifier '(' let_actual_arg ')'
 	;
 
 let_actual_arg
 	: %empty
 	| expression
+	;
+
+let_actual_arg_seq_list
+	: let_actual_arg
+	| let_actual_arg_seq_list ',' let_actual_arg
 	;
 
 /*************************************************
@@ -1373,27 +1373,27 @@ parameter_value_assignment
 	;
 
 list_of_parameter_value_assignments
-	: ordered_parameter_assignment_recurse
-	| named_parameter_assignment_recurse
-	;
-
-ordered_parameter_assignment_recurse
-	: ordered_parameter_assignment
-	| ordered_parameter_assignment_recurse ',' ordered_parameter_assignment
+	: ordered_parameter_assignment_seq_list
+	| named_parameter_assignment_seq_list
 	;
 
 ordered_parameter_assignment
 	: param_expression
 	;
 
-named_parameter_assignment_recurse
-	: named_parameter_assignment
-	| named_parameter_assignment_recurse ',' named_parameter_assignment
+ordered_parameter_assignment_seq_list
+	: ordered_parameter_assignment
+	| ordered_parameter_assignment_seq_list ',' ordered_parameter_assignment
 	;
 
 named_parameter_assignment
 	: '.' identifier '(' ')'
 	| '.' identifier '(' param_expression ')'
+	;
+
+named_parameter_assignment_seq_list
+	: named_parameter_assignment
+	| named_parameter_assignment_seq_list ',' named_parameter_assignment
 	;
 
 /******************************************************
@@ -1652,7 +1652,7 @@ jump_statement
 wait_statement
 	: SVLOG_WAIT '(' expression ')' statement_or_null
 	| SVLOG_WAIT SVLOG_FORK ';'
-	| SVLOG_WAIT_ORDER '(' hierarchical_identifier_recurse ')' action_block
+	| SVLOG_WAIT_ORDER '(' hierarchical_identifier_seq_list ')' action_block
 	;
 
 event_trigger
@@ -1700,18 +1700,18 @@ unique_priority
 	;
 
 cond_predicate
-	: expression_or_cond_pattern expression_or_cond_pattern_recurse
-	;
-
-expression_or_cond_pattern_recurse
-	: %empty
-	| SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
-	| expression_or_cond_pattern_recurse SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
+	: expression_or_cond_pattern expression_or_cond_pattern_seq_list
 	;
 
 expression_or_cond_pattern
 	: expression
 	| cond_pattern
+	;
+
+expression_or_cond_pattern_seq_list
+	: %empty
+	| SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
+	| expression_or_cond_pattern_seq_list SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
 	;
 
 cond_pattern
@@ -1745,7 +1745,7 @@ case_keyword
 	;
 
 case_item
-	: case_item_expression_recurse ':' statement_or_null
+	: case_item_expression_seq_list ':' statement_or_null
 	| SVLOG_DEFAULT statement_or_null
 	| SVLOG_DEFAULT ':' statement_or_null
 	;
@@ -1755,9 +1755,9 @@ case_item_recurse
 	| case_item_recurse case_item
 	;
 
-case_item_expression_recurse
+case_item_expression_seq_list
 	: expression
-	| case_item_expression_recurse ',' expression
+	| case_item_expression_seq_list ',' expression
 	;
 
 case_pattern_item
@@ -1833,23 +1833,23 @@ loop_statement
 for_initialization
 	: %empty
 	| list_of_variable_assignments
-	| for_variable_declaration_recurse
-	;
-
-for_variable_declaration_recurse
-	: for_variable_declaration
-	| for_variable_declaration_recurse ',' for_variable_declaration
+	| for_variable_declaration_seq_list
 	;
 
 for_variable_declaration
-	: data_type identifier '=' expression variable_identifier_expression_recurse
-	| SVLOG_VAR data_type identifier '=' expression variable_identifier_expression_recurse
+	: data_type identifier '=' expression variable_identifier_expression_seq_list
+	| SVLOG_VAR data_type identifier '=' expression variable_identifier_expression_seq_list
 	;
 
-variable_identifier_expression_recurse
+for_variable_declaration_seq_list
+	: for_variable_declaration
+	| for_variable_declaration_seq_list ',' for_variable_declaration
+	;
+
+variable_identifier_expression_seq_list
 	: %empty
 	| ',' identifier '=' expression
-	| variable_identifier_expression_recurse ',' identifier '=' expression
+	| variable_identifier_expression_seq_list ',' identifier '=' expression
 	;
 
 for_step
@@ -1881,11 +1881,11 @@ loop_variables
  ******************************************/
 
 assignment_pattern_net_lvalue
-	: APOSTROPHE '{' net_lvalue_recurse '}'
+	: APOSTROPHE '{' net_lvalue_seq_list '}'
 	;
 
 assignment_pattern_variable_lvalue
-	:  APOSTROPHE '{' variable_lvalue_recurse '}'
+	:  APOSTROPHE '{' variable_lvalue_seq_list '}'
 	;
 
 /******************************************
@@ -2005,16 +2005,16 @@ clocking_declaration
 	  SVLOG_ENDCLOCKING clocking_identifier
 	;
 
-clocking_item_recurse
-	: %empty
-	| clocking_item
-	| clocking_item_recurse clocking_item
-	;
-
 clocking_item
 	: SVLOG_DEFAULT default_skew ';'
 	| clocking_direction list_of_clocking_decl_assign ';'
 	| attribute_instance_recurse assertion_item_declaration
+	;
+
+clocking_item_recurse
+	: %empty
+	| clocking_item
+	| clocking_item_recurse clocking_item
 	;
 
 default_skew
@@ -2096,19 +2096,19 @@ rs_production_recurse
 	;
 
 rs_production
-	: data_type_or_void_or_null identifier ':' list_of_rs_rules ';'
-	| data_type_or_void_or_null identifier '(' tf_port_list ')' ':' list_of_rs_rules ';'
-	;
-
-list_of_rs_rules
-	: rs_rule
-	| list_of_rs_rules '|' rs_rule
+	: data_type_or_void_or_null identifier ':' rs_rule_seq_list ';'
+	| data_type_or_void_or_null identifier '(' tf_port_list ')' ':' rs_rule_seq_list ';'
 	;
 
 rs_rule
 	: rs_production_list
 	| rs_production_list EQUAL_WEIGHT_OPERATOR rs_weight_specification
 	| rs_production_list EQUAL_WEIGHT_OPERATOR rs_weight_specification rs_code_block
+	;
+
+rs_rule_seq_list
+	: rs_rule
+	| rs_rule_seq_list '|' rs_rule
 	;
 
 rs_production_list
@@ -2165,7 +2165,7 @@ rs_case
 	;
 
 rs_case_item
-	: list_of_expressions ':' rs_production_item ';'
+	: expression_seq_list ':' rs_production_item ';'
 	| SVLOG_DEFAULT rs_production_item ';'
 	| SVLOG_DEFAULT ':' rs_production_item ';'
 	;
@@ -2467,9 +2467,9 @@ expression
 	| tagged_union_expression
 	;
 
-list_of_expression
+expression_seq_list
 	: expression
-	| list_of_expression ',' expression
+	| expression_seq_list ',' expression
 	;
 
 mintypmax_expression
@@ -2582,27 +2582,21 @@ bit_select
 	| bit_select '[' expression ']'
 	;
 
-member_identifier_bit_select_recurse
+mident_bit_select_seq_list
 	: %empty
 	| '.' identifier bit_select
-	| member_identifier_bit_select_recurse '.' identifier bit_select
+	| mident_bit_select_seq_list '.' identifier bit_select
 
 select
 	: bit_select
 	| bit_select '[' part_select_range ']'
-	| member_identifier_bit_select_recurse '.' identifier bit_select
-	| member_identifier_bit_select_recurse '.' identifier bit_select '[' part_select_range ']'
-	;
-
-mident_bit_select_recurse
-	: %empty
-	| '.' identifier bit_select
-	| mident_bit_select_recurse '.' identifier bit_select
+	| mident_bit_select_seq_list '.' identifier bit_select
+	| mident_bit_select_seq_list '.' identifier bit_select '[' part_select_range ']'
 	;
 
 nonrange_select
 	: bit_select
-	| mident_bit_select_recurse '.' identifier bit_select
+	| mident_bit_select_seq_list '.' identifier bit_select
 	;
 
 constant_bit_select
@@ -2610,16 +2604,16 @@ constant_bit_select
 	| constant_bit_select '[' constant_expression ']'
 	;
 
-constant_select_recurse
+constant_select_seq_list
 	: '.' identifier constant_bit_select
-	| constant_select_recurse '.' identifier constant_bit_select
+	| constant_select_seq_list '.' identifier constant_bit_select
 	;
 
 constant_select
 	: constant_bit_select
 	| constant_bit_select '[' constant_part_select_range ']'
-	| constant_select_recurse
-	| constant_select_recurse '[' constant_part_select_range ']'
+	| constant_select_seq_list
+	| constant_select_seq_list '[' constant_part_select_range ']'
 	;
 
 /*****************************************
@@ -2635,14 +2629,14 @@ constant_select
 
 net_lvalue
 	: ps_or_hierarchical_net_identifier constant_select
-	| '{' net_lvalue_recurse '}'
+	| '{' net_lvalue_seq_list '}'
 	| assignment_pattern_net_lvalue
 	| assignment_pattern_expression_type assignment_pattern_net_lvalue
 	;
 
-net_lvalue_recurse
+net_lvalue_seq_list
 	: net_lvalue
-	| net_lvalue_recurse ',' net_lvalue
+	| net_lvalue_seq_list ',' net_lvalue
 	;
 
 variable_lvalue
@@ -2655,9 +2649,9 @@ variable_lvalue
 	| variable_lvalue ',' variable_lvalue
 	;
 
-variable_lvalue_recurse
+variable_lvalue_seq_list
 	: variable_lvalue
-	| variable_lvalue_recurse ',' variable_lvalue
+	| variable_lvalue_seq_list ',' variable_lvalue
 	;
 
 nonrange_variable_lvalue
@@ -2947,25 +2941,25 @@ string_escape_seq
  * Based off section: (A.9.1 Attributes). *
  ******************************************/
 
+attribute_instance
+	:
+	| '(' '*' attribute_spec_seq_list '*' ')'
+	;
+
 attribute_instance_recurse
 	: %empty
 	| attribute_instance
 	| attribute_instance_recurse attribute_instance
 	;
 
-attribute_instance
-	:
-	| '(' '*' attribute_specs '*' ')'
-	;
-
-attribute_specs
-	: attr_spec
-	| attribute_instance_recurse ',' attr_spec
-	;
-
 attr_spec
 	: attr_name
 	| attr_name  '=' constant_expression
+	;
+
+attribute_spec_seq_list
+	: attr_spec
+	| attribute_instance_recurse ',' attr_spec
 	;
 
 attr_name
@@ -2990,9 +2984,9 @@ hierarchical_identifier
 	| hierarchical_identifier identifier constant_bit_select '.'
 	;
 
-hierarchical_identifier_recurse
+hierarchical_identifier_seq_list
 	: hierarchical_identifier
-	| hierarchical_identifier_recurse ',' hierarchical_identifier
+	| hierarchical_identifier_seq_list ',' hierarchical_identifier
 	;
 
 identifier
@@ -3061,18 +3055,18 @@ rs_production_identifier_or_null
 	| identifier
 	;
 
-ps_param_ident_recurse
-	: generate_block_identifier '.'
-	| generate_block_identifier  '[' constant_expression ']' '.'
-	| ps_param_ident_recurse generate_block_identifier '.'
-	| ps_param_ident_recurse generate_block_identifier  '[' constant_expression ']' '.'
-	;
-
 ps_parameter_identifier
 	: identifier
 	| package_scope identifier
 	| class_scope identifier
-	| ps_param_ident_recurse identifier
+	| ps_param_ident_seq_list identifier
+	;
+
+ps_param_ident_seq_list
+	: generate_block_identifier '.'
+	| generate_block_identifier  '[' constant_expression ']' '.'
+	| ps_param_ident_seq_list generate_block_identifier '.'
+	| ps_param_ident_seq_list generate_block_identifier  '[' constant_expression ']' '.'
 	;
 
 system_tf_identifier
