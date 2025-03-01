@@ -1898,9 +1898,14 @@ disable_statement
  * Based off section: (A.6.6 Conditional statements). *
  ******************************************************/
 
-conditional_statement
-	: SVLOG_IF '(' cond_predicate ')' statement_or_null
-	| unique_priority SVLOG_IF '(' cond_predicate ')' cs_else_if_resurse cs_else
+cs_else_if_seq_list
+	: SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
+	| cs_else_if_seq_list SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
+	;
+
+cs_else_if_seq_list_or_null
+	: %empty
+	| cs_else_if_seq_list
 	;
 
 cs_else
@@ -1908,10 +1913,9 @@ cs_else
 	| SVLOG_ELSE statement_or_null
 	;
 
-cs_else_if_resurse
-	: %empty
-	| SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
-	| conditional_statement_else_if_resurse SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
+conditional_statement
+	: unique_priority_or_null SVLOG_IF '(' cond_predicate ')'
+	  statement_or_null cs_else_if_seq_list_or_null cs_else
 	;
 
 unique_priority
@@ -1920,8 +1924,13 @@ unique_priority
 	| SVLOG_PRIORITY
 	;
 
+unique_priority_or_null
+	: %empty
+	| unique_priority
+	;
+
 cond_predicate
-	: expression_or_cond_pattern expression_or_cond_pattern_seq_list
+	: expression_or_cond_pattern expression_or_cond_pattern_seq_list_or_null
 	;
 
 expression_or_cond_pattern
@@ -1930,9 +1939,13 @@ expression_or_cond_pattern
 	;
 
 expression_or_cond_pattern_seq_list
-	: %empty
-	| SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
+	: SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
 	| expression_or_cond_pattern_seq_list SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
+	;
+
+expression_or_cond_pattern_seq_list_or_null
+	: %empty
+	| expression_or_cond_pattern_seq_list
 	;
 
 cond_pattern
