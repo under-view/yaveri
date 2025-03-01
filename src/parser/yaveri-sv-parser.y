@@ -209,6 +209,7 @@
 %token <itoken> CASE_NOT_EQUAL
 %token <itoken> LOGICAL_LEFT_SHIFT
 %token <itoken> LOGICAL_RIGHT_SHIFT
+%token <itoken> GOTO_REPETITION_OPERATOR
 %token <itoken> OVERLAPPED_OPERATOR
 %token <itoken> OVERLAPPED_OPERATOR_FOLLOWED_BY
 %token <itoken> NONOVERLAPPED_OPERATOR
@@ -217,6 +218,10 @@
 %token <itoken> EQUIVALANCE_OPERATOR
 %token <itoken> WILDCARD_EQUAL
 %token <itoken> WILDCARD_NOT_EQUAL
+%token <itoken> REPEAT_ZERO_OR_MORE /* [*] is an abbreviation for [*0:$] */
+%token <itoken> REPEAT_ONE_OR_MORE  /* [+] is an abbreviation for [*1:$] */
+%token <itoken> CONSECUTIVE_REPEAT_OPERATOR
+%token <itoken> NON_CONSECUTIVE_REPEAT_OPERATOR
 %token <itoken> BIT_WISE_NAND
 %token <itoken> BIT_WISE_NOR
 %token <itoken> POUND_ZERO
@@ -958,9 +963,13 @@ associative_dimension
 	;
 
 variable_dimension_recurse
-	: %empty
-	| variable_dimension
+	: variable_dimension
 	| variable_dimension_recurse variable_dimension
+	;
+
+variable_dimension_recurse_or_null
+	: %empty
+	| variable_dimension_recurse
 	;
 
 variable_dimension
@@ -1117,9 +1126,9 @@ property_port_list
 
 property_port_item
 	: attribute_instance_recurse pp_item_local_direction_or_null property_formal_type
-	  identifier variable_dimension_recurse
+	  identifier variable_dimension_recurse_or_null
 	| attribute_instance_recurse pp_item_local_direction_or_null property_formal_type
-	  identifier variable_dimension_recurse '=' property_actual_arg
+	  identifier variable_dimension_recurse_or_null '=' property_actual_arg
 	;
 
 pp_item_local_direction_or_null
@@ -1187,6 +1196,49 @@ property_case_item_recurse
 	| property_case_item_recurse property_case_item
 	;
 
+sequence_declaration_port_list_or_null
+	: %empty
+	| '(' ')'
+	| '(' sequence_port_list ')'
+	;
+
+sequence_declaration
+	: SVLOG_SEQUENCE identifier sequence_declaration_port_list_or_null ';'
+		assertion_variable_declaration_recurse_or_null
+		sequence_expr semicolon_or_null
+	  SVLOG_ENDSEQUENCE colon_ident_or_null
+	;
+
+sequence_port_list
+	: sequence_port_item
+	| sequence_port_list sequence_port_item
+	;
+
+sp_item_local_slp_direction_or_null
+	: %empty
+	| SVLOG_LOCAL
+	| SVLOG_LOCAL sequence_lvar_port_direction
+	;
+
+sequence_port_item
+	: attribute_instance_recurse_or_null sp_item_local_slp_direction_or_null
+          sequence_formal_type identifier variable_dimension_recurse_or_null
+	| attribute_instance_recurse_or_null sp_item_local_slp_direction_or_null
+          sequence_formal_type identifier variable_dimension_recurse_or_null '=' sequence_actual_arg
+	;
+
+sequence_lvar_port_direction
+	: SVLOG_INPUT
+	| SVLOG_INOUT
+	| SVLOG_OUTPUT
+	;
+
+sequence_formal_type
+	: data_type_or_implicit
+	| SVLOG_SEQUENCE
+	| SVLOG_UNTYPED
+	;
+
 sequence_expr
 	: cycle_delay_range sequence_expr
 	| sequence_expr cycle_delay_range sequence_expr
@@ -1212,6 +1264,10 @@ cycle_delay_range
 	| '#' '#' '[' '+' ']'
 	;
 
+sequence_method_call
+	: sequence_instance '.' identifier
+	;
+
 sequence_match_item
 	: operator_assignment
 	| inc_or_dec_expression
@@ -1219,9 +1275,13 @@ sequence_match_item
 	;
 
 sequence_match_item_seq_list
-	: %empty
-	| ',' sequence_match_item
+	: ',' sequence_match_item
 	| sequence_match_item_seq_list ',' sequence_match_item
+	;
+
+sequence_match_item_seq_list_or_null
+	: %empty
+	| sequence_match_item_seq_list
 	;
 
 sequence_instance
@@ -1231,9 +1291,9 @@ sequence_instance
 	;
 
 sequence_list_of_arguments
-	: sequence_actual_arg_seq_list ident_sequence_actual_arg_seq_list
-	| '.' identifier '(' ')' ident_sequence_actual_arg_seq_list
-	| '.' identifier '(' sequence_actual_arg ')' ident_sequence_actual_arg_seq_list
+	: sequence_actual_arg_seq_list_or_null sequence_actual_arg_ident_seq_list_or_null
+	| '.' identifier '(' ')' sequence_actual_arg_ident_seq_list_or_null
+	| '.' identifier '(' sequence_actual_arg ')' sequence_actual_arg_ident_seq_list_or_null
 	;
 
 sequence_actual_arg
@@ -1242,18 +1302,26 @@ sequence_actual_arg
 	| '$'
 	;
 
-ident_sequence_actual_arg_seq_list
-	: %empty
-	| ',' '.' identifier '(' ')'
+sequence_actual_arg_ident_seq_list
+	: ',' '.' identifier '(' ')'
 	| ',' '.' identifier '(' sequence_actual_arg ')'
-	| ident_sequence_actual_arg_seq_list ',' '.' identifier '(' ')'
-	| ident_sequence_actual_arg_seq_list ',' '.' identifier '(' sequence_actual_arg ')'
+	| sequence_actual_arg_ident_seq_list ',' '.' identifier '(' ')'
+	| sequence_actual_arg_ident_seq_list ',' '.' identifier '(' sequence_actual_arg ')'
+	;
+
+sequence_actual_arg_ident_seq_list_or_null
+	: %empty
+	| sequence_actual_arg_ident_seq_list
 	;
 
 sequence_actual_arg_seq_list
-	: %empty
-	| sequence_actual_arg
+	: sequence_actual_arg
 	| sequence_actual_arg_seq_list ',' sequence_actual_arg
+	;
+
+sequence_actual_arg_seq_list_or_null
+	: %empty
+	| sequence_actual_arg_seq_list
 	;
 
 boolean_abbrev
@@ -1267,17 +1335,17 @@ sequence_abbrev
 	;
 
 consecutive_repetition
-	: '[' '*' const_or_range_expression ']'
-	| '[' '*' ']'
-	| '[' '+' ']'
+	: CONSECUTIVE_REPEAT_OPERATOR const_or_range_expression ']'
+	| REPEAT_ZERO_OR_MORE
+	| REPEAT_ONE_OR_MORE
 	;
 
 nonconsecutive_repetition
-	: '[' '=' const_or_range_expression ']'
+	: NON_CONSECUTIVE_REPEAT_OPERATOR const_or_range_expression ']'
 	;
 
 goto_repetition
-	: '[' IMPLICATION_OPERATOR const_or_range_expression ']'
+	: GOTO_REPETITION_OPERATOR const_or_range_expression ']'
 	;
 
 const_or_range_expression
@@ -1290,9 +1358,18 @@ cycle_delay_const_range_expression
 	| constant_expression ':' '$'
 	;
 
+assertion_variable_declaration
+	: var_data_type list_of_variable_decl_assignments ';'
+	;
+
 assertion_variable_declaration_recurse
 	: assertion_variable_declaration
 	| assertion_variable_declaration_recurse assertion_variable_declaration
+	;
+
+assertion_variable_declaration_recurse_or_null
+	: %empty
+	| assertion_variable_declaration_recurse
 	;
 
 /*******************************************************
@@ -2950,6 +3027,11 @@ attribute_instance_recurse
 	: %empty
 	| attribute_instance
 	| attribute_instance_recurse attribute_instance
+	;
+
+attribute_instance_recurse_or_null
+	: %empty
+	| attribute_instance_recurse
 	;
 
 attr_spec

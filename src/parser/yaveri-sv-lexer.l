@@ -254,6 +254,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "!=="          { return CASE_NOT_EQUAL;                     }
 "<<<"          { return LOGICAL_LEFT_SHIFT;                 }
 ">>>"          { return LOGICAL_RIGHT_SHIFT;                }
+"[->"          { return GOTO_REPETITION_OPERATOR;           }
 "|->"          { return OVERLAPPED_OPERATOR;                }
 "#-#"          { return OVERLAPPED_OPERATOR_FOLLOWED_BY;    }
 "|=>"          { return NONOVERLAPPED_OPERATOR;             }
@@ -262,6 +263,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "<->"          { return EQUIVALANCE_OPERATOR;               }
 "==?"          { return WILDCARD_EQUAL;                     }
 "!=?"          { return WILDCARD_NOT_EQUAL;                 }
+"[*]"          { return REPEAT_ZERO_OR_MORE;                }
+"[+]"          { return REPEAT_ONE_OR_MORE;                 }
+"[*"           { return CONSECUTIVE_REPEAT_OPERATOR;        }
+"[="           { return NON_CONSECUTIVE_REPEAT_OPERATOR;    }
 "~&"           { return BIT_WISE_NAND;                      }
 "~|"           { return BIT_WISE_NOR;                       }
 "#0"           { return POUND_ZERO;                         }
