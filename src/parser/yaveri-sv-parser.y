@@ -971,7 +971,7 @@ packed_dimension_recurse_or_null
 
 associative_dimension
 	: '[' data_type ']'
-	| '[' '*' ']'
+	| REPEAT_ZERO_OR_MORE
 	;
 
 variable_dimension
