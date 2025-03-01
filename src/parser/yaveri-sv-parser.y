@@ -2173,7 +2173,7 @@ clocking_identifier
 
 clocking_declaration
 	: default_or_null SVLOG_CLOCKING clocking_identifier clocking_event ';'
-		clocking_item_recurse
+		clocking_item_recurse_or_null
 	  SVLOG_ENDCLOCKING clocking_identifier
 	| SVLOG_GLOBAL SVLOG_CLOCKING clocking_identifier clocking_event ';'
 	  SVLOG_ENDCLOCKING clocking_identifier
@@ -2186,9 +2186,13 @@ clocking_item
 	;
 
 clocking_item_recurse
-	: %empty
-	| clocking_item
+	: clocking_item
 	| clocking_item_recurse clocking_item
+	;
+
+clocking_item_recurse_or_null
+	: %empty
+	| clocking_item_recurse
 	;
 
 default_skew
