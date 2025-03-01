@@ -2050,6 +2050,109 @@ value_range
  ***********************************************/
 
 
+/******************************************
+ * Start of 'Patterns' Grammer Rules      *
+ * Based off section: (A.6.7.1 Patterns). *
+ ******************************************/
+
+pattern
+	: '(' pattern ')'
+	| period_ident
+	| '.' '*'
+	| constant_expression
+	| SVLOG_TAGGED identifier
+	| SVLOG_TAGGED identifier pattern
+	| APOSTROPHE '{' pattern_seq_list '}'
+	| APOSTROPHE '{' pattern_ident_seq_list '}'
+	;
+
+pattern_recurse
+	: pattern
+	| pattern_recurse pattern
+	;
+
+pattern_seq_list
+	: pattern
+	| pattern_seq_list ',' pattern
+	;
+
+pattern_ident_seq_list
+	: identifier ':' pattern
+	| pattern_ident_seq_list ',' identifier ':' pattern
+	;
+
+assignment_pattern
+	: APOSTROPHE '{' expression_seq_list '}'
+	| APOSTROPHE '{' structure_pattern_key_expression_seq_list '}'
+	| APOSTROPHE '{' array_pattern_key_expression_seq_list '}'
+	| APOSTROPHE '{' constant_expression '{' expression_seq_list '}' '}'
+	;
+
+structure_pattern_key
+	: identifier
+	| assignment_pattern_key
+	;
+
+structure_pattern_key_recurse
+	: structure_pattern_key
+	| structure_pattern_key_recurse structure_pattern_key
+	;
+
+structure_pattern_key_expression_seq_list
+	: structure_pattern_key ':' expression
+	| structure_pattern_key_expression_seq_list ',' structure_pattern_key ':' expression
+	;
+
+array_pattern_key
+	: constant_expression
+	| assignment_pattern_key
+	;
+
+array_pattern_key_recurse
+	: array_pattern_key
+	| array_pattern_key_recurse array_pattern_key
+	;
+
+array_pattern_key_expression_seq_list
+	: array_pattern_key ':' expression
+	| array_pattern_key_expression_seq_list ',' array_pattern_key ':' expression
+	;
+
+assignment_pattern_key
+	: simple_type
+	| SVLOG_DEFAULT
+	;
+
+assignment_pattern_expression
+	: assignment_pattern
+	| assignment_pattern_expression_type assignment_pattern
+	;
+
+assignment_pattern_expression_type
+	: ps_type_identifier
+	| ps_parameter_identifier
+	| integer_atom_type
+	| type_reference
+	;
+
+constant_assignment_pattern_expression
+	: assignment_pattern_expression
+	;
+
+assignment_pattern_net_lvalue
+	: APOSTROPHE '{' net_lvalue_seq_list '}'
+	;
+
+assignment_pattern_variable_lvalue
+	: APOSTROPHE '{' variable_lvalue_seq_list '}'
+	;
+
+/******************************************
+ * End of 'Patterns' Grammer Rules        *
+ * Based off section: (A.6.7.1 Patterns). *
+ ******************************************/
+
+
 /**************************************************
  * Start of 'Looping statements' Grammer Rules    *
  * Based off section: (A.6.8 Looping statements). *
@@ -3361,8 +3464,12 @@ interface_or_null
 	| %empty
 	;
 
-period_ident_or_null
+period_ident
 	: '.' identifier
+	;
+
+period_ident_or_null
+	: period_ident
 	| %empty
 	;
 
