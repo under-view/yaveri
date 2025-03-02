@@ -1150,6 +1150,16 @@ block_item_declaration
 	| attribute_instance_recurse_or_null let_declaration
 	;
 
+block_item_declaration_recurse
+	: block_item_declaration
+	| block_item_declaration_recurse block_item_declaration
+	;
+
+block_item_declaration_recurse_or_null
+	: %empty
+	| block_item_declaration_recurse
+	;
+
 /*******************************************************
  * End of 'Block item declarations' Grammer Rules      *
  * Based off section: (A.2.8 Block item declarations). *
