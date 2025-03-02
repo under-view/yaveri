@@ -1223,7 +1223,7 @@ dynamic_override_specifiers_or_null
 
 initial_or_extends_specifier
 	: ':' SVLOG_INITIAL
-	| ':' SVLOG_EXTENDS
+	| ':' SVLOG_EXTENDES
 	;
 
 initial_or_extends_specifier_or_null
@@ -1646,9 +1646,9 @@ assertion_variable_declaration_recurse_or_null
  *************************************************/
 
 let_declaration
-	: SVLOG_LET identifier '=' expression ';'
-	| SVLOG_LET identifier '(' ')' '=' expression ';'
-	| SVLOG_LET identifier '(' let_port_list ')' '=' expression ';'
+	: SVLOG_LET identifier equal_expression ';'
+	| SVLOG_LET identifier '(' ')' equal_expression ';'
+	| SVLOG_LET identifier '(' let_port_list ')' equal_expression ';'
 	;
 
 let_port_list
@@ -1657,8 +1657,7 @@ let_port_list
 	;
 
 let_port_item
-	: attribute_instance_recurse_or_null let_formal_type identifier variable_dimension_recurse
-	| attribute_instance_recurse_or_null let_formal_type identifier variable_dimension_recurse '=' expression
+	: attribute_instance_recurse_or_null let_formal_type identifier variable_dimension_recurse equal_expression_or_null
 	;
 
 let_formal_type
@@ -1842,7 +1841,7 @@ list_of_variable_assignments
 	;
 
 net_assignment
-	: net_lvalue '=' expression
+	: net_lvalue equal_expression
 	;
 
 /******************************************************************************
@@ -1902,7 +1901,7 @@ procedural_continuous_assignment
 	;
 
 variable_assignment
-	: variable_lvalue '=' expression
+	: variable_lvalue equal_expression
 
 /*****************************************************************
  * End of 'Procedural blocks and assignments' Grammer Rules      *
@@ -2396,8 +2395,8 @@ for_initialization
 	;
 
 for_variable_declaration
-	: data_type identifier '=' expression variable_identifier_expression_seq_list
-	| SVLOG_VAR data_type identifier '=' expression variable_identifier_expression_seq_list
+	: data_type identifier equal_expression variable_identifier_expression_seq_list
+	| SVLOG_VAR data_type identifier equal_expression variable_identifier_expression_seq_list
 	;
 
 for_variable_declaration_seq_list
@@ -2407,8 +2406,8 @@ for_variable_declaration_seq_list
 
 variable_identifier_expression_seq_list
 	: %empty
-	| ',' identifier '=' expression
-	| variable_identifier_expression_seq_list ',' identifier '=' expression
+	| ',' identifier equal_expression
+	| variable_identifier_expression_seq_list ',' identifier equal_expression
 	;
 
 for_step
@@ -2599,8 +2598,7 @@ list_of_clocking_decl_assign
 	;
 
 clocking_decl_assign
-	: identifier
-	| identifier '=' expression
+	: identifier equal_expression_or_null
 	;
 
 clocking_skew_or_null
@@ -3713,8 +3711,12 @@ var_or_null
 	| %empty
 	;
 
-equal_expression_or_null
+equal_expression
 	: '=' expression
+	;
+
+equal_expression_or_null
+	: equal_expression
 	| %empty
 	;
 
