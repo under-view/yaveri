@@ -54,6 +54,7 @@
 %token <itoken> SVLOG_CLOCKING
 %token <itoken> SVLOG_CONTINUE
 %token <itoken> SVLOG_DEASSIGN
+%token <itoken> SVLOG_EXTENDES
 %token <itoken> SVLOG_FUNCTION
 %token <itoken> SVLOG_JOIN_ANY
 %token <itoken> SVLOG_NEXTTIME
@@ -74,9 +75,11 @@
 %token <itoken> SVLOG_DEFAULT
 %token <itoken> SVLOG_DISABLE
 %token <itoken> SVLOG_ENDCASE
+%token <itoken> SVLOG_ENDTASK
 %token <itoken> SVLOG_FOREACH
 %token <itoken> SVLOG_FOREVER
 %token <itoken> SVLOG_IMPLIES
+%token <itoken> SVLOG_INITIAL
 %token <itoken> SVLOG_INTEGER
 %token <itoken> SVLOG_LONGINT
 %token <itoken> SVLOG_MATCHES
@@ -193,6 +196,7 @@
 %token <itoken> SVLOG_LET
 %token <itoken> SVLOG_NEW
 %token <itoken> SVLOG_NOT
+%token <itoken> SVLOG_REF
 %token <itoken> SVLOG_REG
 %token <itoken> SVLOG_STD
 %token <itoken> SVLOG_TRI
@@ -1072,20 +1076,14 @@ function_declaration
 	: SVLOG_FUNCTION dynamic_override_specifiers_or_null lifetime_or_null function_body_declaration
 	;
 
-func_body_decl_ident_or_class_scope_or_null
-	: %empty
-	| period_ident
-	| class_scope
-	;
-
 function_body_declaration
 	: function_data_type_or_implicit
-	  func_body_decl_ident_or_class_scope_or_null identifier ';'
+	  ident_or_class_scope_or_null identifier ';'
 	  tf_item_declaration_recurse_or_null
 	  function_statement_or_null_recurse_or_null
 	  SVLOG_ENDFUNCTION colon_ident_or_null
 	| function_data_type_or_implicit
-	  func_body_decl_ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
+	  ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
 	  block_item_declaration_recurse_or_null
 	  function_statement_or_null_recurse_or_null
 	  SVLOG_ENDFUNCTION colon_ident_or_null
@@ -1136,6 +1134,116 @@ dpi_task_import_property_or_null
  * End of 'Function declarations' Grammer Rules      *
  * Based off section: (A.2.6 Function declarations). *
  *****************************************************/
+
+
+/***************************************************
+ * Start of 'Task declarations' Grammer Rules      *
+ * Based off section: (A.2.7 Task declarations).   *
+ ***************************************************/
+
+task_declaration
+	: SVLOG_TASK dynamic_override_specifiers_or_null lifetime_or_null task_body_declaration
+	;
+
+task_body_declaration
+	: ident_or_class_scope_or_null identifier ';'
+		tf_item_declaration_recurse_or_null
+		statement_or_null_recurse_or_null
+	  SVLOG_ENDTASK colon_ident_or_null
+	| ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
+		block_item_declaration_recurse_or_null
+		statement_or_null_recurse_or_null
+	  SVLOG_ENDTASK colon_ident_or_null
+	;
+
+tf_item_declaration
+	: block_item_declaration
+	| tf_port_declaration
+	;
+
+tf_item_declaration_recurse
+	: tf_item_declaration
+	| tf_item_declaration_recurse tf_item_declaration
+	;
+
+tf_item_declaration_recurse_or_null
+	: tf_item_declaration_recurse
+	| %empty
+	;
+
+tf_port_list
+	: tf_port_item
+	| tf_port_list ',' tf_port_item
+	;
+
+tf_port_list_or_null
+	: tf_port_list
+	| %empty
+	;
+
+tf_port_item_var_dimension_expr_or_null
+	: identifier variable_dimension_recurse_or_null equal_expression_or_null
+	| %empty
+	;
+
+tf_port_item
+	: attribute_instance_recurse_or_null tf_port_direction_or_null
+	  var_or_null data_type_or_implicit
+	  tf_port_item_var_dimension_expr_or_null
+	;
+
+tf_port_direction
+	: port_direction
+	| const_or_null SVLOG_REF static_or_null
+	;
+
+tf_port_direction_or_null
+	: tf_port_direction
+	| %empty
+	;
+
+tf_port_declaration
+	: attribute_instance_recurse_or_null tf_port_direction
+	  var_or_null data_type_or_implicit list_of_tf_variable_identifiers ';'
+	;
+
+task_prototype
+	: SVLOG_TASK dynamic_override_specifiers_or_null identifier
+	| SVLOG_TASK dynamic_override_specifiers_or_null identifier '(' tf_port_list ')'
+	;
+
+dynamic_override_specifiers
+	: initial_or_extends_specifier_or_null final_specifier_or_null
+	;
+
+dynamic_override_specifiers_or_null
+	: dynamic_override_specifiers
+	| %empty
+	;
+
+initial_or_extends_specifier
+	: ':' SVLOG_INITIAL
+	| ':' SVLOG_EXTENDS
+	;
+
+initial_or_extends_specifier_or_null
+	: initial_or_extends_specifier
+	| %empty
+	;
+
+final_specifier
+	: ':' SVLOG_FINAL
+	;
+
+final_specifier_or_null
+	: final_specifier
+	| %empty
+	;
+
+/*************************************************
+ * End of 'Task declarations' Grammer Rules      *
+ * Based off section: (A.2.7 Task declarations). *
+ *************************************************/
 
 
 /*******************************************************
@@ -3591,6 +3699,32 @@ period_ident_or_null
 class_or_package_scope_or_null
 	: class_scope
 	| package_scope
+	| %empty
+	;
+
+ident_or_class_scope_or_null
+	: period_ident
+	| class_scope
+	| %empty
+	;
+
+var_or_null
+	: SVLOG_VAR
+	| %empty
+	;
+
+equal_expression_or_null
+	: '=' expression
+	| %empty
+	;
+
+const_or_null
+	: SVLOG_CONST
+	| %empty
+	;
+
+static_or_null
+	: SVLOG_STATIC
 	| %empty
 	;
 

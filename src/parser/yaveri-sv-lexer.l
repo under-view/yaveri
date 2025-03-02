@@ -101,6 +101,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "clocking"       { return SVLOG_CLOCKING;       }
 "continue"       { return SVLOG_CONTINUE;       }
 "deassign"       { return SVLOG_DEASSIGN;       }
+"extendes"       { return SVLOG_EXTENDES;       }
 "function"       { return SVLOG_FUNCTION;       }
 "join_any"       { return SVLOG_JOIN_ANY;       }
 "nexttime"       { return SVLOG_NEXTTIME;       }
@@ -121,9 +122,11 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "default"        { return SVLOG_DEFAULT;        }
 "disable"        { return SVLOG_DISABLE;        }
 "endcase"        { return SVLOG_ENDCASE;        }
+"endtask"        { return SVLOG_ENDTASK;        }
 "foreach"        { return SVLOG_FOREACH;        }
 "forever"        { return SVLOG_FOREVER;        }
 "implies"        { return SVLOG_IMPLIES;        }
+"initial"        { return SVLOG_INITIAL;        }
 "integer"        { return SVLOG_INTEGER;        }
 "longint"        { return SVLOG_LONGINT;        }
 "matches"        { return SVLOG_MATCHES;        }
@@ -240,6 +243,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "let"            { return SVLOG_LET;            }
 "new"            { return SVLOG_NEW;            }
 "not"            { return SVLOG_NOT;            }
+"ref"            { return SVLOG_REF;            }
 "reg"            { return SVLOG_REG;            }
 "std"            { return SVLOG_STD;            }
 "tri"            { return SVLOG_TRI;            }
