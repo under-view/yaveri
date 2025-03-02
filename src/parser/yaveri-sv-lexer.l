@@ -27,6 +27,8 @@ DIGIT [0-9]
 HEXCHAR [a-fA-F]
 	/* Escape identifier regex */
 EIDENT ^[\\][^ ]*
+	/* c_identifer regex */
+CIDENT [a-zA-Z_][a-zA-Z0-9_]*[^;]
 	/* Simple identifier regex */
 SIDENT ^[_a-zA-Z][_$0-9a-zA-Z]*[^;]
 	/* Quoted String regex */
@@ -69,6 +71,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "s_eventually"   { return SVLOG_S_EVENTUALLY;   }
 "s_until_with"   { return SVLOG_S_UNTIL_WITH;   }
 "endclocking"    { return SVLOG_ENDCLOCKING;    }
+"endfunction"    { return SVLOG_ENDFUNCTION;    }
 "endproperty"    { return SVLOG_ENDPROPERTY;    }
 "endsequence"    { return SVLOG_ENDSEQUENCE;    }
 "first_match"    { return SVLOG_FIRST_MATCH;    }
@@ -98,6 +101,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "clocking"       { return SVLOG_CLOCKING;       }
 "continue"       { return SVLOG_CONTINUE;       }
 "deassign"       { return SVLOG_DEASSIGN;       }
+"function"       { return SVLOG_FUNCTION;       }
 "join_any"       { return SVLOG_JOIN_ANY;       }
 "nexttime"       { return SVLOG_NEXTTIME;       }
 "priority"       { return SVLOG_PRIORITY;       }
@@ -113,6 +117,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "vectored"       { return SVLOG_VECTORED;       }
 "chandle"        { return SVLOG_CHANDLE;        }
 "checker"        { return SVLOG_CHECKER;        }
+"context"        { return SVLOG_CONTEXT;        }
 "default"        { return SVLOG_DEFAULT;        }
 "disable"        { return SVLOG_DISABLE;        }
 "endcase"        { return SVLOG_ENDCASE;        }
@@ -175,6 +180,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "class"          { return SVLOG_CLASS;          }
 "const"          { return SVLOG_CONST;          }
 "cover"          { return SVLOG_COVER;          }
+"DPI-C"          { return SVLOG_DPI_C;          }
 "event"          { return SVLOG_EVENT;          }
 "force"          { return SVLOG_FORCE;          }
 "final"          { return SVLOG_FINAL;          }
@@ -207,10 +213,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "fork"           { return SVLOG_FORK;           }
 "join"           { return SVLOG_JOIN;           }
 "null"           { return SVLOG_NULL;           }
+"pure"           { return SVLOG_PURE;           }
 "rand"           { return SVLOG_RAND;           }
 "real"           { return SVLOG_REAL;           }
 "soft"           { return SVLOG_SOFT;           }
 "step"           { return SVLOG_STEP;           }
+"task"           { return SVLOG_TASK;           }
 "this"           { return SVLOG_THIS;           }
 "time"           { return SVLOG_TIME;           }
 "tri0"           { return SVLOG_TRI0;           }
@@ -224,6 +232,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "with"           { return SVLOG_WITH;           }
 "and"            { return SVLOG_AND;            }
 "bit"            { return SVLOG_BIT;            }
+"DPI"            { return SVLOG_DPI;            }
 "end"            { return SVLOG_END;            }
 "for"            { return SVLOG_FOR;            }
 "iff"            { return SVLOG_IF_AND_ONLY_IF; }
@@ -332,18 +341,19 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 	/* End of reserved words */
 
 
-{DIGIT}        { return SVLOG_DIGIT;         }
-{HEXCHAR}      { return SVLOG_HEXCHAR;       }
-{QUOTEDS}      { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_QUOTED_STRING; }
+{DIGIT}        { return SVLOG_DIGIT;                                                           }
+{HEXCHAR}      { return SVLOG_HEXCHAR;                                                         }
+{QUOTEDS}      { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_QUOTED_STRING;        }
 {TRIPLEQS}     { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_TRIPLE_QUOTED_STRING; }
-{STFIDENT}     { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_STFIDENT; }
-{SIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_SIDENT;   }
-{EIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_EIDENT;   }
-{SESCAPESEQ}   { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_ESCAPE_SEQ; }
-{SCOMMENT}     {      /* Do nothing */       }
-{MCOMMENT}     {      /* Do nothing */       }
-[ \n\t\f\v]    {      /* Do nothing */       }
-.              { fprintf(stdout, "bad input character '%s' at line %d\n", yytext, yylineno); }
+{STFIDENT}     { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_STFIDENT;             }
+{CIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_CIDENT;               }
+{SIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_SIDENT;               }
+{EIDENT}       { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_EIDENT;               }
+{SESCAPESEQ}   { strncpy(yylval_param->stoken,yytext,4095); return SVLOG_ESCAPE_SEQ;           }
+{SCOMMENT}     {      /* Do nothing */                                                         }
+{MCOMMENT}     {      /* Do nothing */                                                         }
+[ \n\t\f\v]    {      /* Do nothing */                                                         }
+.              { fprintf(stdout, "bad input character '%s' at line %d\n", yytext, yylineno);   }
 
 %%
 	/************************

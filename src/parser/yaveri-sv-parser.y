@@ -24,6 +24,7 @@
 %token <itoken> SVLOG_S_EVENTUALLY
 %token <itoken> SVLOG_S_UNTIL_WITH
 %token <itoken> SVLOG_ENDCLOCKING
+%token <itoken> SVLOG_ENDFUNCTION
 %token <itoken> SVLOG_ENDPROPERTY
 %token <itoken> SVLOG_ENDSEQUENCE
 %token <itoken> SVLOG_FIRST_MATCH
@@ -53,6 +54,7 @@
 %token <itoken> SVLOG_CLOCKING
 %token <itoken> SVLOG_CONTINUE
 %token <itoken> SVLOG_DEASSIGN
+%token <itoken> SVLOG_FUNCTION
 %token <itoken> SVLOG_JOIN_ANY
 %token <itoken> SVLOG_NEXTTIME
 %token <itoken> SVLOG_PRIORITY
@@ -68,6 +70,7 @@
 %token <itoken> SVLOG_VECTORED
 %token <itoken> SVLOG_CHANDLE
 %token <itoken> SVLOG_CHECKER
+%token <itoken> SVLOG_CONTEXT
 %token <itoken> SVLOG_DEFAULT
 %token <itoken> SVLOG_DISABLE
 %token <itoken> SVLOG_ENDCASE
@@ -130,6 +133,7 @@
 %token <itoken> SVLOG_CLASS
 %token <itoken> SVLOG_CONST
 %token <itoken> SVLOG_COVER
+%token <itoken> SVLOG_DPI_C
 %token <itoken> SVLOG_EVENT
 %token <itoken> SVLOG_FORCE
 %token <itoken> SVLOG_FINAL
@@ -162,10 +166,12 @@
 %token <itoken> SVLOG_FORK
 %token <itoken> SVLOG_JOIN
 %token <itoken> SVLOG_NULL
+%token <itoken> SVLOG_PURE
 %token <itoken> SVLOG_RAND
 %token <itoken> SVLOG_REAL
 %token <itoken> SVLOG_SOFT
 %token <itoken> SVLOG_STEP
+%token <itoken> SVLOG_TASK
 %token <itoken> SVLOG_THIS
 %token <itoken> SVLOG_TIME
 %token <itoken> SVLOG_TRI0
@@ -179,6 +185,7 @@
 %token <itoken> SVLOG_WITH
 %token <itoken> SVLOG_AND
 %token <itoken> SVLOG_BIT
+%token <itoken> SVLOG_DPI
 %token <itoken> SVLOG_END
 %token <itoken> SVLOG_FOR
 %token <itoken> SVLOG_IF_AND_ONLY_IF
@@ -277,6 +284,8 @@
 %token <stoken> SVLOG_EIDENT
 /* System task and functions identifier */
 %token <stoken> SVLOG_STFIDENT
+/* c_identifier */
+%token <stoken> SVLOG_CIDENT
 /* Quoted Strings */
 %token <stoken> SVLOG_QUOTED_STRING
 /* String Escape Sequence */
@@ -563,6 +572,11 @@ nettype_declaration
 lifetime
 	: SVLOG_STATIC
 	| SVLOG_AUTOMATIC
+	;
+
+lifetime_or_null
+	: %empty
+	| lifetime
 	;
 
 /***************************************************
@@ -1042,6 +1056,86 @@ unsized_dimension
  * End of 'Declaration ranges' Grammer Rules      *
  * Based off section: (A.2.5 Declaration ranges). *
  **************************************************/
+
+
+/*****************************************************
+ * Start of 'Function declarations' Grammer Rules    *
+ * Based off section: (A.2.6 Function declarations). *
+ *****************************************************/
+
+function_data_type_or_implicit
+	: data_type_or_void
+	| implicit_data_type
+	;
+
+function_declaration
+	: SVLOG_FUNCTION dynamic_override_specifiers_or_null lifetime_or_null function_body_declaration
+	;
+
+func_body_decl_ident_or_class_scope_or_null
+	: %empty
+	| period_ident
+	| class_scope
+	;
+
+function_body_declaration
+	: function_data_type_or_implicit
+	  func_body_decl_ident_or_class_scope_or_null identifier ';'
+	  tf_item_declaration_recurse_or_null
+	  function_statement_or_null_recurse_or_null
+	  SVLOG_ENDFUNCTION colon_ident_or_null
+	| function_data_type_or_implicit
+	  func_body_decl_ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
+	  block_item_declaration_recurse_or_null
+	  function_statement_or_null_recurse_or_null
+	  SVLOG_ENDFUNCTION colon_ident_or_null
+	;
+
+function_prototype
+	: SVLOG_FUNCTION dynamic_override_specifiers_or_null data_type_or_void identifier
+	| SVLOG_FUNCTION dynamic_override_specifiers_or_null data_type_or_void identifier '(' tf_port_list_or_null ')'
+	;
+
+c_ident_equal_or_null
+	: %empty
+	| SVLOG_CIDENT '='
+	;
+
+dpi_import_export
+	: SVLOG_IMPORT dpi_spec_string dpi_function_import_property_or_null c_ident_equal_or_null function_prototype ';'
+	| SVLOG_IMPORT dpi_spec_string dpi_task_import_property_or_null c_ident_equal_or_null task_prototype ';'
+	| SVLOG_EXPORT dpi_spec_string c_ident_equal_or_null SVLOG_FUNCTION identifier ';'
+	| SVLOG_EXPORT dpi_spec_string c_ident_equal_or_null SVLOG_TASK identifier ';'
+	;
+
+dpi_spec_string
+	: '"' SVLOG_DPI_C '"'
+	| '"' SVLOG_DPI '"'
+	;
+
+dpi_function_import_property
+	: SVLOG_CONTEXT
+	| SVLOG_PURE
+	;
+
+dpi_function_import_property_or_null
+	: %empty
+	| dpi_function_import_property
+	;
+
+dpi_task_import_property
+	: SVLOG_CONTEXT
+	;
+
+dpi_task_import_property_or_null
+	: %empty
+	| dpi_task_import_property
+	;
+
+/*****************************************************
+ * End of 'Function declarations' Grammer Rules      *
+ * Based off section: (A.2.6 Function declarations). *
+ *****************************************************/
 
 
 /*******************************************************
@@ -1800,6 +1894,16 @@ function_statement
 function_statement_or_null
 	: function_statement
 	| attribute_instance_recurse_or_null ';'
+	;
+
+function_statement_or_null_recurse
+	: function_statement_or_null
+	| function_statement_or_null_recurse function_statement_or_null
+	;
+
+function_statement_or_null_recurse_or_null
+	: %empty
+	| function_statement_or_null_recurse
 	;
 
 /******************************************
@@ -3466,6 +3570,7 @@ interface_or_null
 
 period_ident
 	: '.' identifier
+	| identifier '.'
 	;
 
 period_ident_or_null
