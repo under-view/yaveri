@@ -944,11 +944,14 @@ specparam_assignment
 	| pulse_control_specparam
 	;
 
+equal_reject_limit_value
+	: '=' '(' reject_limit_value ')'
+	| '=' '(' reject_limit_value ',' error_limit_value ')'
+	;
+
 pulse_control_specparam
-	: SVLOG_PATHPULSE '=' '(' reject_limit_value ')'
-	| SVLOG_PATHPULSE '=' '(' reject_limit_value ',' error_limit_value ')'
-	| SVLOG_PATHPULSE specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ')'
-	| SVLOG_PATHPULSE specify_input_terminal_descriptor '$' specify_output_terminal_descriptor '=' '(' reject_limit_value ',' error_limit_value ')'
+	: SVLOG_PATHPULSE equal_reject_limit_value
+	| SVLOG_PATHPULSE specify_input_terminal_descriptor '$' specify_output_terminal_descriptor equal_reject_limit_value
 	;
 
 error_limit_value
