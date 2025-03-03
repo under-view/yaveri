@@ -79,8 +79,10 @@
 %token <itoken> SVLOG_FOREACH
 %token <itoken> SVLOG_FOREVER
 %token <itoken> SVLOG_IMPLIES
+%token <itoken> SVLOG_INCLUDE
 %token <itoken> SVLOG_INITIAL
 %token <itoken> SVLOG_INTEGER
+%token <itoken> SVLOG_LIBRARY
 %token <itoken> SVLOG_LONGINT
 %token <itoken> SVLOG_MATCHES
 %token <itoken> SVLOG_MODPORT
@@ -99,6 +101,7 @@
 %token <itoken> SVLOG_UNIQUE0
 %token <itoken> SVLOG_UNTYPED
 %token <itoken> SVLOG_VIRTUAL
+%token <itoken> SVLOG_HINCDIR
 %token <itoken> SVLOG_ALWAYS
 %token <itoken> SVLOG_ASSERT
 %token <itoken> SVLOG_ASSIGN
@@ -310,6 +313,56 @@ svlog
 	| system_tf_call
 	| %empty
 	;
+
+/***************************************************
+ * Start of 'Library source text' Grammer Rules    *
+ * Based off section: (A.1.1 Library source text). *
+ ***************************************************/
+
+library_text
+	: library_description_recurse_or_null
+	;
+
+library_description
+	: library_declaration
+	| include_statement
+	| config_declaration
+	| ';'
+	;
+
+library_description_recurse
+	: library_description
+	| library_description_recurse library_description
+	;
+
+library_description_recurse_or_null
+	: %empty
+	| library_description_recurse
+	;
+
+incdir_file_path_spec_seq_list
+	: SVLOG_HINCDIR file_path_spec_seq_list
+	;
+
+incdir_file_path_spec_seq_list_or_null
+	: incdir_file_path_spec_seq_list
+	| %empty
+	;
+
+library_declaration
+	: SVLOG_LIBRARY identifier file_path_spec_seq_list
+	  incdir_file_path_spec_seq_list_or_null
+	;
+
+include_statement
+	: SVLOG_INCLUDE file_path_spec ';'
+	;
+
+/***************************************************
+ * Start of 'Library source text' Grammer Rules    *
+ * Based off section: (A.1.1 Library source text). *
+ ***************************************************/
+
 
 /***********************************************************
  * Start of 'Module parameters and ports' Grammer Rules    *

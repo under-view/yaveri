@@ -126,8 +126,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "foreach"        { return SVLOG_FOREACH;        }
 "forever"        { return SVLOG_FOREVER;        }
 "implies"        { return SVLOG_IMPLIES;        }
+"include"        { return SVLOG_INCLUDE;        }
 "initial"        { return SVLOG_INITIAL;        }
 "integer"        { return SVLOG_INTEGER;        }
+"library"        { return SVLOG_LIBRARY;        }
 "longint"        { return SVLOG_LONGINT;        }
 "matches"        { return SVLOG_MATCHES;        }
 "modport"        { return SVLOG_MODPORT;        }
@@ -146,6 +148,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unique0"        { return SVLOG_UNIQUE0;        }
 "untyped"        { return SVLOG_UNTYPED;        }
 "virtual"        { return SVLOG_VIRTUAL;        }
+"-incdir"        { return SVLOG_HINCDIR;        }
 "always"         { return SVLOG_ALWAYS;         }
 "assert"         { return SVLOG_ASSERT;         }
 "assign"         { return SVLOG_ASSIGN;         }
