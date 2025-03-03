@@ -965,9 +965,7 @@ type_assignment
 	;
 
 variable_decl_assignment
-	: identifier
-	| identifier variable_dimension_recurse
-	| identifier variable_dimension_recurse '=' expression
+	: identifier variable_dimension_recurse_or_null equal_expression_or_null
 	| identifier unsized_dimension variable_dimension_recurse_or_null
 	| identifier unsized_dimension variable_dimension_recurse_or_null '=' dynamic_array_new
 	| identifier '=' class_new
