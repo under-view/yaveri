@@ -83,6 +83,7 @@
 %token <itoken> SVLOG_INTEGER
 %token <itoken> SVLOG_LONGINT
 %token <itoken> SVLOG_MATCHES
+%token <itoken> SVLOG_MODPORT
 %token <itoken> SVLOG_NEGEDGE
 %token <itoken> SVLOG_NETTYPE
 %token <itoken> SVLOG_PACKAGE
@@ -1272,6 +1273,78 @@ block_item_declaration_recurse_or_null
  * End of 'Block item declarations' Grammer Rules      *
  * Based off section: (A.2.8 Block item declarations). *
  *******************************************************/
+
+
+/******************************************************
+ * Start of 'Interface declarations' Grammer Rules    *
+ * Based off section: (A.2.9 Interface declarations). *
+ ******************************************************/
+
+modport_declaration
+	: SVLOG_MODPORT modport_item_seq_list
+	;
+
+modport_item
+	: identifier '(' modport_ports_declaration_seq_list ')'
+	;
+
+modport_item_seq_list
+	: modport_item
+	| modport_item_seq_list ',' modport_item
+	;
+
+modport_ports_declaration
+	: attribute_instance_recurse_or_null modport_simple_ports_declaration
+	| attribute_instance_recurse_or_null modport_tf_ports_declaration
+	| attribute_instance_recurse_or_null modport_clocking_declaration
+	;
+
+modport_ports_declaration_seq_list
+	: modport_ports_declaration
+	| modport_ports_declaration_seq_list ',' modport_ports_declaration
+	;
+
+modport_clocking_declaration
+	: SVLOG_CLOCKING identifier
+	;
+
+modport_simple_ports_declaration
+	: port_direction modport_simple_port_seq_list
+	;
+
+modport_simple_port
+	: identifier
+	| period_ident '(' expression_or_null ')'
+	;
+
+modport_simple_port_seq_list
+	: modport_simple_port
+	| modport_simple_port_seq_list ',' modport_simple_port
+	;
+
+modport_tf_ports_declaration
+	: import_export modport_tf_port_seq_list
+	;
+
+modport_tf_port
+	: method_prototype
+	| identifier
+	;
+
+modport_tf_port_seq_list
+	: modport_tf_port
+	| modport_tf_port_seq_list ',' modport_tf_port
+	;
+
+import_export
+	: SVLOG_IMPORT
+	| SVLOG_EXPORT
+	;
+
+/******************************************************
+ * End of 'Interface declarations' Grammer Rules      *
+ * Based off section: (A.2.9 Interface declarations). *
+ ******************************************************/
 
 
 /*******************************************************

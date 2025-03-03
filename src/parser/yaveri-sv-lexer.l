@@ -130,6 +130,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "integer"        { return SVLOG_INTEGER;        }
 "longint"        { return SVLOG_LONGINT;        }
 "matches"        { return SVLOG_MATCHES;        }
+"modport"        { return SVLOG_MODPORT;        }
 "negedge"        { return SVLOG_NEGEDGE;        }
 "nettype"        { return SVLOG_NETTYPE;        }
 "package"        { return SVLOG_PACKAGE;        }
