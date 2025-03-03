@@ -311,6 +311,136 @@ svlog
 	| %empty
 	;
 
+/***********************************************************
+ * Start of 'Module parameters and ports' Grammer Rules    *
+ * Based off section: (A.1.3 Module parameters and ports). *
+ ***********************************************************/
+
+parameter_port_list
+	: '#' '(' list_of_param_assignments parameter_port_declaration_seq_list ')'
+	| '#' '(' parameter_port_declaration_seq_list ')'
+	| '#' '(' ')'
+	;
+
+parameter_port_declaration
+	: parameter_declaration
+	| local_parameter_declaration
+	| data_type list_of_param_assignments
+	| type_parameter_declaration
+	;
+
+parameter_port_declaration_seq_list
+	: parameter_port_declaration
+	| ',' parameter_port_declaration
+	| parameter_port_declaration_seq_list ',' parameter_port_declaration
+	;
+
+list_of_ports
+	: '(' port_seq_list ')'
+	;
+
+att_inst_ansi_port_decl_seq_list
+	: attribute_instance_recurse_or_null ansi_port_declaration
+	| att_inst_ansi_port_decl_seq_list ',' attribute_instance_recurse_or_null ansi_port_declaration
+	;
+
+list_of_port_declarations
+	: '(' ')'
+	| '(' att_inst_ansi_port_decl_seq_list ')'
+	;
+
+port_declaration
+	: attribute_instance_recurse_or_null inout_declaration
+	| attribute_instance_recurse_or_null input_declaration
+	| attribute_instance_recurse_or_null output_declaration
+	| attribute_instance_recurse_or_null ref_declaration
+	| attribute_instance_recurse_or_null interface_port_declaration
+	;
+
+port
+	: port_expression_or_null
+	| period_ident '(' port_expression_or_null ')'
+	;
+
+port_seq_list
+	: port
+	| port_seq_list ',' port
+	;
+
+port_expression
+	: port_reference
+	| '{' port_reference_seq_list '}'
+	;
+
+port_expression_or_null
+	: port_expression
+	| %empty
+	;
+
+port_reference
+	: identifier constant_select
+	;
+
+port_reference_seq_list
+	: port_reference
+	| port_reference_seq_list ',' port_reference
+	;
+
+port_direction
+	: SVLOG_INPUT
+	| SVLOG_OUTPUT
+	| SVLOG_INOUT
+	| SVLOG_REF
+	;
+
+port_direction_or_null
+	: port_direction
+	| %empty
+	;
+
+net_port_header
+	: port_direction_or_null net_port_type
+	;
+
+variable_port_header
+	: port_direction_or_null variable_port_type
+	;
+
+variable_port_header_or_null
+	: variable_port_header
+	| %empty
+	;
+
+interface_port_header
+	: identifier period_ident_or_null
+	| SVLOG_INTERFACE period_ident_or_null
+	;
+
+net_or_interface_port_header
+	: net_port_header
+	| interface_port_header
+	;
+
+net_or_interface_port_header_or_null
+	: net_or_interface_port_header
+	| %empty
+	;
+
+ansi_port_declaration
+	: net_or_interface_port_header_or_null identifier
+	  unpacked_dimension_recurse_or_null equal_constant_expression_or_null
+	| variable_port_header_or_null identifier
+	  variable_dimension_recurse_or_null
+	  equal_constant_expression_or_null
+	| port_direction_or_null period_ident '(' expression_or_null ')'
+	;
+
+/***********************************************************
+ * End of 'Module parameters and ports' Grammer Rules      *
+ * Based off section: (A.1.3 Module parameters and ports). *
+ ***********************************************************/
+
+
 /*******************************************
  * Start of 'Class items' Grammer Rules    *
  * Based off section: (A.1.9 Class items). *
@@ -3791,6 +3921,15 @@ equal_expression
 
 equal_expression_or_null
 	: equal_expression
+	| %empty
+	;
+
+equal_constant_expression
+	: '=' constant_expression
+	;
+
+equal_constant_expression_or_null
+	: equal_constant_expression
 	| %empty
 	;
 
