@@ -704,6 +704,8 @@ timeunits_declaration_or_null
  * Based off section: (A.1.3 Module parameters and ports). *
  ***********************************************************/
 
+/* Start of 'parameter_port_list' grammer rules */
+
 parameter_port_list
 	: '#' '(' list_of_param_assignments parameter_port_declaration_seq_list ')'
 	| '#' '(' parameter_port_declaration_seq_list ')'
@@ -714,6 +716,11 @@ parameter_port_list_or_null
 	: %empty
 	| parameter_port_list
 	;
+
+/* End of 'parameter_port_list' grammer rules */
+
+
+/* Start of 'parameter_port_declaration' grammer rules */
 
 parameter_port_declaration
 	: parameter_declaration
@@ -728,9 +735,19 @@ parameter_port_declaration_seq_list
 	| parameter_port_declaration_seq_list ',' parameter_port_declaration
 	;
 
+/* End of 'parameter_port_declaration' grammer rules */
+
+
+/* Start of 'list_of_ports' grammer rules */
+
 list_of_ports
 	: '(' port_seq_list ')'
 	;
+
+/* End of 'list_of_ports' grammer rules */
+
+
+/* Start of 'list_of_port_declarations' grammer rules */
 
 att_inst_ansi_port_decl_seq_list
 	: attribute_instance_recurse_or_null ansi_port_declaration
@@ -742,6 +759,11 @@ list_of_port_declarations
 	| '(' att_inst_ansi_port_decl_seq_list ')'
 	;
 
+/* End of 'list_of_port_declarations' grammer rules */
+
+
+/* Start of 'port_declaration' grammer rules */
+
 port_declaration
 	: attribute_instance_recurse_or_null inout_declaration
 	| attribute_instance_recurse_or_null input_declaration
@@ -749,6 +771,11 @@ port_declaration
 	| attribute_instance_recurse_or_null ref_declaration
 	| attribute_instance_recurse_or_null interface_port_declaration
 	;
+
+/* End of 'port_declaration' grammer rules */
+
+
+/* Start of 'port' grammer rules */
 
 port
 	: port_expression_or_null
@@ -760,15 +787,25 @@ port_seq_list
 	| port_seq_list ',' port
 	;
 
+/* End of 'port' grammer rules */
+
+
+/* Start of 'port_expression' grammer rules */
+
 port_expression
 	: port_reference
 	| '{' port_reference_seq_list '}'
 	;
 
 port_expression_or_null
-	: port_expression
-	| %empty
+	: %empty
+	| port_expression
 	;
+
+/* End of 'port_expression' grammer rules */
+
+
+/* Start of 'port_reference' grammer rules */
 
 port_reference
 	: identifier constant_select
@@ -779,6 +816,11 @@ port_reference_seq_list
 	| port_reference_seq_list ',' port_reference
 	;
 
+/* End of 'port_reference' grammer rules */
+
+
+/* Start of 'port_direction' grammer rules */
+
 port_direction
 	: SVLOG_INPUT
 	| SVLOG_OUTPUT
@@ -787,27 +829,52 @@ port_direction
 	;
 
 port_direction_or_null
-	: port_direction
-	| %empty
+	: %empty
+	| port_direction
 	;
+
+/* End of 'port_direction' grammer rules */
+
+
+/* Start of 'net_port_header' grammer rules */
 
 net_port_header
 	: port_direction_or_null net_port_type
 	;
+
+/* End of 'net_port_header' grammer rules */
+
+
+/* Start of 'variable_port_header' grammer rules */
 
 variable_port_header
 	: port_direction_or_null variable_port_type
 	;
 
 variable_port_header_or_null
-	: variable_port_header
-	| %empty
+	: %empty
+	| variable_port_header
 	;
+
+/* End of 'variable_port_header' grammer rules */
+
+
+/* Start of 'interface_port_header' grammer rules */
 
 interface_port_header
 	: identifier period_ident_or_null
 	| SVLOG_INTERFACE period_ident_or_null
 	;
+
+interface_port_header_or_null
+	: %empty
+	| interface_port_header
+	;
+
+/* End of 'interface_port_header' grammer rules */
+
+
+/* Start of 'ansi_port_declaration' grammer rules */
 
 net_or_interface_port_header
 	: net_port_header
@@ -815,18 +882,21 @@ net_or_interface_port_header
 	;
 
 net_or_interface_port_header_or_null
-	: net_or_interface_port_header
-	| %empty
+	: %empty
+	| net_or_interface_port_header
 	;
 
 ansi_port_declaration
 	: net_or_interface_port_header_or_null identifier
-	  unpacked_dimension_recurse_or_null equal_constant_expression_or_null
+		unpacked_dimension_recurse_or_null
+			equal_constant_expression_or_null
 	| variable_port_header_or_null identifier
-	  variable_dimension_recurse_or_null
-	  equal_constant_expression_or_null
+		variable_dimension_recurse_or_null
+			equal_constant_expression_or_null
 	| port_direction_or_null period_ident '(' expression_or_null ')'
 	;
+
+/* End of 'ansi_port_declaration' grammer rules */
 
 /***********************************************************
  * End of 'Module parameters and ports' Grammer Rules      *
