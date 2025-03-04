@@ -17,6 +17,7 @@
 
 %token <itoken> SVLOG_SYNC_ACCEPT_ON
 %token <itoken> SVLOG_SYNC_REJECT_ON
+%token <itoken> SVLOG_TIMEPRECISION
 %token <itoken> SVLOG_ENDINTERFACE
 %token <itoken> SVLOG_ENDPRIMITIVE
 %token <itoken> SVLOG_INTERCONNECT
@@ -28,10 +29,12 @@
 %token <itoken> SVLOG_ENDPROPERTY
 %token <itoken> SVLOG_ENDSEQUENCE
 %token <itoken> SVLOG_FIRST_MATCH
+%token <itoken> SVLOG_MACROMODULE
 %token <itoken> SVLOG_ENDCHECKER
 %token <itoken> SVLOG_ENDPACKAGE
 %token <itoken> SVLOG_ENDPROGRAM
 %token <itoken> SVLOG_EVENTUALLY
+%token <itoken> SVLOG_IMPLEMENTS
 %token <itoken> SVLOG_LOCALPARAM
 %token <itoken> SVLOG_PATHPULSE
 %token <itoken> SVLOG_S_NEXTTIME
@@ -54,6 +57,7 @@
 %token <itoken> SVLOG_CLOCKING
 %token <itoken> SVLOG_CONTINUE
 %token <itoken> SVLOG_DEASSIGN
+%token <itoken> SVLOG_ENDCLASS
 %token <itoken> SVLOG_EXTENDES
 %token <itoken> SVLOG_FUNCTION
 %token <itoken> SVLOG_JOIN_ANY
@@ -67,6 +71,7 @@
 %token <itoken> SVLOG_SEQUENCE
 %token <itoken> SVLOG_SHORTINT
 %token <itoken> SVLOG_S_ALWAYS
+%token <itoken> SVLOG_TIMEUNIT
 %token <itoken> SVLOG_UNSIGNED
 %token <itoken> SVLOG_VECTORED
 %token <itoken> SVLOG_CHANDLE
@@ -110,6 +115,7 @@
 %token <itoken> SVLOG_CONFIG
 %token <itoken> SVLOG_EXPECT
 %token <itoken> SVLOG_EXPORT
+%token <itoken> SVLOG_EXTERN
 %token <itoken> SVLOG_GENVAR
 %token <itoken> SVLOG_GLOBAL
 %token <itoken> SVLOG_HIGHZ0
@@ -218,7 +224,6 @@
 %token <itoken> SVLOG_SEC
 
 
-
 %token <itoken> EXPORT_DECLARATION
 %token <itoken> CASE_EQUAL
 %token <itoken> CASE_NOT_EQUAL
@@ -319,9 +324,16 @@ svlog
  * Based off section: (A.1.1 Library source text). *
  ***************************************************/
 
+/* Start of 'library_text' grammer rules */
+
 library_text
 	: library_description_recurse_or_null
 	;
+
+/* End of 'library_text' grammer rules */
+
+
+/* Start of 'library_description' grammer rules */
 
 library_description
 	: library_declaration
@@ -340,28 +352,351 @@ library_description_recurse_or_null
 	| library_description_recurse
 	;
 
+/* End of 'library_description' grammer rules */
+
+
+/* Start of 'library_declaration' grammer rules */
+
 incdir_file_path_spec_seq_list
 	: SVLOG_HINCDIR file_path_spec_seq_list
 	;
 
 incdir_file_path_spec_seq_list_or_null
-	: incdir_file_path_spec_seq_list
-	| %empty
+	: %empty
+	| incdir_file_path_spec_seq_list
 	;
 
 library_declaration
-	: SVLOG_LIBRARY identifier file_path_spec_seq_list
-	  incdir_file_path_spec_seq_list_or_null
+	: SVLOG_LIBRARY identifier
+		file_path_spec_seq_list
+			incdir_file_path_spec_seq_list_or_null
 	;
+
+/* End of 'library_declaration' grammer rules */
+
+
+/* Start of 'include_statement' grammer rules */
 
 include_statement
 	: SVLOG_INCLUDE file_path_spec ';'
 	;
 
+/* End of 'include_statement' grammer rules */
+
 /***************************************************
- * Start of 'Library source text' Grammer Rules    *
+ * End of 'Library source text' Grammer Rules      *
  * Based off section: (A.1.1 Library source text). *
  ***************************************************/
+
+
+/*********************************************************
+ * Start of 'SystemVerilog source text' Grammer Rules    *
+ * Based off section: (A.1.2 SystemVerilog source text). *
+ *********************************************************/
+
+/* Start of 'source_text' grammer rules */
+
+source_text
+	: timeunits_declaration_or_null description_recurse_or_null
+	;
+
+/* End of 'source_text' grammer rules */
+
+
+/* Start of 'description' grammer rules */
+
+description
+	: module_declaration
+	| udp_declaration
+	| interface_declaration
+	| program_declaration
+	| package_declaration
+	| attribute_instance_recurse_or_null package_item
+	| attribute_instance_recurse_or_null bind_directive
+	| config_declaration
+	;
+
+description_recurse
+	: description
+	| description_recurse description
+	;
+
+description_recurse_or_null
+	: %empty
+	| description_recurse
+	;
+
+/* End of 'description' grammer rules */
+
+
+/* Start of 'module_nonansi_header' grammer rules */
+
+module_nonansi_header
+	: attribute_instance_recurse_or_null module_keyword lifetime_or_null
+		identifier package_import_declaration_recurse_or_null
+			parameter_port_list_or_null list_of_ports ';'
+	;
+
+/* End of 'module_nonansi_header' grammer rules */
+
+
+/* Start of 'module_ansi_header' grammer rules */
+
+module_ansi_header
+	: attribute_instance_recurse_or_null module_keyword lifetime_or_null
+		identifier package_import_declaration_recurse_or_null
+			parameter_port_list_or_null list_of_port_declarations_or_null ';'
+	;
+
+/* End of 'module_ansi_header' grammer rules */
+
+
+/* Start of 'module_declaration' grammer rules */
+
+module_declaration
+	: module_nonansi_header timeunits_declaration_or_null
+		module_item_recurse_or_null
+			SVLOG_ENDMODULE colon_ident_or_null
+	| module_ansi_header timeunits_declaration_or_null
+		non_port_module_item_recurse_or_null
+			SVLOG_ENDMODULE colon_ident_or_null
+	| attribute_instance_recurse_or_null module_keyword
+		lifetime_or_null identifier '(' '.' '*' ')' ';'
+			timeunits_declaration_or_null module_item_recurse_or_null
+				SVLOG_ENDMODULE colon_ident_or_null
+	| SVLOG_EXTERN module_nonansi_header
+	| SVLOG_EXTERN module_ansi_header
+	;
+
+/* End of 'module_declaration' grammer rules */
+
+
+/* Start of 'module_keyword' grammer rules */
+
+module_keyword
+	: SVLOG_MODULE
+	| SVLOG_MACROMODULE
+	;
+
+/* End of 'module_keyword' grammer rules */
+
+
+/* Start of 'interface_declaration' grammer rules */
+
+interface_declaration
+	: interface_nonansi_header timeunits_declaration_or_null
+		interface_item_recurse_or_null
+			SVLOG_ENDINTERFACE colon_ident_or_null
+	| interface_ansi_header timeunits_declaration_or_null
+		non_port_interface_item_recurse_or_null
+			SVLOG_ENDINTERFACE colon_ident_or_null
+	| attribute_instance_recurse_or_null
+		SVLOG_INTERFACE identifier '(' '.' '*' ')' ';'
+			timeunits_declaration_or_null interface_item_recurse_or_null
+				SVLOG_ENDINTERFACE colon_ident_or_null
+	| SVLOG_EXTERN interface_nonansi_header
+	| SVLOG_EXTERN interface_ansi_header
+	;
+
+/* End of 'interface_declaration' grammer rules */
+
+
+/* Start of 'interface_nonansi_header' grammer rules */
+
+interface_nonansi_header
+	: attribute_instance_recurse_or_null
+		SVLOG_INTERFACE lifetime_or_null identifier
+			package_import_declaration_recurse_or_null
+				parameter_port_list_or_null list_of_ports ';'
+	;
+
+/* End of 'interface_nonansi_header' grammer rules */
+
+
+/* Start of 'interface_ansi_header' grammer rules */
+
+interface_ansi_header
+	: attribute_instance_recurse_or_null
+		SVLOG_INTERFACE lifetime_or_null identifier
+			package_import_declaration_recurse_or_null
+				parameter_port_list_or_null
+					list_of_port_declarations_or_null ';'
+	;
+
+/* End of 'interface_ansi_header' grammer rules */
+
+
+/* Start of 'program_declaration' grammer rules */
+
+program_declaration
+	: program_nonansi_header timeunits_declaration_or_null
+		program_item_recurse_or_null
+			SVLOG_ENDPROGRAM colon_ident_or_null
+	| program_ansi_header timeunits_declaration_or_null
+		non_port_program_item_recurse_or_null
+			SVLOG_ENDPROGRAM colon_ident_or_null
+	| attribute_instance_recurse_or_null
+		SVLOG_PROGRAM identifier '(' '.' '*' ')' ';'
+			timeunits_declaration_or_null program_item_recurse_or_null
+				SVLOG_ENDPROGRAM colon_ident_or_null
+	| SVLOG_EXTERN program_nonansi_header
+	| SVLOG_EXTERN program_ansi_header
+	;
+
+/* End of 'program_declaration' grammer rules */
+
+
+/* Start of 'program_nonansi_header' grammer rules */
+
+program_nonansi_header
+	: attribute_instance_recurse_or_null
+		SVLOG_PROGRAM lifetime_or_null identifier
+			package_import_declaration_recurse_or_null
+				parameter_port_list_or_null list_of_ports ';'
+	;
+
+/* End of 'program_nonansi_header' grammer rules */
+
+
+/* Start of 'program_ansi_header' grammer rules */
+
+program_ansi_header
+	: attribute_instance_recurse_or_null
+		SVLOG_PROGRAM lifetime_or_null identifier
+			package_import_declaration_recurse_or_null
+				parameter_port_list_or_null
+					list_of_port_declarations_or_null ';'
+	;
+
+/* End of 'program_ansi_header' grammer rules */
+
+
+/* Start of 'checker_declaration' grammer rules */
+
+checker_declaration_cpl_or_null
+	: %empty
+	| '(' checker_port_list_or_null ')'
+	;
+
+checker_declaration_at_cogi
+	: attribute_instance_recurse_or_null checker_or_generate_item
+	;
+
+checker_declaration_at_cogi_recurse
+	: checker_declaration_at_cogi
+	| checker_declaration_at_cogi_recurse checker_declaration_at_cogi
+	;
+
+checker_declaration_at_cogi_recurse_or_null
+	: %empty
+	| checker_declaration_at_cogi_recurse
+	;
+
+checker_declaration
+	: SVLOG_CHECKER identifier checker_declaration_cpl_or_null ';'
+		checker_declaration_at_cogi_recurse_or_null
+			SVLOG_ENDCHECKER colon_ident_or_null
+	;
+
+/* End of 'checker_declaration' grammer rules */
+
+
+/* Start of 'class_declaration' grammer rules */
+
+class_decl_implements_interface_class_type_or_null
+	: %empty
+	| SVLOG_IMPLEMENTS interface_class_type_seq_list
+	;
+
+class_decl_loa_or_default_or_null
+	: %empty
+	| list_of_arguments
+	| SVLOG_DEFAULT
+	;
+
+class_decl_extends_class_type_or_null
+	: %empty
+	| SVLOG_EXTENDES class_type
+	| SVLOG_EXTENDES class_type '(' class_decl_loa_or_default_or_null ')'
+	;
+
+class_declaration
+	: virtual_or_null SVLOG_CLASS final_specifier_or_null identifier
+		parameter_port_list_or_null class_decl_extends_class_type_or_null
+			class_decl_implements_interface_class_type_or_null ';'
+				class_item_recurse_or_null SVLOG_ENDCLASS colon_ident_or_null
+	;
+
+/* End of 'class_declaration' grammer rules */
+
+
+/* Start of 'class_declaration' grammer rules */
+
+interface_class_decl_extends_interface_class_type_or_null
+	: %empty
+	| SVLOG_EXTENDES interface_class_type_seq_list
+	;
+
+interface_class_declaration
+	: SVLOG_INTERFACE SVLOG_CLASS identifier parameter_port_list_or_null
+		interface_class_decl_extends_interface_class_type_or_null ';'
+			interface_class_item_recurse_or_null
+				SVLOG_ENDCLASS colon_ident_or_null
+	;
+
+/* End of 'class_declaration' grammer rules */
+
+
+/* Start of 'package_declaration' grammer rules */
+
+package_decl_aipi
+	: attribute_instance_recurse_or_null package_item
+	;
+
+package_decl_aipi_recurse
+	: package_decl_aipi
+	| package_decl_aipi_recurse package_decl_aipi
+	;
+
+package_decl_aipi_recurse_or_null
+	: %empty
+	| package_decl_aipi
+	;
+
+package_declaration
+	: attribute_instance_recurse_or_null SVLOG_PACKAGE lifetime_or_null identifier ';'
+		timeunits_declaration_or_null package_decl_aipi_recurse_or_null
+				SVLOG_ENDPACKAGE colon_ident_or_null
+	;
+
+/* End of 'package_declaration' grammer rules */
+
+
+/* Start of 'timeunits_declaration' grammer rules */
+
+tdecl_forward_time_literal_or_null
+	: %empty
+	| '/' time_literal
+	;
+
+timeunits_declaration
+	: SVLOG_TIMEUNIT time_literal tdecl_forward_time_literal_or_null ';'
+	| SVLOG_TIMEPRECISION time_literal ';'
+	| SVLOG_TIMEUNIT time_literal ';' SVLOG_TIMEPRECISION time_literal ';'
+	| SVLOG_TIMEPRECISION time_literal ';' SVLOG_TIMEUNIT time_literal ;
+	;
+
+timeunits_declaration_or_null
+	: %empty
+	| timeunits_declaration
+	;
+
+/* End of 'timeunits_declaration' grammer rules */
+
+/*********************************************************
+ * End of 'SystemVerilog source text' Grammer Rules      *
+ * Based off section: (A.1.2 SystemVerilog source text). *
+ *********************************************************/
 
 
 /***********************************************************
@@ -373,6 +708,11 @@ parameter_port_list
 	: '#' '(' list_of_param_assignments parameter_port_declaration_seq_list ')'
 	| '#' '(' parameter_port_declaration_seq_list ')'
 	| '#' '(' ')'
+	;
+
+parameter_port_list_or_null
+	: %empty
+	| parameter_port_list
 	;
 
 parameter_port_declaration
@@ -667,9 +1007,29 @@ package_import_declaration
 	: SVLOG_IMPORT package_import_item_seq_list ';'
 	;
 
+package_import_declaration_recurse
+	: package_import_declaration
+	| package_import_declaration_recurse package_import_declaration
+	;
+
+package_import_declaration_recurse_or_null
+	: %empty
+	| package_import_declaration_recurse
+	;
+
 package_export_declaration
 	: SVLOG_EXPORT EXPORT_DECLARATION ';'
 	| SVLOG_EXPORT package_import_item_seq_list ';'
+	;
+
+package_export_declaration_recurse
+	: package_export_declaration
+	| package_export_declaration_recurse package_export_declaration
+	;
+
+package_export_declaration_recurse_or_null
+	: %empty
+	| package_export_declaration_recurse
 	;
 
 package_import_item
@@ -870,6 +1230,11 @@ class_type
 
 interface_class_type
 	: ps_class_identifier parameter_value_assignment_or_null
+	;
+
+interface_class_type_seq_list
+	: interface_class_type
+	| interface_class_type_seq_list ',' interface_class_type
 	;
 
 integer_type
@@ -3994,6 +4359,11 @@ const_or_null
 static_or_null
 	: SVLOG_STATIC
 	| %empty
+	;
+
+virtual_or_null
+	: %empty
+	| SVLOG_VIRTUAL
 	;
 
 /*********************************

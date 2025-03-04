@@ -64,6 +64,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 	/* Start of reserved words */
 "sync_accept_on" { return SVLOG_SYNC_ACCEPT_ON; }
 "sync_reject_on" { return SVLOG_SYNC_REJECT_ON; }
+"timeprecision"  { return SVLOG_TIMEPRECISION;  }
 "endinterface"   { return SVLOG_ENDINTERFACE;   }
 "endprimitive"   { return SVLOG_ENDPRIMITIVE;   }
 "interconnect"   { return SVLOG_INTERCONNECT;   }
@@ -75,10 +76,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endproperty"    { return SVLOG_ENDPROPERTY;    }
 "endsequence"    { return SVLOG_ENDSEQUENCE;    }
 "first_match"    { return SVLOG_FIRST_MATCH;    }
+"macromodule"    { return SVLOG_MACROMODULE;    }
 "endchecker"     { return SVLOG_ENDCHECKER;     }
 "endpackage"     { return SVLOG_ENDPACKAGE;     }
 "endprogram"     { return SVLOG_ENDPROGRAM;     }
 "eventually"     { return SVLOG_EVENTUALLY;     }
+"implements"     { return SVLOG_IMPLEMENTS;     }
 "localparam"     { return SVLOG_LOCALPARAM;     }
 "PATHPULSE$"     { return SVLOG_PATHPULSE;      }
 "s_nexttime"     { return SVLOG_S_NEXTTIME;     }
@@ -101,6 +104,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "clocking"       { return SVLOG_CLOCKING;       }
 "continue"       { return SVLOG_CONTINUE;       }
 "deassign"       { return SVLOG_DEASSIGN;       }
+"endclass"       { return SVLOG_ENDCLASS;       }
 "extendes"       { return SVLOG_EXTENDES;       }
 "function"       { return SVLOG_FUNCTION;       }
 "join_any"       { return SVLOG_JOIN_ANY;       }
@@ -114,6 +118,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "sequence"       { return SVLOG_SEQUENCE;       }
 "shortint"       { return SVLOG_SHORTINT;       }
 "s_always"       { return SVLOG_S_ALWAYS;       }
+"timeunit"       { return SVLOG_TIMEUNIT;       }
 "unsigned"       { return SVLOG_UNSIGNED;       }
 "vectored"       { return SVLOG_VECTORED;       }
 "chandle"        { return SVLOG_CHANDLE;        }
@@ -157,6 +162,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "config"         { return SVLOG_CONFIG;         }
 "expect"         { return SVLOG_EXPECT;         }
 "export"         { return SVLOG_EXPORT;         }
+"extern"         { return SVLOG_EXTERN;         }
 "genvar"         { return SVLOG_GENVAR;         }
 "global"         { return SVLOG_GLOBAL;         }
 "highz0"         { return SVLOG_HIGHZ0;         }
