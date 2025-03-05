@@ -104,6 +104,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "clocking"       { return SVLOG_CLOCKING;       }
 "continue"       { return SVLOG_CONTINUE;       }
 "deassign"       { return SVLOG_DEASSIGN;       }
+"defparam"       { return SVLOG_DEFPARAM;       }
 "endclass"       { return SVLOG_ENDCLASS;       }
 "extendes"       { return SVLOG_EXTENDES;       }
 "function"       { return SVLOG_FUNCTION;       }
@@ -121,6 +122,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "timeunit"       { return SVLOG_TIMEUNIT;       }
 "unsigned"       { return SVLOG_UNSIGNED;       }
 "vectored"       { return SVLOG_VECTORED;       }
+"$warning"       { return SVLOG_DSWARNING;      }
 "chandle"        { return SVLOG_CHANDLE;        }
 "checker"        { return SVLOG_CHECKER;        }
 "context"        { return SVLOG_CONTEXT;        }
@@ -186,6 +188,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unique"         { return SVLOG_UNIQUE;         }
 "unwire"         { return SVLOG_UNWIRE;         }
 "within"         { return SVLOG_WITHIN;         }
+"$error"         { return SVLOG_DSERROR;        }
+"$fatal"         { return SVLOG_DSFATAL;        }
 "begin"          { return SVLOG_BEGIN;          }
 "break"          { return SVLOG_BREAK;          }
 "casex"          { return SVLOG_CASEX;          }
@@ -215,8 +219,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "weak1"          { return SVLOG_WEAK1;          }
 "while"          { return SVLOG_WHILE;          }
 "1step"          { return SVLOG_1STEP;          }
-"$root"          { return SVLOG_ROOT;           }
-"$unit"          { return SVLOG_UNIT;           }
+"$info"          { return SVLOG_DSINFO;         }
+"$root"          { return SVLOG_DSROOT;         }
+"$unit"          { return SVLOG_DSUNIT;         }
+"bind"           { return SVLOG_BIND;           }
 "byte"           { return SVLOG_BYTE;           }
 "case"           { return SVLOG_CASE;           }
 "dist"           { return SVLOG_DIST;           }

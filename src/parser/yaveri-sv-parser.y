@@ -57,6 +57,7 @@
 %token <itoken> SVLOG_CLOCKING
 %token <itoken> SVLOG_CONTINUE
 %token <itoken> SVLOG_DEASSIGN
+%token <itoken> SVLOG_DEFPARAM
 %token <itoken> SVLOG_ENDCLASS
 %token <itoken> SVLOG_EXTENDES
 %token <itoken> SVLOG_FUNCTION
@@ -74,6 +75,7 @@
 %token <itoken> SVLOG_TIMEUNIT
 %token <itoken> SVLOG_UNSIGNED
 %token <itoken> SVLOG_VECTORED
+%token <itoken> SVLOG_DSWARNING
 %token <itoken> SVLOG_CHANDLE
 %token <itoken> SVLOG_CHECKER
 %token <itoken> SVLOG_CONTEXT
@@ -139,6 +141,8 @@
 %token <itoken> SVLOG_UNIQUE
 %token <itoken> SVLOG_UNWIRE
 %token <itoken> SVLOG_WITHIN
+%token <itoken> SVLOG_DSERROR
+%token <itoken> SVLOG_DSFATAL
 %token <itoken> SVLOG_BEGIN
 %token <itoken> SVLOG_BREAK
 %token <itoken> SVLOG_CASEX
@@ -168,8 +172,10 @@
 %token <itoken> SVLOG_WEAK1
 %token <itoken> SVLOG_WHILE
 %token <itoken> SVLOG_1STEP
-%token <itoken> SVLOG_ROOT
-%token <itoken> SVLOG_UNIT
+%token <itoken> SVLOG_DSINFO
+%token <itoken> SVLOG_DSROOT
+%token <itoken> SVLOG_DSUNIT
+%token <itoken> SVLOG_BIND
 %token <itoken> SVLOG_BYTE
 %token <itoken> SVLOG_CASE
 %token <itoken> SVLOG_DIST
@@ -902,6 +908,191 @@ ansi_port_declaration
  * End of 'Module parameters and ports' Grammer Rules      *
  * Based off section: (A.1.3 Module parameters and ports). *
  ***********************************************************/
+
+
+/********************************************
+ * Start of 'Module items' Grammer Rules    *
+ * Based off section: (A.1.4 Module items). *
+ ********************************************/
+
+/* Start of 'severity_system_task' grammer rules */
+
+severity_system_task_loa_or_null
+	: %empty
+	| '(' list_of_arguments_or_null ')'
+	;
+
+severity_system_task_finish_num_loa_or_null
+	: %empty
+	| '(' finish_number ')'
+	| '(' finish_number ',' list_of_arguments ')'
+	;
+
+severity_system_task
+	: SVLOG_DSFATAL severity_system_task_finish_num_loa_or_null ';'
+	| SVLOG_DSERROR severity_system_task_loa_or_null ';'
+	| SVLOG_DSWARNING severity_system_task_loa_or_null ';'
+	| SVLOG_DSINFO severity_system_task_loa_or_null ';'
+	;
+
+/* End of 'severity_system_task' grammer rules */
+
+
+/* Start of 'finish_number' grammer rules */
+
+finish_number
+	: SVLOG_DIGIT
+	;
+
+/* End of 'finish_number' grammer rules */
+
+
+/* Start of 'module_common_item' grammer rules */
+
+module_common_item
+	: module_or_generate_item_declaration
+	| interface_instantiation
+	| program_instantiation
+	| assertion_item
+	| bind_directive
+	| continuous_assign
+	| net_alias
+	| initial_construct
+	| final_construct
+	| always_construct
+	| loop_generate_construct
+	| conditional_generate_construct
+	| severity_system_task
+	;
+
+/* End of 'module_common_item' grammer rules */
+
+
+/* Start of 'module_item' grammer rules */
+
+module_item
+	: port_declaration ';'
+	| non_port_module_item
+	;
+
+module_item_recurse
+	: module_item
+	| module_item_recurse module_item
+	;
+
+module_item_recurse_or_null
+	: %empty
+	| module_item_recurse
+	;
+
+/* End of 'module_item' grammer rules */
+
+
+/* Start of 'module_or_generate_item' grammer rules */
+
+module_or_generate_item
+	: attribute_instance_recurse_or_null parameter_override
+	| attribute_instance_recurse_or_null gate_instantiation
+	| attribute_instance_recurse_or_null udp_instantiation
+	| attribute_instance_recurse_or_null module_instantiation
+	| attribute_instance_recurse_or_null module_common_item
+	;
+
+/* End of 'module_or_generate_item' grammer rules */
+
+
+/* Start of 'module_or_generate_item_declaration' grammer rules */
+
+module_or_generate_item_declaration
+	: package_or_generate_item_declaration
+	| genvar_declaration
+	| clocking_declaration
+	| SVLOG_DEFAULT SVLOG_CLOCKING identifier ';'
+	| SVLOG_DEFAULT SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF expression_or_dist ';'
+	;
+
+/* End of 'module_or_generate_item_declaration' grammer rules */
+
+
+/* Start of 'non_port_module_item' grammer rules */
+
+non_port_module_item
+	: generate_region
+	| module_or_generate_item
+	| specify_block
+	| attribute_instance_recurse_or_null specparam_declaration
+	| program_declaration
+	| module_declaration
+	| interface_declaration
+	| timeunits_declaration
+	;
+
+non_port_module_item_recurse
+	: non_port_module_item
+	| non_port_module_item_recurse non_port_module_item
+	;
+
+non_port_module_item_recurse_or_null
+	: %empty
+	| non_port_module_item_recurse
+	;
+
+/* End of 'non_port_module_item' grammer rules */
+
+
+/* Start of 'parameter_override' grammer rules */
+
+parameter_override
+	: SVLOG_DEFPARAM list_of_defparam_assignments ';'
+	;
+
+/* End of 'parameter_override' grammer rules */
+
+
+/* Start of 'parameter_override' grammer rules */
+
+colon_bind_ti_list_or_null
+	: %empty
+	| ':' bind_target_instance_list
+	;
+
+bind_directive
+	: SVLOG_BIND identifier colon_bind_ti_list_or_null bind_instantiation ';'
+	| SVLOG_BIND bind_target_instance bind_instantiation ';'
+	;
+
+/* End of 'parameter_override' grammer rules */
+
+
+/* Start of 'bind_target_instance' grammer rules */
+
+bind_target_instance
+	: hierarchical_identifier constant_bit_select
+	;
+
+bind_target_instance_list
+	: bind_target_instance
+	| bind_target_instance_list ',' bind_target_instance
+	;
+
+/* End of 'bind_target_instance' grammer rules */
+
+
+/* Start of 'bind_instantiation' grammer rules */
+
+bind_instantiation
+	: program_instantiation
+	| module_instantiation
+	| interface_instantiation
+	| checker_instantiation
+	;
+
+/* End of 'bind_instantiation' grammer rules */
+
+/********************************************
+ * End of 'Module items' Grammer Rules      *
+ * Based off section: (A.1.4 Module items). *
+ ********************************************/
 
 
 /*******************************************
@@ -3577,13 +3768,17 @@ function_subroutine_call
 	;
 
 list_of_arguments
-	: 
-	| expression
+	: expression
 	| '.' identifier '(' ')'
 	| '.' identifier '(' expression ')'
 	| list_of_arguments ',' expression
 	| list_of_arguments ',' '.' identifier '(' ')'
 	| list_of_arguments ',' '.' identifier '(' expression ')'
+	;
+
+list_of_arguments_or_null
+	: %empty
+	| list_of_arguments
 	;
 
 method_call
@@ -4248,7 +4443,7 @@ attr_name
 
 hierarchical_identifier
 	: identifier
-	| SVLOG_ROOT '.' identifier
+	| SVLOG_DSROOT '.' identifier
 	| hierarchical_identifier identifier constant_bit_select '.'
 	;
 
@@ -4264,7 +4459,7 @@ identifier
 
 package_scope
 	: identifier CLASS_SCOPE_OPERATOR
-	| SVLOG_UNIT CLASS_SCOPE_OPERATOR
+	| SVLOG_DSUNIT CLASS_SCOPE_OPERATOR
 	;
 
 ps_class_identifier
