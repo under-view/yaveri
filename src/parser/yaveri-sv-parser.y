@@ -60,7 +60,9 @@
 %token <itoken> SVLOG_DEFPARAM
 %token <itoken> SVLOG_ENDCLASS
 %token <itoken> SVLOG_EXTENDES
+%token <itoken> SVLOG_FORKJOIN
 %token <itoken> SVLOG_FUNCTION
+%token <itoken> SVLOG_INSTANCE
 %token <itoken> SVLOG_JOIN_ANY
 %token <itoken> SVLOG_NEXTTIME
 %token <itoken> SVLOG_PRIORITY
@@ -1225,6 +1227,80 @@ use_clause
  * End of 'Configuration source text' Grammer Rules      *
  * Based off section: (A.1.5 Configuration source text). *
  *********************************************************/
+
+
+/***********************************************
+ * Start of 'Interface items' Grammer Rules    *
+ * Based off section: (A.1.6 Interface items). *
+ ***********************************************/
+
+/* Start of 'interface_or_generate_item' grammer rules */
+
+interface_or_generate_item
+	: attribute_instance_recurse_or_null module_common_item
+	| attribute_instance_recurse_or_null extern_tf_declaration
+	;
+
+/* End of 'interface_or_generate_item' grammer rules */
+
+
+/* Start of 'extern_tf_declaration' grammer rules */
+
+extern_tf_declaration
+	: SVLOG_EXTERN method_prototype ';'
+	| SVLOG_EXTERN SVLOG_FORKJOIN task_prototype ';'
+	;
+
+/* End of 'extern_tf_declaration' grammer rules */
+
+
+/* Start of 'interface_item' grammer rules */
+
+interface_item
+	: port_declaration ';'
+	| non_port_interface_item
+	;
+
+interface_item_recurse
+	: interface_item
+	| interface_item_recurse interface_item
+	;
+
+interface_item_recurse_or_null
+	: %empty
+	| interface_item_recurse
+	;
+
+/* End of 'interface_item' grammer rules */
+
+
+/* Start of 'non_port_interface_item' grammer rules */
+
+non_port_interface_item
+	: generate_region
+	| interface_or_generate_item
+	| program_declaration
+	| modport_declaration
+	| interface_declaration
+	| timeunits_declaration
+	;
+
+non_port_interface_item_recurse
+	: non_port_interface_item
+	| non_port_interface_item_recurse non_port_interface_item
+	;
+
+non_port_interface_item_recurse_or_null
+	: %empty
+	| non_port_interface_item_recurse
+	;
+
+/* End of 'non_port_interface_item' grammer rules */
+
+/***********************************************
+ * End of 'Interface items' Grammer Rules      *
+ * Based off section: (A.1.6 Interface items). *
+ ***********************************************/
 
 
 /*******************************************

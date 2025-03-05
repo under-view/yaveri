@@ -107,7 +107,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "defparam"       { return SVLOG_DEFPARAM;       }
 "endclass"       { return SVLOG_ENDCLASS;       }
 "extendes"       { return SVLOG_EXTENDES;       }
+"forkjoin"       { return SVLOG_FORKJOIN;       }
 "function"       { return SVLOG_FUNCTION;       }
+"instance"       { return SVLOG_INSTANCE;       }
 "join_any"       { return SVLOG_JOIN_ANY;       }
 "nexttime"       { return SVLOG_NEXTTIME;       }
 "priority"       { return SVLOG_PRIORITY;       }
