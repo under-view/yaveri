@@ -1303,6 +1303,73 @@ non_port_interface_item_recurse_or_null
  ***********************************************/
 
 
+/*********************************************
+ * Start of 'Program items' Grammer Rules    *
+ * Based off section: (A.1.7 Program items). *
+ *********************************************/
+
+/* Start of 'program_item' grammer rules */
+
+program_item
+	: port_declaration ';'
+	| non_port_program_item
+	;
+
+program_item_recurse
+	: program_item
+	| program_item_recurse program_item
+	;
+
+program_item_recurse_or_null
+	: %empty
+	| program_item_recurse
+	;
+
+/* End of 'program_item' grammer rules */
+
+
+/* Start of 'non_port_program_item' grammer rules */
+
+non_port_program_item
+	: attribute_instance_recurse_or_null continuous_assign
+	| attribute_instance_recurse_or_null module_or_generate_item_declaration
+	| attribute_instance_recurse_or_null initial_construct
+	| attribute_instance_recurse_or_null final_construct
+	| attribute_instance_recurse_or_null concurrent_assertion_item
+	| timeunits_declaration
+	| program_generate_item
+	;
+
+non_port_program_item_recurse
+	: non_port_program_item
+	| non_port_program_item_recurse non_port_program_item
+	;
+
+non_port_program_item_recurse_or_null
+	: %empty
+	| non_port_program_item_recurse
+	;
+
+/* End of 'non_port_program_item' grammer rules */
+
+
+/* Start of 'program_generate_item' grammer rules */
+
+program_generate_item
+	: loop_generate_construct
+	| conditional_generate_construct
+	| generate_region
+	| elaboration_severity_system_task
+	;
+
+/* End of 'program_generate_item' grammer rules */
+
+/*********************************************
+ * End of 'Program items' Grammer Rules      *
+ * Based off section: (A.1.7 Program items). *
+ *********************************************/
+
+
 /*******************************************
  * Start of 'Class items' Grammer Rules    *
  * Based off section: (A.1.9 Class items). *
