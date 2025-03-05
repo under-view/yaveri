@@ -137,6 +137,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "initial"        { return SVLOG_INITIAL;        }
 "integer"        { return SVLOG_INTEGER;        }
 "library"        { return SVLOG_LIBRARY;        }
+"liblist"        { return SVLOG_LIBLIST;        }
 "longint"        { return SVLOG_LONGINT;        }
 "matches"        { return SVLOG_MATCHES;        }
 "modport"        { return SVLOG_MODPORT;        }
@@ -162,6 +163,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "assume"         { return SVLOG_ASSUME;         }
 "before"         { return SVLOG_BEFORE;         }
 "config"         { return SVLOG_CONFIG;         }
+"design"         { return SVLOG_DESIGN;         }
 "expect"         { return SVLOG_EXPECT;         }
 "export"         { return SVLOG_EXPORT;         }
 "extern"         { return SVLOG_EXTERN;         }
@@ -225,6 +227,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "bind"           { return SVLOG_BIND;           }
 "byte"           { return SVLOG_BYTE;           }
 "case"           { return SVLOG_CASE;           }
+"cell"           { return SVLOG_CELL;           }
 "dist"           { return SVLOG_DIST;           }
 "edge"           { return SVLOG_EDGE;           }
 "else"           { return SVLOG_ELSE;           }
@@ -263,6 +266,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "reg"            { return SVLOG_REG;            }
 "std"            { return SVLOG_STD;            }
 "tri"            { return SVLOG_TRI;            }
+"use"            { return SVLOG_USE;            }
 "var"            { return SVLOG_VAR;            }
 "wor"            { return SVLOG_WOR;            }
 "xor"            { return SVLOG_XOR;            }

@@ -90,6 +90,7 @@
 %token <itoken> SVLOG_INITIAL
 %token <itoken> SVLOG_INTEGER
 %token <itoken> SVLOG_LIBRARY
+%token <itoken> SVLOG_LIBLIST
 %token <itoken> SVLOG_LONGINT
 %token <itoken> SVLOG_MATCHES
 %token <itoken> SVLOG_MODPORT
@@ -115,6 +116,7 @@
 %token <itoken> SVLOG_ASSUME
 %token <itoken> SVLOG_BEFORE
 %token <itoken> SVLOG_CONFIG
+%token <itoken> SVLOG_DESIGN
 %token <itoken> SVLOG_EXPECT
 %token <itoken> SVLOG_EXPORT
 %token <itoken> SVLOG_EXTERN
@@ -178,6 +180,7 @@
 %token <itoken> SVLOG_BIND
 %token <itoken> SVLOG_BYTE
 %token <itoken> SVLOG_CASE
+%token <itoken> SVLOG_CELL
 %token <itoken> SVLOG_DIST
 %token <itoken> SVLOG_EDGE
 %token <itoken> SVLOG_ELSE
@@ -216,6 +219,7 @@
 %token <itoken> SVLOG_REG
 %token <itoken> SVLOG_STD
 %token <itoken> SVLOG_TRI
+%token <itoken> SVLOG_USE
 %token <itoken> SVLOG_VAR
 %token <itoken> SVLOG_WOR
 %token <itoken> SVLOG_XOR
@@ -1093,6 +1097,134 @@ bind_instantiation
  * End of 'Module items' Grammer Rules      *
  * Based off section: (A.1.4 Module items). *
  ********************************************/
+
+
+/*********************************************************
+ * Start of 'Configuration source text' Grammer Rules    *
+ * Based off section: (A.1.5 Configuration source text). *
+ *********************************************************/
+
+/* Start of 'config_declaration' grammer rules */
+
+config_decl_local_param_decl
+	: local_parameter_declaration ';'
+	;
+
+config_decl_local_param_decl_recurse
+	: config_decl_local_param_decl
+	| config_decl_local_param_decl_recurse config_decl_local_param_decl
+	;
+
+config_decl_local_param_decl_recurse_or_null
+	: %empty
+	| config_decl_local_param_decl_recurse
+	;
+
+config_declaration
+	: SVLOG_CONFIG identifier ';'
+		config_decl_local_param_decl_recurse_or_null
+			design_statement config_rule_statement_recurse_or_null
+				SVLOG_ENDCONFIG colon_ident_or_null
+	;
+
+/* End of 'config_declaration' grammer rules */
+
+
+/* Start of 'design_statement' grammer rules */
+
+design_statement_ident_recurse
+	: period_ident_or_null identifier
+	| design_statement_ident_recurse period_ident_or_null identifier
+	;
+
+design_statement_ident_recurse_or_null
+	: %empty
+	| design_statement_ident_recurse
+	;
+
+design_statement
+	: SVLOG_DESIGN design_statement_ident_recurse_or_null ';'
+	;
+
+/* End of 'design_statement' grammer rules */
+
+
+/* Start of 'config_rule_statement' grammer rules */
+
+config_rule_statement
+	: SVLOG_DEFAULT liblist_clause ';'
+	| inst_clause liblist_clause ';'
+	| inst_clause use_clause ';'
+	| cell_clause liblist_clause ';'
+	| cell_clause use_clause ';'
+	;
+
+config_rule_statement_recurse
+	: config_rule_statement
+	| config_rule_statement_recurse config_rule_statement
+	;
+
+config_rule_statement_recurse_or_null
+	: %empty
+	| config_rule_statement_recurse
+	;
+
+/* End of 'config_rule_statement' grammer rules */
+
+
+/* Start of 'inst_clause' grammer rules */
+
+inst_clause
+	: SVLOG_INSTANCE inst_name
+	;
+
+/* End of 'inst_clause' grammer rules */
+
+
+/* Start of 'inst_name' grammer rules */
+
+inst_name
+	: identifier period_ident_recurse_or_null
+	;
+
+/* End of 'inst_name' grammer rules */
+
+
+/* Start of 'cell_clause' grammer rules */
+
+cell_clause
+	: SVLOG_CELL period_ident_or_null identifier
+	;
+
+/* End of 'cell_clause' grammer rules */
+
+
+/* Start of 'liblist_clause' grammer rules */
+
+liblist_clause
+	: SVLOG_LIBLIST identifier_recurse_or_null
+	;
+
+/* End of 'liblist_clause' grammer rules */
+
+
+/* Start of 'use_clause' grammer rules */
+
+use_clause
+	: SVLOG_USE period_ident_or_null
+		identifier colon_config_or_null
+	| SVLOG_USE named_parameter_assignment_seq_list
+		colon_config_or_null
+	| SVLOG_USE period_ident_or_null identifier
+		named_parameter_assignment_seq_list colon_config_or_null
+	;
+
+/* End of 'use_clause' grammer rules */
+
+/*********************************************************
+ * End of 'Configuration source text' Grammer Rules      *
+ * Based off section: (A.1.5 Configuration source text). *
+ *********************************************************/
 
 
 /*******************************************
@@ -4457,6 +4589,16 @@ identifier
 	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
 	;
 
+identifier_recurse
+	: identifier
+	| identifier_recurse identifier
+	;
+
+identifier_recurse_or_null
+	: %empty
+	| identifier_recurse
+	;
+
 package_scope
 	: identifier CLASS_SCOPE_OPERATOR
 	| SVLOG_DSUNIT CLASS_SCOPE_OPERATOR
@@ -4581,6 +4723,16 @@ period_ident_or_null
 	| %empty
 	;
 
+period_ident_recurse
+	: period_ident
+	| period_ident_recurse period_ident
+	;
+
+period_ident_recurse_or_null
+	: %empty
+	| period_ident_recurse
+	;
+
 class_or_package_scope_or_null
 	: class_scope
 	| package_scope
@@ -4629,6 +4781,15 @@ static_or_null
 virtual_or_null
 	: %empty
 	| SVLOG_VIRTUAL
+	;
+
+colon_config
+	: ':' SVLOG_CONFIG
+	;
+
+colon_config_or_null
+	: %empty
+	| colon_config
 	;
 
 /*********************************
