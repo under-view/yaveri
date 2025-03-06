@@ -642,7 +642,7 @@ class_declaration
 /* End of 'class_declaration' grammer rules */
 
 
-/* Start of 'class_declaration' grammer rules */
+/* Start of 'interface_class_declaration' grammer rules */
 
 interface_class_decl_extends_interface_class_type_or_null
 	: %empty
@@ -656,7 +656,7 @@ interface_class_declaration
 				SVLOG_ENDCLASS colon_ident_or_null
 	;
 
-/* End of 'class_declaration' grammer rules */
+/* End of 'interface_class_declaration' grammer rules */
 
 
 /* Start of 'package_declaration' grammer rules */
@@ -1367,6 +1367,102 @@ program_generate_item
 /*********************************************
  * End of 'Program items' Grammer Rules      *
  * Based off section: (A.1.7 Program items). *
+ *********************************************/
+
+
+/*********************************************
+ * Start of 'Checker items' Grammer Rules    *
+ * Based off section: (A.1.8 Checker items). *
+ *********************************************/
+
+/* Start of 'checker_port_list' grammer rules */
+
+checker_port_list
+	: checker_port_item
+	| checker_port_list ',' checker_port_item
+	;
+
+checker_port_list_or_null
+	: %empty
+	| checker_port_list
+	;
+
+/* End of 'checker_port_list' grammer rules */
+
+
+/* Start of 'checker_port_item' grammer rules */
+
+checker_port_item
+	: attribute_instance_recurse_or_null checker_port_direction_or_null
+		property_formal_type identifier variable_dimension_recurse_or_null
+			equal_property_actual_arg_or_null
+	;
+
+/* End of 'checker_port_item' grammer rules */
+
+
+/* Start of 'checker_port_direction' grammer rules */
+
+checker_port_direction
+	: SVLOG_INPUT
+	| SVLOG_OUTPUT
+	;
+
+checker_port_direction_or_null
+	: %empty
+	| checker_port_direction
+	;
+
+/* End of 'checker_port_direction' grammer rules */
+
+
+/* Start of 'checker_or_generate_item' grammer rules */
+
+checker_or_generate_item
+	: checker_or_generate_item_declaration
+	| initial_construct
+	| always_construct
+	| final_construct
+	| assertion_item
+	| continuous_assign
+	| checker_generate_item
+	;
+
+/* End of 'checker_or_generate_item' grammer rules */
+
+
+/* Start of 'checker_or_generate_item_declaration' grammer rules */
+
+checker_or_generate_item_declaration
+	: rand_or_null data_declaration
+	| function_declaration
+	| checker_declaration
+	| assertion_item_declaration
+	| covergroup_declaration
+	| genvar_declaration
+	| clocking_declaration
+	| SVLOG_DEFAULT SVLOG_CLOCKING identifier ';'
+	| SVLOG_DEFAULT SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF expression_or_dist ';'
+	| ';'
+	;
+
+/* End of 'checker_or_generate_item_declaration' grammer rules */
+
+
+/* Start of 'checker_generate_item' grammer rules */
+
+checker_generate_item
+	: loop_generate_construct
+	| conditional_generate_construct
+	| generate_region
+	| severity_system_task
+	;
+
+/* End of 'checker_generate_item' grammer rules */
+
+/*********************************************
+ * End of 'Checker items' Grammer Rules      *
+ * Based off section: (A.1.8 Checker items). *
  *********************************************/
 
 
@@ -4911,6 +5007,15 @@ equal_constant_expression_or_null
 	| %empty
 	;
 
+equal_property_actual_arg
+	: '=' property_actual_arg
+	;
+
+equal_property_actual_arg_or_null
+	: %empty
+	| equal_property_actual_arg
+	;
+
 const_or_null
 	: SVLOG_CONST
 	| %empty
@@ -4924,6 +5029,11 @@ static_or_null
 virtual_or_null
 	: %empty
 	| SVLOG_VIRTUAL
+	;
+
+rand_or_null
+	: %empty
+	| SVLOG_RAND
 	;
 
 colon_config
