@@ -721,9 +721,9 @@ timeunits_declaration_or_null
 /* Start of 'parameter_port_list' grammer rules */
 
 parameter_port_list
-	: '#' '(' list_of_param_assignments parameter_port_declaration_seq_list ')'
+	: '#' '(' ')'
+	| '#' '(' list_of_param_assignments parameter_port_declaration_seq_list ')'
 	| '#' '(' parameter_port_declaration_seq_list ')'
-	| '#' '(' ')'
 	;
 
 parameter_port_list_or_null
@@ -1905,6 +1905,87 @@ extern_constraint_declaration
  * End of 'Constraints' Grammer Rules       *
  * Based off section: (A.1.10 Constraints). *
  ********************************************/
+
+
+/**********************************************
+ * Start of 'Package items' Grammer Rules     *
+ * Based off section: (A.1.11 Package items). *
+ **********************************************/
+
+/* Start of 'package_item' grammer rules */
+
+package_item
+	: package_or_generate_item_declaration
+	| anonymous_program
+	| package_export_declaration
+	| timeunits_declaration
+	;
+
+/* End of 'package_item' grammer rules */
+
+
+/* Start of 'package_or_generate_item_declaration' grammer rules */
+
+package_or_generate_item_declaration
+	: net_declaration
+	| data_declaration
+	| task_declaration
+	| function_declaration
+	| checker_declaration
+	| dpi_import_export
+	| extern_constraint_declaration
+	| class_declaration
+	| interface_class_declaration
+	| class_constructor_declaration
+	| local_parameter_declaration ';'
+	| parameter_declaration ';'
+	| covergroup_declaration
+	| assertion_item_declaration
+	| ';'
+	;
+
+/* End of 'package_or_generate_item_declaration' grammer rules */
+
+
+/* Start of 'anonymous_program' grammer rules */
+
+anonymous_program
+	: SVLOG_PROGRAM ';'
+		anonymous_program_item_recurse_or_null
+			SVLOG_ENDPROGRAM
+	;
+
+/* End of 'anonymous_program' grammer rules */
+
+
+/* Start of 'anonymous_program_item' grammer rules */
+
+anonymous_program_item
+	: task_declaration
+	| function_declaration
+	| class_declaration
+	| interface_class_declaration
+	| covergroup_declaration
+	| class_constructor_declaration
+	| ';'
+	;
+
+anonymous_program_item_recurse
+	: anonymous_program_item
+	| anonymous_program_item_recurse anonymous_program_item
+	;
+
+anonymous_program_item_recurse_or_null
+	: %empty
+	| anonymous_program_item_recurse
+	;
+
+/* End of 'anonymous_program_item' grammer rules */
+
+/**********************************************
+ * End of 'Package items' Grammer Rules       *
+ * Based off section: (A.1.11 Package items). *
+ **********************************************/
 
 
 /***************************************************************
