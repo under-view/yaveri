@@ -2101,18 +2101,11 @@ ref_declaration
  * Based off section: (A.2.1.3 Type declarations). *
  ***************************************************/
 
-data_declaration_options
-	: SVLOG_CONST
-	| SVLOG_VAR
-	| lifetime
-	| SVLOG_CONST SVLOG_VAR
-	| SVLOG_CONST lifetime
-	| SVLOG_CONST SVLOG_VAR lifetime
-	| SVLOG_VAR lifetime
-	;
+/* Start of 'data_declaration' grammer rules */
 
 data_declaration
-	: data_declaration_options data_type_or_implicit list_of_variable_decl_assignments ';'
+	: const_or_null var_or_null lifetime_or_null
+		data_type_or_implicit list_of_variable_decl_assignments ';'
 	| type_declaration
 	| package_import_declaration
 	| nettype_declaration
@@ -2128,6 +2121,11 @@ data_declaration_recurse_or_null
 	| data_declaration_recurse
 	;
 
+/* End of 'data_declaration' grammer rules */
+
+
+/* Start of 'package_import_declaration' grammer rules */
+
 package_import_declaration
 	: SVLOG_IMPORT package_import_item_seq_list ';'
 	;
@@ -2141,6 +2139,11 @@ package_import_declaration_recurse_or_null
 	: %empty
 	| package_import_declaration_recurse
 	;
+
+/* End of 'package_import_declaration' grammer rules */
+
+
+/* Start of 'package_export_declaration' grammer rules */
 
 package_export_declaration
 	: SVLOG_EXPORT EXPORT_DECLARATION ';'
@@ -2157,6 +2160,11 @@ package_export_declaration_recurse_or_null
 	| package_export_declaration_recurse
 	;
 
+/* End of 'package_export_declaration' grammer rules */
+
+
+/* Start of 'package_import_item' grammer rules */
+
 package_import_item
 	: identifier CLASS_SCOPE_OPERATOR identifier
 	| identifier CLASS_SCOPE_OPERATOR '*'
@@ -2167,20 +2175,38 @@ package_import_item_seq_list
 	| package_import_item_seq_list ',' package_import_item
 	;
 
+/* End of 'package_import_item' grammer rules */
+
+
+/* Start of 'genvar_declaration' grammer rules */
+
 genvar_declaration
 	: SVLOG_GENVAR list_of_genvar_identifiers ';'
 	;
 
+/* End of 'genvar_declaration' grammer rules */
+
+
+/* Start of 'net_declaration' grammer rules */
+
 drive_or_charge_strength
-	: %empty
-	| drive_strength
+	: drive_strength
 	| charge_strength
 	;
 
-vectored_or_scalared
+drive_or_charge_strength_or_null
 	: %empty
-	| SVLOG_VECTORED
+	| drive_or_charge_strength
+	;
+
+vectored_or_scalared
+	: SVLOG_VECTORED
 	| SVLOG_SCALARED
+	;
+
+vectored_or_scalared_or_null
+	: %empty
+	| vectored_or_scalared
 	;
 
 delay3_or_null
@@ -2199,21 +2225,36 @@ delay_value_or_null
 	;
 
 net_ident_ud_seq_list
-	: identifier unpacked_dimension_recurse
-	| net_ident_ud_seq_list ',' identifier unpacked_dimension_recurse
+	: identifier unpacked_dimension_recurse_or_null
+	| net_ident_ud_seq_list ',' identifier unpacked_dimension_recurse_or_null
 	;
 
 net_declaration
-	: net_type drive_or_charge_strength vectored_or_scalared data_type_or_implicit delay3_or_null list_of_net_decl_assignments ';'
-	| identifier delay_control_or_null list_of_net_decl_assignments ';'
-	| SVLOG_INTERCONNECT implicit_data_type delay_value_or_null net_ident_ud_seq_list ';'
+	: net_type drive_or_charge_strength_or_null vectored_or_scalared_or_null
+		data_type_or_implicit delay3_or_null list_of_net_decl_assignments ';'
+	| identifier delay_control_or_null
+		list_of_net_decl_assignments ';'
+	| SVLOG_INTERCONNECT implicit_data_type
+		delay_value_or_null net_ident_ud_seq_list ';'
 	;
 
+/* End of 'net_declaration' grammer rules */
+
+
+/* Start of 'type_declaration' grammer rules */
+
 type_declaration
-	: SVLOG_TYPEDEF data_type_or_incomplete_class_scoped_type identifier variable_dimension_recurse ';'
-	| SVLOG_TYPEDEF identifier constant_bit_select '.' identifier identifier ';'
+	: SVLOG_TYPEDEF data_type_or_incomplete_class_scoped_type
+		identifier variable_dimension_recurse_or_null ';'
+	| SVLOG_TYPEDEF identifier constant_bit_select
+		period_ident identifier ';'
 	| SVLOG_TYPEDEF forward_type_or_null identifier ';'
 	;
+
+/* End of 'type_declaration' grammer rules */
+
+
+/* Start of 'forward_type' grammer rules */
 
 forward_type
 	: SVLOG_ENUM
@@ -2228,19 +2269,31 @@ forward_type_or_null
 	| forward_type
 	;
 
+/* End of 'forward_type' grammer rules */
+
+
+/* Start of 'nettype_declaration' grammer rules */
+
+nettype_declaration_with
+	: SVLOG_WITH class_or_package_scope_or_null identifier
+	;
+
 nettype_declaration_with_or_null
 	: %empty
-	| SVLOG_WITH identifier
-	| SVLOG_WITH package_scope identifier
-	| SVLOG_WITH class_scope identifier
+	| nettype_declaration_with
 	;
 
 nettype_declaration
-	: SVLOG_NETTYPE data_type identifier nettype_declaration_with_or_null ';'
-	| SVLOG_NETTYPE identifier identifier ';'
-	| SVLOG_NETTYPE package_scope identifier identifier ';'
-	| SVLOG_NETTYPE class_scope identifier identifier ';'
+	: SVLOG_NETTYPE data_type identifier
+		nettype_declaration_with_or_null ';'
+	| SVLOG_NETTYPE class_or_package_scope_or_null
+		identifier identifier ';'
 	;
+
+/* End of 'nettype_declaration' grammer rules */
+
+
+/* Start of 'lifetime' grammer rules */
 
 lifetime
 	: SVLOG_STATIC
@@ -2251,6 +2304,8 @@ lifetime_or_null
 	: %empty
 	| lifetime
 	;
+
+/* End of 'lifetime' grammer rules */
 
 /***************************************************
  * End of 'Type declarations' Grammer Rules        *
