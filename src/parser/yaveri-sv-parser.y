@@ -773,6 +773,11 @@ list_of_port_declarations
 	| '(' att_inst_ansi_port_decl_seq_list ')'
 	;
 
+list_of_port_declarations_or_null
+	: %empty
+	| list_of_port_declarations
+	;
+
 /* End of 'list_of_port_declarations' grammer rules */
 
 
@@ -1660,6 +1665,16 @@ property_qualifier
 	| class_item_qualifier
 	;
 
+property_qualifier_recurse
+	: property_qualifier
+	| property_qualifier_recurse property_qualifier
+	;
+
+property_qualifier_recurse_or_null
+	: %empty
+	| property_qualifier_recurse
+	;
+
 /* End of 'property_qualifier' grammer rules */
 
 
@@ -1684,6 +1699,16 @@ method_qualifier
 	: SVLOG_VIRTUAL
 	| SVLOG_PURE SVLOG_VIRTUAL
 	| class_item_qualifier
+	;
+
+method_qualifier_recurse
+	: method_qualifier
+	| method_qualifier_recurse method_qualifier
+	;
+
+method_qualifier_recurse_or_null
+	: %empty
+	| method_qualifier_recurse
 	;
 
 /* End of 'method_qualifier' grammer rules */
