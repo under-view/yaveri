@@ -1670,6 +1670,11 @@ random_qualifier
 	| SVLOG_RANDC
 	;
 
+random_qualifier_or_null
+	: %empty
+	| random_qualifier
+	;
+
 /* End of 'random_qualifier' grammer rules */
 
 
@@ -2318,6 +2323,8 @@ lifetime_or_null
  * Based off section: (A.2.2.1 Net and variable types). *
  ********************************************************/
 
+/* Start of 'casting_type' grammer rules */
+
 casting_type
 	: simple_type
 	| constant_primary
@@ -2326,55 +2333,85 @@ casting_type
 	| SVLOG_CONST
 	;
 
-packed_signed_or_null
-	: %empty
-	| SVLOG_PACKED
+/* End of 'casting_type' grammer rules */
+
+
+/* Start of 'data_type' grammer rules */
+
+packed_signing
+	: SVLOG_PACKED
 	| SVLOG_PACKED signing
 	;
 
+packed_signing_or_null
+	: %empty
+	| packed_signing
+	;
+
 data_type
-	: integer_vector_type packed_dimension_recurse_or_null
-	| integer_vector_type signing packed_dimension_recurse_or_null
-	| integer_atom_type
-	| integer_atom_type signing
+	: integer_vector_type signing_or_null
+		packed_dimension_recurse_or_null
+	| integer_atom_type signing_or_null
 	| non_integer_type
-	| struct_union packed_signed_or_null '{' struct_union_member_recurse '}' packed_dimension_recurse_or_null
-	| SVLOG_ENUM enum_base_type_or_null '{' enum_name_declaration_seq_list '}' packed_dimension_recurse_or_null
+	| struct_union packed_signing_or_null
+		'{' struct_union_member_recurse '}'
+			packed_dimension_recurse_or_null
+	| SVLOG_ENUM enum_base_type_or_null
+		'{' enum_name_declaration_seq_list '}'
+			packed_dimension_recurse_or_null
 	| SVLOG_STRING
 	| SVLOG_CHANDLE
-	| SVLOG_VIRTUAL interface_or_null identifier parameter_value_assignment_or_null period_ident_or_null
-	| class_or_package_scope_or_null identifier packed_dimension_recurse_or_null
+	| SVLOG_VIRTUAL interface_or_null identifier
+		parameter_value_assignment_or_null
+			period_ident_or_null
+	| class_or_package_scope_or_null identifier
+		packed_dimension_recurse_or_null
 	| class_type
 	| SVLOG_EVENT
 	| ps_covergroup_identifier
 	| type_reference
 	;
 
+/* End of 'casting_type' grammer rules */
+
+
+/* Start of 'data_type_or_implicit' grammer rules */
+
 data_type_or_implicit
 	: data_type
 	| implicit_data_type
 	;
 
+/* End of 'data_type_or_implicit' grammer rules */
+
+
+/* Start of 'implicit_data_type' grammer rules */
+
 implicit_data_type
-	: packed_dimension_recurse_or_null
-	| signing packed_dimension_recurse_or_null
+	: signing_or_null packed_dimension_recurse_or_null
 	;
 
+/* End of 'implicit_data_type' grammer rules */
+
+
+/* Start of 'enum_base_type' grammer rules */
+
 enum_base_type
-	: integer_atom_type
-	| integer_atom_type signing
-	| integer_vector_type
-	| integer_vector_type signing
-	| integer_vector_type packed_dimension
-	| integer_vector_type signing packed_dimension
-	| identifier
-	| identifier packed_dimension
+	: integer_atom_type signing_or_null
+	| integer_vector_type signing_or_null
+		packed_dimension_or_null
+	| identifier packed_dimension_or_null
 	;
 
 enum_base_type_or_null
 	: %empty
 	| enum_base_type
 	;
+
+/* End of 'enum_base_type' grammer rules */
+
+
+/* Start of 'enum_name_declaration' grammer rules */
 
 enum_name_declaration
 	: identifier
@@ -2385,10 +2422,19 @@ enum_name_declaration
 	;
 
 enum_name_declaration_seq_list
-	: %empty
-	| enum_name_declaration
+	: enum_name_declaration
 	| enum_name_declaration_seq_list ',' enum_name_declaration
 	;
+
+enum_name_declaration_seq_list_or_null
+	: %empty
+	| enum_name_declaration_seq_list
+	;
+
+/* End of 'enum_name_declaration' grammer rules */
+
+
+/* Start of 'class_scope' grammer rules */
 
 class_scope
 	: class_type CLASS_SCOPE_OPERATOR
@@ -2399,9 +2445,16 @@ class_scope_or_null
 	| class_scope
 	;
 
+/* End of 'class_scope' grammer rules */
+
+
+/* Start of 'class_type' grammer rules */
+
 class_type_ident_seq_list
-	: CLASS_SCOPE_OPERATOR identifier parameter_value_assignment_or_null
-	| class_type_ident_seq_list CLASS_SCOPE_OPERATOR identifier parameter_value_assignment_or_null
+	: CLASS_SCOPE_OPERATOR identifier
+		parameter_value_assignment_or_null
+	| class_type_ident_seq_list CLASS_SCOPE_OPERATOR
+		identifier parameter_value_assignment_or_null
 	;
 
 class_type_ident_seq_list_or_null
@@ -2410,11 +2463,23 @@ class_type_ident_seq_list_or_null
 	;
 
 class_type
-	: ps_class_identifier parameter_value_assignment_or_null class_type_ident_seq_list_or_null
+	: ps_class_identifier
+		parameter_value_assignment_or_null
+			class_type_ident_seq_list_or_null
 	;
+
+/* End of 'class_type' grammer rules */
+
+
+/* Start of 'interface_class_type' grammer rules */
 
 interface_class_type
 	: ps_class_identifier parameter_value_assignment_or_null
+	;
+
+interface_class_type_or_null
+	: %empty
+	| interface_class_type
 	;
 
 interface_class_type_seq_list
@@ -2422,10 +2487,25 @@ interface_class_type_seq_list
 	| interface_class_type_seq_list ',' interface_class_type
 	;
 
+interface_class_type_seq_list_or_null
+	: %empty
+	| interface_class_type_seq_list
+	;
+
+/* End of 'interface_class_type' grammer rules */
+
+
+/* Start of 'integer_type' grammer rules */
+
 integer_type
 	: integer_vector_type
 	| integer_atom_type
 	;
+
+/* End of 'integer_type' grammer rules */
+
+
+/* Start of 'integer_atom_type' grammer rules */
 
 integer_atom_type
 	: SVLOG_BYTE
@@ -2436,17 +2516,32 @@ integer_atom_type
 	| SVLOG_TIME
 	;
 
+/* End of 'integer_atom_type' grammer rules */
+
+
+/* Start of 'integer_vector_type' grammer rules */
+
 integer_vector_type
 	: SVLOG_BIT
 	| SVLOG_LOGIC
 	| SVLOG_REG
 	;
 
+/* End of 'integer_vector_type' grammer rules */
+
+
+/* Start of 'non_integer_type' grammer rules */
+
 non_integer_type
 	: SVLOG_SHORTREAL
 	| SVLOG_REAL
 	| SVLOG_REALTIME
 	;
+
+/* End of 'non_integer_type' grammer rules */
+
+
+/* Start of 'net_type' grammer rules */
 
 net_type
 	: SVLOG_SUPPLY0
@@ -2463,27 +2558,60 @@ net_type
 	| SVLOG_WOR
 	;
 
+net_type_or_null
+	: %empty
+	| net_type
+	;
+
+/* End of 'net_type' grammer rules */
+
+
+/* Start of 'net_port_type' grammer rules */
+
 net_port_type
-	: data_type_or_implicit
-	| net_type data_type_or_implicit
+	: net_type_or_null data_type_or_implicit
 	| identifier
 	| SVLOG_INTERCONNECT implicit_data_type
 	;
 
+/* End of 'net_port_type' grammer rules */
+
+
+/* Start of 'variable_port_type' grammer rules */
+
 variable_port_type
 	: var_data_type
 	;
+
+/* End of 'variable_port_type' grammer rules */
+
+
+/* Start of 'var_data_type' grammer rules */
 
 var_data_type
 	: data_type
 	| SVLOG_VAR data_type_or_implicit
 	;
 
+/* End of 'var_data_type' grammer rules */
+
+
+/* Start of 'signing' grammer rules */
+
 signing
-	:
-	| SVLOG_SIGNED
+	: SVLOG_SIGNED
 	| SVLOG_UNSIGNED
 	;
+
+signing_or_null
+	: %empty
+	| signing
+	;
+
+/* End of 'signing' grammer rules */
+
+
+/* Start of 'simple_type' grammer rules */
 
 simple_type
 	: integer_type
@@ -2492,10 +2620,25 @@ simple_type
 	| ps_parameter_identifier
 	;
 
+/* End of 'simple_type' grammer rules */
+
+
+/* Start of 'struct_union' grammer rules */
+
 struct_union
 	: SVLOG_STRUCT
 	| SVLOG_UNION SVLOG_SOFT
 	| SVLOG_UNION SVLOG_TAGGED
+	;
+
+/* End of 'struct_union' grammer rules */
+
+
+/* Start of 'struct_union_member' grammer rules */
+
+struct_union_member
+	: attribute_instance_recurse_or_null random_qualifier_or_null
+		data_type_or_void list_of_variable_decl_assignments ';'
 	;
 
 struct_union_member_recurse
@@ -2503,10 +2646,15 @@ struct_union_member_recurse
 	| struct_union_member_recurse struct_union_member
 	;
 
-struct_union_member
-	: attribute_instance_recurse_or_null data_type_or_void list_of_variable_decl_assignments ';'
-	| attribute_instance_recurse_or_null random_qualifier data_type_or_void list_of_variable_decl_assignments ';'
+struct_union_member_recurse_or_null
+	: %empty
+	| struct_union_member_recurse
 	;
+
+/* End of 'struct_union_member' grammer rules */
+
+
+/* Start of 'data_type_or_void' grammer rules */
 
 data_type_or_void
 	: data_type
@@ -2518,25 +2666,50 @@ data_type_or_void_or_null
 	| data_type_or_void
 	;
 
+/* End of 'data_type_or_void' grammer rules */
+
+
+/* Start of 'type_reference' grammer rules */
+
 type_reference
 	: SVLOG_TYPE '(' expression ')'
 	| SVLOG_TYPE '(' data_type_or_incomplete_class_scoped_type ')'
 	;
+
+/* End of 'type_reference' grammer rules */
+
+
+/* Start of 'data_type_or_incomplete_class_scoped_type' grammer rules */
 
 data_type_or_incomplete_class_scoped_type
 	: data_type
 	| incomplete_class_scoped_type
 	;
 
+/* End of 'data_type_or_incomplete_class_scoped_type' grammer rules */
+
+
+/* Start of 'incomplete_class_scoped_type' grammer rules */
+
 incomplete_class_scoped_type
-	: identifier CLASS_SCOPE_OPERATOR type_identifier_or_class_type
-	| incomplete_class_scoped_type CLASS_SCOPE_OPERATOR type_identifier_or_class_type
+	: identifier CLASS_SCOPE_OPERATOR
+		type_identifier_or_class_type
+	| incomplete_class_scoped_type
+		CLASS_SCOPE_OPERATOR
+			type_identifier_or_class_type
 	;
+
+/* End of 'incomplete_class_scoped_type' grammer rules */
+
+
+/* Start of 'type_identifier_or_class_type' grammer rules */
 
 type_identifier_or_class_type
 	: identifier
 	| class_type
 	;
+
+/* End of 'type_identifier_or_class_type' grammer rules */
 
 /********************************************************
  * End of 'Net and variable types' Grammer Rules        *
@@ -2748,6 +2921,11 @@ unpacked_dimension_recurse_or_null
 packed_dimension
 	: '[' constant_range ']'
 	| unsized_dimension
+	;
+
+packed_dimension_or_null
+	: %empty
+	| packed_dimension
 	;
 
 packed_dimension_recurse
