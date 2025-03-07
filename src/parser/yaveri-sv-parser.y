@@ -3143,6 +3143,8 @@ equal_dynamic_array_new_or_null
  * Based off section: (A.2.5 Declaration ranges). *
  **************************************************/
 
+/* Start of 'unpacked_dimension' grammer rules */
+
 unpacked_dimension
 	: '[' constant_range ']'
 	| '[' constant_expression ']'
@@ -3157,6 +3159,11 @@ unpacked_dimension_recurse_or_null
 	: %empty
 	| unpacked_dimension_recurse
 	;
+
+/* End of 'unpacked_dimension' grammer rules */
+
+
+/* Start of 'packed_dimension' grammer rules */
 
 packed_dimension
 	: '[' constant_range ']'
@@ -3178,16 +3185,36 @@ packed_dimension_recurse_or_null
 	| packed_dimension_recurse
 	;
 
+/* End of 'packed_dimension' grammer rules */
+
+
+/* Start of 'associative_dimension' grammer rules */
+
 associative_dimension
 	: '[' data_type ']'
 	| REPEAT_ZERO_OR_MORE
 	;
+
+associative_dimension_or_null
+	: %empty
+	| associative_dimension
+	;
+
+/* End of 'associative_dimension' grammer rules */
+
+
+/* Start of 'variable_dimension' grammer rules */
 
 variable_dimension
 	: unsized_dimension
 	| unpacked_dimension
 	| associative_dimension
 	| queue_dimension
+	;
+
+variable_dimension_or_null
+	: %empty
+	| variable_dimension
 	;
 
 variable_dimension_recurse
@@ -3200,14 +3227,36 @@ variable_dimension_recurse_or_null
 	| variable_dimension_recurse
 	;
 
+/* End of 'variable_dimension' grammer rules */
+
+
+/* Start of 'queue_dimension' grammer rules */
+
 queue_dimension
 	: QUEUE_INITIALIZE
 	| BOUNDED_QUEUE_INITIALIZE constant_expression ']'
 	;
 
+queue_dimension_or_null
+	: %empty
+	| queue_dimension
+	;
+
+/* End of 'queue_dimension' grammer rules */
+
+
+/* Start of 'unsized_dimension' grammer rules */
+
 unsized_dimension
 	: '[' ']'
 	;
+
+unsized_dimension_or_null
+	: %empty
+	| unsized_dimension
+	;
+
+/* End of 'unsized_dimension' grammer rules */
 
 /**************************************************
  * End of 'Declaration ranges' Grammer Rules      *
