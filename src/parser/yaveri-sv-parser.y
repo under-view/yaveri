@@ -37,7 +37,7 @@
 %token <itoken> SVLOG_EVENTUALLY
 %token <itoken> SVLOG_IMPLEMENTS
 %token <itoken> SVLOG_LOCALPARAM
-%token <itoken> SVLOG_PATHPULSE
+%token <itoken> SVLOG_PATHPULSEDS
 %token <itoken> SVLOG_S_NEXTTIME
 %token <itoken> SVLOG_THROUGHOUT
 %token <itoken> SVLOG_UNTIL_WITH
@@ -2372,7 +2372,7 @@ data_type
 	| type_reference
 	;
 
-/* End of 'casting_type' grammer rules */
+/* End of 'data_type' grammer rules */
 
 
 /* Start of 'data_type_or_implicit' grammer rules */
@@ -3016,62 +3016,121 @@ list_of_variable_port_identifiers
  * Based off section: (A.2.4 Declaration assignments). *
  ******************************************************/
 
+/* Start of 'defparam_assignment' grammer rules */
+
+defparam_assignment
+	: hierarchical_identifier equal_constant_mintypmax_expression
+	;
+
+/* End of 'defparam_assignment' grammer rules */
+
+
+/* Start of 'net_decl_assignment' grammer rules */
+
 net_decl_assignment
 	: identifier unpacked_dimension_recurse_or_null
-	| identifier unpacked_dimension_recurse_or_null '=' expression
+		equal_expression_or_null
 	;
+
+/* End of 'net_decl_assignment' grammer rules */
+
+
+/* Start of 'param_assignment' grammer rules */
 
 param_assignment
 	: identifier variable_dimension_recurse_or_null
-	| identifier variable_dimension_recurse_or_null '=' constant_param_expression
+		equal_constant_param_expression_or_null
 	;
 
+/* End of 'param_assignment' grammer rules */
+
+
+/* Start of 'specparam_assignment' grammer rules */
+
 specparam_assignment
-	: identifier '=' constant_mintypmax_expression
+	: identifier equal_constant_mintypmax_expression
 	| pulse_control_specparam
 	;
 
+/* End of 'specparam_assignment' grammer rules */
+
+
+/* Start of 'pulse_control_specparam' grammer rules */
+
 equal_reject_limit_value
-	: '=' '(' reject_limit_value ')'
-	| '=' '(' reject_limit_value ',' error_limit_value ')'
+	: '=' '(' constant_mintypmax_expression ')'
+	| '=' '(' constant_mintypmax_expression ',' constant_mintypmax_expression ')'
 	;
 
 pulse_control_specparam
-	: SVLOG_PATHPULSE equal_reject_limit_value
-	| SVLOG_PATHPULSE specify_input_terminal_descriptor '$' specify_output_terminal_descriptor equal_reject_limit_value
+	: SVLOG_PATHPULSEDS equal_reject_limit_value
+	| SVLOG_PATHPULSEDS specify_input_terminal_descriptor '$'
+		specify_output_terminal_descriptor equal_reject_limit_value
 	;
 
-error_limit_value
-	: constant_mintypmax_expression
-	;
+/* End of 'pulse_control_specparam' grammer rules */
 
-reject_limit_value
-	: constant_mintypmax_expression
-	;
+
+/* Start of 'type_assignment' grammer rules */
 
 type_assignment
 	: identifier
 	| identifier '=' data_type_or_incomplete_class_scoped_type
 	;
 
+/* End of 'type_assignment' grammer rules */
+
+
+/* Start of 'variable_decl_assignment' grammer rules */
+
 variable_decl_assignment
 	: identifier variable_dimension_recurse_or_null equal_expression_or_null
-	| identifier unsized_dimension variable_dimension_recurse_or_null
-	| identifier unsized_dimension variable_dimension_recurse_or_null '=' dynamic_array_new
+	| identifier unsized_dimension
+		variable_dimension_recurse_or_null
+			equal_dynamic_array_new_or_null
 	| identifier '=' class_new
 	;
 
+/* End of 'variable_decl_assignment' grammer rules */
+
+
+/* Start of 'class_new' grammer rules */
+
+class_new_loa
+	: '(' ')'
+	| '(' list_of_arguments ')'
+	;
+
+class_new_loa_or_null
+	: %empty
+	| class_new_loa
+	;
+
 class_new
-	: SVLOG_NEW
-	| SVLOG_NEW '(' list_of_arguments ')'
-	| class_scope SVLOG_NEW '(' list_of_arguments ')'
+	: class_scope_or_null SVLOG_NEW class_new_loa_or_null
 	| SVLOG_NEW expression
 	;
+
+/* End of 'class_new' grammer rules */
+
+
+/* Start of 'dynamic_array_new' grammer rules */
 
 dynamic_array_new
 	: SVLOG_NEW '[' expression ']'
 	| SVLOG_NEW '[' expression ']' '(' expression ')'
 	;
+
+equal_dynamic_array_new
+	: '=' dynamic_array_new
+	;
+
+equal_dynamic_array_new_or_null
+	: %empty
+	| equal_dynamic_array_new
+	;
+
+/* End of 'dynamic_array_new' grammer rules */
 
 /*******************************************************
  * End of 'Declaration assignments' Grammer Rules      *
@@ -5173,10 +5232,28 @@ constant_mintypmax_expression
 	| constant_expression ':' constant_expression ':' constant_expression
 	;
 
+equal_constant_mintypmax_expression
+	: '=' constant_mintypmax_expression
+	;
+
+equal_constant_mintypmax_expression_or_null
+	: %empty
+	| equal_constant_mintypmax_expression
+	;
+
 constant_param_expression
 	: constant_mintypmax_expression
 	| data_type
 	| '$'
+	;
+
+equal_constant_param_expression
+	: '=' constant_param_expression
+	;
+
+equal_constant_param_expression_or_null
+	: %empty
+	| equal_constant_param_expression
 	;
 
 param_expression

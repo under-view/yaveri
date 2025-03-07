@@ -84,7 +84,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "eventually"     { return SVLOG_EVENTUALLY;     }
 "implements"     { return SVLOG_IMPLEMENTS;     }
 "localparam"     { return SVLOG_LOCALPARAM;     }
-"PATHPULSE$"     { return SVLOG_PATHPULSE;      }
+"PATHPULSE$"     { return SVLOG_PATHPULSEDS;    }
 "s_nexttime"     { return SVLOG_S_NEXTTIME;     }
 "throughout"     { return SVLOG_THROUGHOUT;     }
 "until_with"     { return SVLOG_UNTIL_WITH;     }
