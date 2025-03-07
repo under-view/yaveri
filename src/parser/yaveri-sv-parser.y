@@ -2779,7 +2779,7 @@ delay
 
 delay_or_null
 	: %empty
-	| deplay
+	| delay
 	;
 
 /* End of 'delay' grammer rules */
@@ -2844,35 +2844,141 @@ delay_value_or_null
  * Based off section: (A.2.3 Declaration lists). *
  *************************************************/
 
+/* Start of 'list_of_defparam_assignments' grammer rules */
+
+list_of_defparam_assignments
+	: defparam_assignment
+	| list_of_defparam_assignments ',' defparam_assignment
+	;
+
+/* End of 'list_of_defparam_assignments' grammer rules */
+
+
+/* Start of 'list_of_genvar_identifiers' grammer rules */
+
 list_of_genvar_identifiers
 	: identifier
 	| list_of_genvar_identifiers ',' identifier
 	;
+
+/* End of 'list_of_genvar_identifiers' grammer rules */
+
+
+/* Start of 'list_of_interface_identifiers' grammer rules */
+
+list_of_interface_identifiers
+	: identifier unpacked_dimension_recurse_or_null
+	| list_of_interface_identifiers ',' identifier
+		unpacked_dimension_recurse_or_null
+	;
+
+/* End of 'list_of_interface_identifiers' grammer rules */
+
+
+/* Start of 'list_of_net_decl_assignments' grammer rules */
 
 list_of_net_decl_assignments
 	: net_decl_assignment
 	| list_of_net_decl_assignments ',' net_decl_assignment
 	;
 
+/* End of 'list_of_net_decl_assignments' grammer rules */
+
+
+/* Start of 'list_of_param_assignments' grammer rules */
+
 list_of_param_assignments
 	: param_assignment
 	| list_of_param_assignments ',' param_assignment
 	;
+
+/* End of 'list_of_param_assignments' grammer rules */
+
+
+/* Start of 'list_of_port_identifiers' grammer rules */
+
+list_of_port_identifiers
+	: identifier unpacked_dimension_recurse_or_null
+	| list_of_port_identifiers ',' identifier
+		unpacked_dimension_recurse_or_null
+	;
+
+/* End of 'list_of_port_identifiers' grammer rules */
+
+
+/* Start of 'list_of_udp_port_identifiers' grammer rules */
+
+list_of_udp_port_identifiers
+	: identifier
+	| list_of_udp_port_identifiers identifier
+	;
+
+/* End of 'list_of_udp_port_identifiers' grammer rules */
+
+
+/* Start of 'list_of_specparam_assignments' grammer rules */
 
 list_of_specparam_assignments
 	: specparam_assignment
 	| list_of_specparam_assignments ',' specparam_assignment
 	;
 
+/* End of 'list_of_specparam_assignments' grammer rules */
+
+
+/* Start of 'list_of_tf_variable_identifiers' grammer rules */
+
+list_of_tf_variable_identifiers
+	: identifier variable_dimension_recurse_or_null
+		equal_expression_or_null
+	| list_of_tf_variable_identifiers ',' identifier
+		variable_dimension_recurse_or_null equal_expression_or_null
+	;
+
+/* End of 'list_of_tf_variable_identifiers' grammer rules */
+
+
+/* Start of 'list_of_type_assignments' grammer rules */
+
 list_of_type_assignments
 	: type_assignment
 	| list_of_type_assignments ',' type_assignment
 	;
 
+/* End of 'list_of_type_assignments' grammer rules */
+
+
+/* Start of 'list_of_variable_decl_assignments' grammer rules */
+
 list_of_variable_decl_assignments
 	: variable_decl_assignment
 	| list_of_variable_decl_assignments ',' variable_decl_assignment
 	;
+
+/* End of 'list_of_variable_decl_assignments' grammer rules */
+
+
+/* Start of 'list_of_variable_identifiers' grammer rules */
+
+list_of_variable_identifiers
+	: identifier variable_dimension_recurse_or_null
+	| list_of_variable_identifiers ',' identifier
+		variable_dimension_recurse_or_null
+	;
+
+/* End of 'list_of_variable_identifiers' grammer rules */
+
+
+/* Start of 'list_of_variable_port_identifiers' grammer rules */
+
+list_of_variable_port_identifiers
+	: identifier variable_dimension_recurse_or_null
+		equal_constant_expression_or_null
+	| list_of_variable_port_identifiers ',' identifier
+		variable_dimension_recurse_or_null equal_constant_expression_or_null
+	;
+
+/* End of 'list_of_variable_port_identifiers' grammer rules */
 
 /*************************************************
  * End of 'Declaration lists' Grammer Rules      *
