@@ -1993,30 +1993,107 @@ anonymous_program_item_recurse_or_null
  * Based off section: (A.2.1.1 Module parameter declarations). *
  ***************************************************************/
 
+/* Start of 'local_parameter_declaration' grammer rules */
+
 local_parameter_declaration
 	: SVLOG_LOCALPARAM data_type_or_implicit list_of_param_assignments
 	| SVLOG_PARAMETER type_parameter_declaration
 	;
+
+/* End of 'local_parameter_declaration' grammer rules */
+
+
+/* Start of 'parameter_declaration' grammer rules */
 
 parameter_declaration
 	: SVLOG_PARAMETER data_type_or_implicit list_of_param_assignments
 	| SVLOG_PARAMETER type_parameter_declaration
 	;
 
+/* End of 'parameter_declaration' grammer rules */
+
+
+/* Start of 'type_parameter_declaration' grammer rules */
+
 type_parameter_declaration
 	: SVLOG_TYPE list_of_type_assignments
 	| SVLOG_TYPE forward_type list_of_type_assignments
 	;
+
+/* End of 'type_parameter_declaration' grammer rules */
+
+
+/* Start of 'specparam_declaration' grammer rules */
 
 specparam_declaration
 	: SVLOG_SPECPARAM list_of_specparam_assignments ';'
 	| SVLOG_SPECPARAM packed_dimension list_of_specparam_assignments ';'
 	;
 
+/* End of 'specparam_declaration' grammer rules */
+
 /***************************************************************
  * End of 'Module parameter declarations' Grammer Rules        *
  * Based off section: (A.2.1.1 Module parameter declarations). *
  ***************************************************************/
+
+
+/***************************************************
+ * Start of 'Port declarations' Grammer Rules      *
+ * Based off section: (A.2.1.2 Port declarations). *
+ ***************************************************/
+
+/* Start of 'inout_declaration' grammer rules */
+
+inout_declaration
+	: SVLOG_INOUT net_port_type list_of_port_identifiers
+	;
+
+/* End of 'inout_declaration' grammer rules */
+
+
+/* Start of 'input_declaration' grammer rules */
+
+input_declaration
+	: SVLOG_INPUT net_port_type list_of_port_identifiers
+	| SVLOG_INPUT variable_port_type list_of_variable_identifiers
+	;
+
+/* End of 'input_declaration' grammer rules */
+
+
+/* Start of 'output_declaration' grammer rules */
+
+output_declaration
+	: SVLOG_OUTPUT net_port_type list_of_port_identifiers
+	| SVLOG_OUTPUT variable_port_type list_of_variable_port_identifiers
+	;
+
+/* End of 'output_declaration' grammer rules */
+
+
+/* Start of 'interface_port_declaration' grammer rules */
+
+interface_port_declaration
+	: identifier list_of_interface_identifiers
+	| period_ident identifier list_of_interface_identifiers
+	;
+
+/* End of 'interface_port_declaration' grammer rules */
+
+
+/* Start of 'ref_declaration' grammer rules */
+
+ref_declaration
+	: SVLOG_REF variable_port_type list_of_variable_identifiers
+	;
+
+/* End of 'ref_declaration' grammer rules */
+
+/***************************************************
+ * End of 'Port declarations' Grammer Rules        *
+ * Based off section: (A.2.1.2 Port declarations). *
+ ***************************************************/
 
 
 /***************************************************
