@@ -2194,16 +2194,6 @@ genvar_declaration
 
 /* Start of 'net_declaration' grammer rules */
 
-drive_or_charge_strength
-	: drive_strength
-	| charge_strength
-	;
-
-drive_or_charge_strength_or_null
-	: %empty
-	| drive_or_charge_strength
-	;
-
 vectored_or_scalared
 	: SVLOG_VECTORED
 	| SVLOG_SCALARED
@@ -2722,6 +2712,8 @@ type_identifier_or_class_type
  * Based off section: (A.2.2.2 Strengths). *
  *******************************************/
 
+/* Start of 'drive_strength' grammer rules */
+
 drive_strength
 	: '(' strength0 ',' strength1 ')'
 	| '(' strength1 ',' strength0 ')'
@@ -2731,12 +2723,22 @@ drive_strength
 	| '(' SVLOG_HIGHZ1 ',' strength0 ')'
 	;
 
+/* End of 'drive_strength' grammer rules */
+
+
+/* Start of 'strength0' grammer rules */
+
 strength0
 	: SVLOG_SUPPLY0
 	| SVLOG_STRONG0
 	| SVLOG_PULL0
 	| SVLOG_WEAK0
 	;
+
+/* End of 'strength0' grammer rules */
+
+
+/* Start of 'strength1' grammer rules */
 
 strength1
 	: SVLOG_SUPPLY1
@@ -2745,11 +2747,33 @@ strength1
 	| SVLOG_WEAK1
 	;
 
+/* End of 'strength1' grammer rules */
+
+
+/* Start of 'charge_strength' grammer rules */
+
 charge_strength
 	: '(' SVLOG_SMALL ')'
 	| '(' SVLOG_MEDIUM ')'
 	| '(' SVLOG_LARGE ')'
 	;
+
+/* End of 'charge_strength' grammer rules */
+
+
+/* Start of 'drive_or_charge_strength' grammer rules */
+
+drive_or_charge_strength
+	: drive_strength
+	| charge_strength
+	;
+
+drive_or_charge_strength_or_null
+	: %empty
+	| drive_or_charge_strength
+	;
+
+/* End of 'drive_or_charge_strength' grammer rules */
 
 /*******************************************
  * End of 'Strengths' Grammer Rules        *
@@ -5780,7 +5804,7 @@ colon_new
 	: ':' SVLOG_NEW
 	;
 
-colone_new_or_null
+colon_new_or_null
 	: %empty
 	| colon_new
 	;
