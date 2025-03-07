@@ -2204,21 +2204,6 @@ vectored_or_scalared_or_null
 	| vectored_or_scalared
 	;
 
-delay3_or_null
-	: %empty
-	| delay3
-	;
-
-delay_control_or_null
-	: %empty
-	| delay_control
-	;
-
-delay_value_or_null
-	: %empty
-	| '#' delay_value
-	;
-
 net_ident_ud_seq_list
 	: identifier unpacked_dimension_recurse_or_null
 	| net_ident_ud_seq_list ',' identifier unpacked_dimension_recurse_or_null
@@ -2230,7 +2215,7 @@ net_declaration
 	| identifier delay_control_or_null
 		list_of_net_decl_assignments ';'
 	| SVLOG_INTERCONNECT implicit_data_type
-		delay_value_or_null net_ident_ud_seq_list ';'
+		delay_or_null net_ident_ud_seq_list ';'
 	;
 
 /* End of 'net_declaration' grammer rules */
@@ -2786,18 +2771,52 @@ drive_or_charge_strength_or_null
  * Based off section: (A.2.2.3 Delays). *
  ****************************************/
 
-delay2
+/* Start of 'delay' grammer rules */
+
+delay
 	: '#' delay_value
+	;
+
+delay_or_null
+	: %empty
+	| deplay
+	;
+
+/* End of 'delay' grammer rules */
+
+
+/* Start of 'delay2' grammer rules */
+
+delay2
+	: delay
 	| '#' '(' mintypmax_expression ')'
 	| '#' '(' mintypmax_expression ',' mintypmax_expression ')'
 	;
 
+delay2_or_null
+	: %empty
+	| delay2
+	;
+
+/* End of 'delay2' grammer rules */
+
+
+/* Start of 'delay3' grammer rules */
+
 delay3
-	: '#' delay_value
-	| '#' '(' mintypmax_expression ')'
-	| '#' '(' mintypmax_expression ',' mintypmax_expression ')'
+	: delay2
 	| '#' '(' mintypmax_expression ',' mintypmax_expression ',' mintypmax_expression ')'
 	;
+
+delay3_or_null
+	: %empty
+	| delay3
+	;
+
+/* End of 'delay3' grammer rules */
+
+
+/* Start of 'delay_value' grammer rules */
 
 delay_value
 	: unsigned_number
@@ -2806,6 +2825,13 @@ delay_value
 	| time_literal
 	| SVLOG_1STEP
 	;
+
+delay_value_or_null
+	: %empty
+	| delay_value
+	;
+
+/* End of 'delay_value' grammer rules */
 
 /****************************************
  * End of 'Delays' Grammer Rules        *
@@ -4054,8 +4080,13 @@ delay_or_event_control
 	;
 
 delay_control
-	: '#' delay_value
+	: delay
 	| '#' '(' mintypmax_expression ')'
+	;
+
+delay_control_or_null
+	: %empty
+	| delay_control
 	;
 
 event_control
