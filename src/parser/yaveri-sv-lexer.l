@@ -77,6 +77,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endsequence"    { return SVLOG_ENDSEQUENCE;    }
 "first_match"    { return SVLOG_FIRST_MATCH;    }
 "macromodule"    { return SVLOG_MACROMODULE;    }
+"constraint"     { return SVLOG_CONSTRAINT;     }
 "endchecker"     { return SVLOG_ENDCHECKER;     }
 "endpackage"     { return SVLOG_ENDPACKAGE;     }
 "endprogram"     { return SVLOG_ENDPROGRAM;     }

@@ -30,6 +30,7 @@
 %token <itoken> SVLOG_ENDSEQUENCE
 %token <itoken> SVLOG_FIRST_MATCH
 %token <itoken> SVLOG_MACROMODULE
+%token <itoken> SVLOG_CONSTRAINT
 %token <itoken> SVLOG_ENDCHECKER
 %token <itoken> SVLOG_ENDPACKAGE
 %token <itoken> SVLOG_ENDPROGRAM
@@ -1703,8 +1704,31 @@ method_prototype
  * Based off section: (A.1.10 Constraints). *
  ********************************************/
 
+/* Start of 'constraint_declaration' grammer rules */
+
+constraint_declaration
+	: static_or_null SVLOG_CONSTRAINT
+		dynamic_override_specifiers_or_null
+			identifier constraint_block
+	;
+
+/* End of 'constraint_declaration' grammer rules */
+
+
+/* Start of 'constraint_block' grammer rules */
+
 constraint_block
-	: '{' constraint_block_item_recurse '}'
+	: '{' constraint_block_item_recurse_or_null '}'
+	;
+
+/* End of 'constraint_block' grammer rules */
+
+
+/* Start of 'constraint_block_item' grammer rules */
+
+constraint_block_item
+	: SVLOG_SOLVE solve_before_list SVLOG_BEFORE solve_before_list ';'
+	| constraint_expression
 	;
 
 constraint_block_item_recurse
@@ -1712,29 +1736,45 @@ constraint_block_item_recurse
 	| constraint_block_item_recurse constraint_block_item
 	;
 
-constraint_block_item
-	: SVLOG_SOLVE solve_before_list SVLOG_BEFORE solve_before_list ';'
-	| constraint_expression
+constraint_block_item_recurse_or_null
+	: %empty
+	| constraint_block_item_recurse
 	;
+
+/* End of 'constraint_block_item' grammer rules */
+
+
+/* Start of 'solve_before_list' grammer rules */
 
 solve_before_list
 	: constraint_primary
 	| solve_before_list ',' constraint_primary
 	;
 
-constraint_primary
+/* End of 'solve_before_list' grammer rules */
+
+
+/* Start of 'constraint_primary' grammer rules */
+
+constraint_primary_hident_select
 	: hierarchical_identifier select
 	| hierarchical_identifier select '(' ')'
-	| implicit_class_handle '.' hierarchical_identifier select
-	| implicit_class_handle '.' hierarchical_identifier select '(' ')'
-	| class_scope hierarchical_identifier select
-	| class_scope hierarchical_identifier select '(' ')'
 	;
 
-constraint_expression_recurse
-	: constraint_expression
-	| constraint_expression_recurse constraint_expression
+constraint_primary_impl_class_handle_or_class_scope
+	: implicit_class_handle '.'
+	| class_scope
 	;
+
+constraint_primary
+	: constraint_primary_impl_class_handle_or_class_scope
+		constraint_primary_hident_select
+	;
+
+/* End of 'constraint_primary' grammer rules */
+
+
+/* Start of 'constraint_expression' grammer rules */
 
 constraint_expression
 	: expression_or_dist ';'
@@ -1747,14 +1787,39 @@ constraint_expression
 	| SVLOG_DISABLE SVLOG_SOFT constraint_primary ';'
 	;
 
+constraint_expression_recurse
+	: constraint_expression
+	| constraint_expression_recurse constraint_expression
+	;
+
+constraint_expression_recurse_or_null
+	: %empty
+	| constraint_expression_recurse
+	;
+
+/* End of 'constraint_expression' grammer rules */
+
+
+/* Start of 'uniqueness_constraint' grammer rules */
+
 uniqueness_constraint
 	: SVLOG_UNIQUE '{' range_list '}'
 	;
 
+/* End of 'uniqueness_constraint' grammer rules */
+
+
+/* Start of 'constraint_set' grammer rules */
+
 constraint_set
 	: constraint_expression
-	| '{' constraint_expression_recurse '}'
+	| '{' constraint_expression_recurse_or_null '}'
 	;
+
+/* End of 'constraint_set' grammer rules */
+
+
+/* Start of 'expression_or_dist' grammer rules */
 
 expression_or_dist
 	: expression
@@ -1766,10 +1831,20 @@ expression_or_dist_seq_list
 	| expression_or_dist_seq_list ',' expression_or_dist
 	;
 
+/* End of 'expression_or_dist' grammer rules */
+
+
+/* Start of 'dist_list' grammer rules */
+
 dist_list
 	: dist_item
 	| dist_list ',' dist_item
 	;
+
+/* End of 'dist_list' grammer rules */
+
+
+/* Start of 'dist_item' grammer rules */
 
 dist_item
 	: value_range
@@ -1777,10 +1852,54 @@ dist_item
 	| SVLOG_DEFAULT DISTRIBUTED_WEIGHT_OPERATOR expression
 	;
 
+/* End of 'dist_item' grammer rules */
+
+
+/* Start of 'dist_weight' grammer rules */
+
 dist_weight
 	: EQUAL_WEIGHT_OPERATOR expression
 	| DISTRIBUTED_WEIGHT_OPERATOR expression
 	;
+
+/* End of 'dist_weight' grammer rules */
+
+
+/* Start of 'constraint_prototype' grammer rules */
+
+constraint_prototype
+	: constraint_prototype_qualifier_or_null static_or_null
+		SVLOG_CONSTRAINT dynamic_override_specifiers_or_null
+			identifier ';'
+	;
+
+/* End of 'constraint_prototype' grammer rules */
+
+
+/* Start of 'constraint_prototype_qualifier' grammer rules */
+
+constraint_prototype_qualifier
+	: SVLOG_EXTERN
+	| SVLOG_PURE
+	;
+
+constraint_prototype_qualifier_or_null
+	: %empty
+	| constraint_prototype_qualifier
+	;
+
+/* End of 'constraint_prototype_qualifier' grammer rules */
+
+
+/* Start of 'extern_constraint_declaration' grammer rules */
+
+extern_constraint_declaration
+	: static_or_null SVLOG_CONSTRAINT
+		dynamic_override_specifiers_or_null
+			class_scope identifier constraint_block
+	;
+
+/* End of 'extern_constraint_declaration' grammer rules */
 
 /********************************************
  * End of 'Constraints' Grammer Rules       *
@@ -5243,8 +5362,8 @@ const_or_null
 	;
 
 static_or_null
-	: SVLOG_STATIC
-	| %empty
+	: %empty
+	| SVLOG_STATIC
 	;
 
 virtual_or_null
