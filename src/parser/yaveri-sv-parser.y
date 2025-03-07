@@ -3269,49 +3269,99 @@ unsized_dimension_or_null
  * Based off section: (A.2.6 Function declarations). *
  *****************************************************/
 
+/* Start of 'function_data_type_or_implicit' grammer rules */
+
 function_data_type_or_implicit
 	: data_type_or_void
 	| implicit_data_type
 	;
 
+/* End of 'function_data_type_or_implicit' grammer rules */
+
+
+/* Start of 'function_declaration' grammer rules */
+
 function_declaration
-	: SVLOG_FUNCTION dynamic_override_specifiers_or_null lifetime_or_null function_body_declaration
+	: SVLOG_FUNCTION dynamic_override_specifiers_or_null
+		lifetime_or_null function_body_declaration
 	;
+
+/* End of 'function_declaration' grammer rules */
+
+
+/* Start of 'function_body_declaration' grammer rules */
 
 function_body_declaration
 	: function_data_type_or_implicit
-	  ident_or_class_scope_or_null identifier ';'
-	  tf_item_declaration_recurse_or_null
-	  function_statement_or_null_recurse_or_null
-	  SVLOG_ENDFUNCTION colon_ident_or_null
+		ident_or_class_scope_or_null identifier ';'
+			tf_item_declaration_recurse_or_null
+				function_statement_or_null_recurse_or_null
+					SVLOG_ENDFUNCTION colon_ident_or_null
 	| function_data_type_or_implicit
-	  ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
-	  block_item_declaration_recurse_or_null
-	  function_statement_or_null_recurse_or_null
-	  SVLOG_ENDFUNCTION colon_ident_or_null
+		ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
+			block_item_declaration_recurse_or_null
+				function_statement_or_null_recurse_or_null
+					SVLOG_ENDFUNCTION colon_ident_or_null
 	;
 
+/* End of 'function_body_declaration' grammer rules */
+
+
+/* Start of 'function_prototype' grammer rules */
+
 function_prototype
-	: SVLOG_FUNCTION dynamic_override_specifiers_or_null data_type_or_void identifier
-	| SVLOG_FUNCTION dynamic_override_specifiers_or_null data_type_or_void identifier '(' tf_port_list_or_null ')'
+	: SVLOG_FUNCTION
+		dynamic_override_specifiers_or_null
+			data_type_or_void identifier
+	| SVLOG_FUNCTION
+		dynamic_override_specifiers_or_null
+			data_type_or_void identifier
+				'(' tf_port_list_or_null ')'
+	;
+
+/* End of 'function_prototype' grammer rules */
+
+
+/* Start of 'dpi_import_export' grammer rules */
+
+c_ident_equal
+	: SVLOG_CIDENT '='
 	;
 
 c_ident_equal_or_null
 	: %empty
-	| SVLOG_CIDENT '='
+	| c_ident_equal
 	;
 
 dpi_import_export
-	: SVLOG_IMPORT dpi_spec_string dpi_function_import_property_or_null c_ident_equal_or_null function_prototype ';'
-	| SVLOG_IMPORT dpi_spec_string dpi_task_import_property_or_null c_ident_equal_or_null task_prototype ';'
-	| SVLOG_EXPORT dpi_spec_string c_ident_equal_or_null SVLOG_FUNCTION identifier ';'
-	| SVLOG_EXPORT dpi_spec_string c_ident_equal_or_null SVLOG_TASK identifier ';'
+	: SVLOG_IMPORT dpi_spec_string
+		dpi_function_import_property_or_nul
+			 c_ident_equal_or_null function_prototype ';'
+	| SVLOG_IMPORT dpi_spec_string
+		dpi_task_import_property_or_null
+			c_ident_equal_or_null task_prototype ';'
+	| SVLOG_EXPORT dpi_spec_string
+		c_ident_equal_or_null
+			SVLOG_FUNCTION identifier ';'
+	| SVLOG_EXPORT dpi_spec_string
+		c_ident_equal_or_null
+			SVLOG_TASK identifier ';'
 	;
+
+/* End of 'dpi_import_export' grammer rules */
+
+
+/* Start of 'dpi_spec_string' grammer rules */
 
 dpi_spec_string
 	: '"' SVLOG_DPI_C '"'
 	| '"' SVLOG_DPI '"'
 	;
+
+/* End of 'dpi_spec_string' grammer rules */
+
+
+/* Start of 'dpi_function_import_property' grammer rules */
 
 dpi_function_import_property
 	: SVLOG_CONTEXT
@@ -3323,6 +3373,11 @@ dpi_function_import_property_or_null
 	| dpi_function_import_property
 	;
 
+/* End of 'dpi_function_import_property' grammer rules */
+
+
+/* Start of 'dpi_task_import_property' grammer rules */
+
 dpi_task_import_property
 	: SVLOG_CONTEXT
 	;
@@ -3331,6 +3386,8 @@ dpi_task_import_property_or_null
 	: %empty
 	| dpi_task_import_property
 	;
+
+/* End of 'dpi_task_import_property' grammer rules */
 
 /*****************************************************
  * End of 'Function declarations' Grammer Rules      *
@@ -6022,9 +6079,9 @@ class_or_package_scope_or_null
 	;
 
 ident_or_class_scope_or_null
-	: period_ident
+	: %empty
+	| period_ident
 	| class_scope
-	| %empty
 	;
 
 var_or_null
