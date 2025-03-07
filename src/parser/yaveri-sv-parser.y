@@ -50,6 +50,7 @@
 %token <itoken> SVLOG_JOIN_NONE
 %token <itoken> SVLOG_PARAMETER
 %token <itoken> SVLOG_PRIMITIVE
+%token <itoken> SVLOG_PROTECTED
 %token <itoken> SVLOG_RANDOMIZE
 %token <itoken> SVLOG_REJECT_ON
 %token <itoken> SVLOG_SHORTREAL
@@ -1471,10 +1472,225 @@ checker_generate_item
  * Based off section: (A.1.9 Class items). *
  *******************************************/
 
+/* Start of 'class_item' grammer rules */
+
+class_item
+	: attribute_instance_recurse_or_null class_property
+	| attribute_instance_recurse_or_null class_method
+	| attribute_instance_recurse_or_null class_constraint
+	| attribute_instance_recurse_or_null class_declaration
+	| attribute_instance_recurse_or_null interface_class_declaration
+	| attribute_instance_recurse_or_null covergroup_declaration
+	| local_parameter_declaration ';'
+	| parameter_declaration ';'
+	| ';'
+	;
+
+class_item_recurse
+	: class_item
+	| class_item_recurse class_item
+	;
+
+class_item_recurse_or_null
+	: %empty
+	| class_item_recurse
+	;
+
+/* End of 'class_item' grammer rules */
+
+
+/* Start of 'class_property' grammer rules */
+
+class_property
+	: property_qualifier_recurse_or_null data_declaration
+	| SVLOG_CONST class_item_qualifier_recurse_or_null data_type
+		identifier equal_constant_expression ';'
+	;
+
+/* End of 'class_property' grammer rules */
+
+
+/* Start of 'class_method' grammer rules */
+
+class_method
+	: method_qualifier_recurse_or_null task_declaration
+	| method_qualifier_recurse_or_null function_declaration
+	| SVLOG_PURE SVLOG_VIRTUAL class_item_qualifier_recurse_or_null method_prototype ';'
+	| SVLOG_EXTERN method_qualifier_recurse_or_null method_prototype ';'
+	| method_qualifier_recurse_or_null class_constructor_declaration
+	| SVLOG_EXTERN method_qualifier_recurse_or_null class_constructor_declaration
+	;
+
+/* End of 'class_method' grammer rules */
+
+
+/* Start of 'class_constructor_declaration' grammer rules */
+
+class_const_decl_super_new_loa_default
+	: SVLOG_SUPER '.' SVLOG_NEW ';'
+	| SVLOG_SUPER '.' SVLOG_NEW '(' ')' ';'
+	| SVLOG_SUPER '.' SVLOG_NEW '(' SVLOG_DEFAULT ')' ';'
+	| SVLOG_SUPER '.' SVLOG_NEW '(' list_of_arguments ')' ';'
+	;
+
+class_const_decl_super_new_loa_default_or_null
+	: %empty
+	| class_const_decl_super_new_loa_default
+	;
+
+class_const_decl_cc_arg_list
+	: '(' ')'
+	| '(' class_constructor_arg_list ')'
+	;
+
+class_const_decl_cc_arg_list_or_null
+	: %empty
+	| class_const_decl_cc_arg_list
+	;
+
+class_constructor_declaration
+	: SVLOG_FUNCTION class_scope_or_null SVLOG_NEW class_const_decl_cc_arg_list_or_null ';'
+		block_item_declaration_recurse_or_null class_const_decl_super_new_loa_default_or_null
+			function_statement_or_null_recurse_or_null
+				SVLOG_ENDFUNCTION colon_new_or_null
+	;
+
+/* End of 'class_constructor_declaration' grammer rules */
+
+
+/* Start of 'class_constructor_prototype' grammer rules */
+
+class_constructor_prototype
+	: SVLOG_FUNCTION SVLOG_NEW ';'
+	| SVLOG_FUNCTION SVLOG_NEW '(' ')' ';'
+	| SVLOG_FUNCTION SVLOG_NEW '(' class_constructor_arg_list ')' ';'
+	;
+
+/* End of 'class_constructor_prototype' grammer rules */
+
+
+/* Start of 'class_constructor_arg_list' grammer rules */
+
+class_constructor_arg_list
+	: class_constructor_arg
+	| class_constructor_arg_list ',' class_constructor_arg
+	;
+
+/* End of 'class_constructor_arg_list' grammer rules */
+
+
+/* Start of 'class_constructor_arg' grammer rules */
+
+class_constructor_arg
+	: tf_port_item
+	| SVLOG_DEFAULT
+	;
+
+/* End of 'class_constructor_arg' grammer rules */
+
+
+/* Start of 'interface_class_item' grammer rules */
+
+interface_class_item
+	: type_declaration
+	| attribute_instance_recurse_or_null interface_class_method
+	| local_parameter_declaration ';'
+	| parameter_declaration ';'
+	| ';'
+	;
+
+interface_class_item_recurse
+	: interface_class_item
+	| interface_class_item_recurse interface_class_item
+	;
+
+interface_class_item_recurse_or_null
+	: %empty
+	| interface_class_item_recurse
+	;
+
+/* End of 'interface_class_item' grammer rules */
+
+
+/* Start of 'interface_class_method' grammer rules */
+
+interface_class_method
+	: SVLOG_PURE SVLOG_VIRTUAL method_prototype ';'
+	;
+
+/* End of 'interface_class_method' grammer rules */
+
+
+/* Start of 'class_constraint' grammer rules */
+
+class_constraint
+	: constraint_prototype
+	| constraint_declaration
+	;
+
+/* End of 'class_constraint' grammer rules */
+
+
+/* Start of 'class_item_qualifier' grammer rules */
+
+class_item_qualifier
+	: SVLOG_STATIC
+	| SVLOG_PROTECTED
+	| SVLOG_LOCAL
+	;
+
+class_item_qualifier_recurse
+	: class_item_qualifier
+	| class_item_qualifier_recurse class_item_qualifier
+	;
+
+class_item_qualifier_recurse_or_null
+	: %empty
+	| class_item_qualifier_recurse
+	;
+
+/* End of 'class_item_qualifier' grammer rules */
+
+
+/* Start of 'property_qualifier' grammer rules */
+
+property_qualifier
+	: random_qualifier
+	| class_item_qualifier
+	;
+
+/* End of 'property_qualifier' grammer rules */
+
+
+/* Start of 'random_qualifier' grammer rules */
+
 random_qualifier
 	: SVLOG_RAND
 	| SVLOG_RANDC
 	;
+
+/* End of 'random_qualifier' grammer rules */
+
+
+/* Start of 'method_qualifier' grammer rules */
+
+method_qualifier
+	: SVLOG_VIRTUAL
+	| SVLOG_PURE SVLOG_VIRTUAL
+	| class_item_qualifier
+	;
+
+/* End of 'method_qualifier' grammer rules */
+
+
+/* Start of 'method_prototype' grammer rules */
+
+method_prototype
+	: task_prototype
+	| function_prototype
+	;
+
+/* End of 'method_prototype' grammer rules */
 
 /*******************************************
  * End of 'Class items' Grammer Rules      *
@@ -1844,6 +2060,11 @@ enum_name_declaration_seq_list
 
 class_scope
 	: class_type CLASS_SCOPE_OPERATOR
+	;
+
+class_scope_or_null
+	: %empty
+	| class_scope
 	;
 
 class_type_ident_seq_list
@@ -5043,6 +5264,15 @@ colon_config
 colon_config_or_null
 	: %empty
 	| colon_config
+	;
+
+colon_new
+	: ':' SVLOG_NEW
+	;
+
+colone_new_or_null
+	: %empty
+	| colon_new
 	;
 
 /*********************************

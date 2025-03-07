@@ -97,6 +97,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "join_none"      { return SVLOG_JOIN_NONE;      }
 "parameter"      { return SVLOG_PARAMETER;      }
 "primitive"      { return SVLOG_PRIMITIVE;      }
+"protected"      { return SVLOG_PROTECTED;      }
 "randomize"      { return SVLOG_RANDOMIZE;      }
 "reject_on"      { return SVLOG_REJECT_ON;      }
 "shortreal"      { return SVLOG_SHORTREAL;      }
