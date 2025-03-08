@@ -67,6 +67,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "timeprecision"  { return SVLOG_TIMEPRECISION;  }
 "endinterface"   { return SVLOG_ENDINTERFACE;   }
 "endprimitive"   { return SVLOG_ENDPRIMITIVE;   }
+"illegal_bins"   { return SVLOG_ILLEGAL_BINS;   }
 "interconnect"   { return SVLOG_INTERCONNECT;   }
 "randsequence"   { return SVLOG_RANDSEQUENCE;   }
 "s_eventually"   { return SVLOG_S_EVENTUALLY;   }
@@ -76,8 +77,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endproperty"    { return SVLOG_ENDPROPERTY;    }
 "endsequence"    { return SVLOG_ENDSEQUENCE;    }
 "first_match"    { return SVLOG_FIRST_MATCH;    }
+"ignore_bins"    { return SVLOG_IGNORE_BINS;    }
 "macromodule"    { return SVLOG_MACROMODULE;    }
+"type_option"    { return SVLOG_TYPE_OPTION;    }
 "constraint"     { return SVLOG_CONSTRAINT;     }
+"covergroup"     { return SVLOG_COVERGROUP;     }
+"coverpoint"     { return SVLOG_COVERPOINT;     }
 "endchecker"     { return SVLOG_ENDCHECKER;     }
 "endpackage"     { return SVLOG_ENDPACKAGE;     }
 "endprogram"     { return SVLOG_ENDPROGRAM;     }
@@ -108,6 +113,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "deassign"       { return SVLOG_DEASSIGN;       }
 "defparam"       { return SVLOG_DEFPARAM;       }
 "endclass"       { return SVLOG_ENDCLASS;       }
+"endgroup"       { return SVLOG_ENDGROUP;       }
 "extendes"       { return SVLOG_EXTENDES;       }
 "forkjoin"       { return SVLOG_FORKJOIN;       }
 "function"       { return SVLOG_FUNCTION;       }
@@ -126,6 +132,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "timeunit"       { return SVLOG_TIMEUNIT;       }
 "unsigned"       { return SVLOG_UNSIGNED;       }
 "vectored"       { return SVLOG_VECTORED;       }
+"wildcard"       { return SVLOG_WILDCARD;       }
 "$warning"       { return SVLOG_DSWARNING;      }
 "chandle"        { return SVLOG_CHANDLE;        }
 "checker"        { return SVLOG_CHECKER;        }
@@ -166,6 +173,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "assign"         { return SVLOG_ASSIGN;         }
 "assume"         { return SVLOG_ASSUME;         }
 "before"         { return SVLOG_BEFORE;         }
+"binsof"         { return SVLOG_BINSOF;         }
 "config"         { return SVLOG_CONFIG;         }
 "design"         { return SVLOG_DESIGN;         }
 "expect"         { return SVLOG_EXPECT;         }
@@ -179,10 +187,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "inside"         { return SVLOG_INSIDE;         }
 "medium"         { return SVLOG_MEDIUM;         }
 "module"         { return SVLOG_MODULE;         }
+"option"         { return SVLOG_OPTION;         }
 "output"         { return SVLOG_OUTPUT;         }
 "packed"         { return SVLOG_PACKED;         }
 "repeat"         { return SVLOG_REPEAT;         }
 "return"         { return SVLOG_RETURN;         }
+"sample"         { return SVLOG_SAMPLE;         }
 "signed"         { return SVLOG_SIGNED;         }
 "static"         { return SVLOG_STATIC;         }
 "string"         { return SVLOG_STRING;         }
@@ -203,6 +213,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "class"          { return SVLOG_CLASS;          }
 "const"          { return SVLOG_CONST;          }
 "cover"          { return SVLOG_COVER;          }
+"cross"          { return SVLOG_CROSS;          }
 "DPI-C"          { return SVLOG_DPI_C;          }
 "event"          { return SVLOG_EVENT;          }
 "force"          { return SVLOG_FORCE;          }
@@ -229,6 +240,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "$root"          { return SVLOG_DSROOT;         }
 "$unit"          { return SVLOG_DSUNIT;         }
 "bind"           { return SVLOG_BIND;           }
+"bins"           { return SVLOG_BINS;           }
 "byte"           { return SVLOG_BYTE;           }
 "case"           { return SVLOG_CASE;           }
 "cell"           { return SVLOG_CELL;           }
@@ -304,6 +316,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "!=?"          { return WILDCARD_NOT_EQUAL;                 }
 "[$]"          { return QUEUE_INITIALIZE;                   }
 "[$:"          { return BOUNDED_QUEUE_INITIALIZE;           }
+":$]"          { return BOUNDED_QUEUE_FINALIZE;             }
+"+/-"          { return ABSOLUTE_TOLERANCE_RANGE;           }
+"+%-"          { return RELATIVE_TOLERANCE_RANGE;           }
 "[*]"          { return REPEAT_ZERO_OR_MORE; /* [*0:$] */   }
 "[+]"          { return REPEAT_ONE_OR_MORE; /* [*1:$] */    }
 "[*"           { return CONSECUTIVE_REPEAT_OPERATOR;        }
@@ -329,7 +344,9 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "<<"           { return LEFT_SHIFT;                         }
 ">>"           { return RIGHT_SHIFT;                        }
 ">="           { return GT_OR_EQ;                           }
-"<="           { return LT_OR_EQ;                           }
+"<="           { return NON_BLOCK_ASSIGNMENT;               }
+"=>"           { return PARALLEL_CONNECTION;                }
+"@@"           { return DOUBLE_AT_SIGN;                     }
 "!"            { return LOGICAL_NOT;                        }
 "^"            { return BIT_WISE_XOR;                       }
 "|"            { return BIT_WISE_OR;                        }

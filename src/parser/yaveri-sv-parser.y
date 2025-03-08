@@ -20,6 +20,7 @@
 %token <itoken> SVLOG_TIMEPRECISION
 %token <itoken> SVLOG_ENDINTERFACE
 %token <itoken> SVLOG_ENDPRIMITIVE
+%token <itoken> SVLOG_ILLEGAL_BINS
 %token <itoken> SVLOG_INTERCONNECT
 %token <itoken> SVLOG_RANDSEQUENCE
 %token <itoken> SVLOG_S_EVENTUALLY
@@ -29,8 +30,12 @@
 %token <itoken> SVLOG_ENDPROPERTY
 %token <itoken> SVLOG_ENDSEQUENCE
 %token <itoken> SVLOG_FIRST_MATCH
+%token <itoken> SVLOG_IGNORE_BINS
 %token <itoken> SVLOG_MACROMODULE
+%token <itoken> SVLOG_TYPE_OPTION
 %token <itoken> SVLOG_CONSTRAINT
+%token <itoken> SVLOG_COVERGROUP
+%token <itoken> SVLOG_COVERPOINT
 %token <itoken> SVLOG_ENDCHECKER
 %token <itoken> SVLOG_ENDPACKAGE
 %token <itoken> SVLOG_ENDPROGRAM
@@ -61,6 +66,7 @@
 %token <itoken> SVLOG_DEASSIGN
 %token <itoken> SVLOG_DEFPARAM
 %token <itoken> SVLOG_ENDCLASS
+%token <itoken> SVLOG_ENDGROUP
 %token <itoken> SVLOG_EXTENDES
 %token <itoken> SVLOG_FORKJOIN
 %token <itoken> SVLOG_FUNCTION
@@ -79,6 +85,7 @@
 %token <itoken> SVLOG_TIMEUNIT
 %token <itoken> SVLOG_UNSIGNED
 %token <itoken> SVLOG_VECTORED
+%token <itoken> SVLOG_WILDCARD
 %token <itoken> SVLOG_DSWARNING
 %token <itoken> SVLOG_CHANDLE
 %token <itoken> SVLOG_CHECKER
@@ -119,6 +126,7 @@
 %token <itoken> SVLOG_ASSIGN
 %token <itoken> SVLOG_ASSUME
 %token <itoken> SVLOG_BEFORE
+%token <itoken> SVLOG_BINSOF
 %token <itoken> SVLOG_CONFIG
 %token <itoken> SVLOG_DESIGN
 %token <itoken> SVLOG_EXPECT
@@ -132,10 +140,12 @@
 %token <itoken> SVLOG_INSIDE
 %token <itoken> SVLOG_MEDIUM
 %token <itoken> SVLOG_MODULE
+%token <itoken> SVLOG_OPTION
 %token <itoken> SVLOG_OUTPUT
 %token <itoken> SVLOG_PACKED
 %token <itoken> SVLOG_REPEAT
 %token <itoken> SVLOG_RETURN
+%token <itoken> SVLOG_SAMPLE
 %token <itoken> SVLOG_SIGNED
 %token <itoken> SVLOG_STATIC
 %token <itoken> SVLOG_STRING
@@ -156,6 +166,7 @@
 %token <itoken> SVLOG_CLASS
 %token <itoken> SVLOG_CONST
 %token <itoken> SVLOG_COVER
+%token <itoken> SVLOG_CROSS
 %token <itoken> SVLOG_DPI_C
 %token <itoken> SVLOG_EVENT
 %token <itoken> SVLOG_FORCE
@@ -182,6 +193,7 @@
 %token <itoken> SVLOG_DSROOT
 %token <itoken> SVLOG_DSUNIT
 %token <itoken> SVLOG_BIND
+%token <itoken> SVLOG_BINS
 %token <itoken> SVLOG_BYTE
 %token <itoken> SVLOG_CASE
 %token <itoken> SVLOG_CELL
@@ -256,6 +268,9 @@
 %token <itoken> WILDCARD_NOT_EQUAL
 %token <itoken> QUEUE_INITIALIZE
 %token <itoken> BOUNDED_QUEUE_INITIALIZE
+%token <itoken> BOUNDED_QUEUE_FINALIZE
+%token <itoken> ABSOLUTE_TOLERANCE_RANGE
+%token <itoken> RELATIVE_TOLERANCE_RANGE
 %token <itoken> REPEAT_ZERO_OR_MORE /* [*] is an abbreviation for [*0:$] */
 %token <itoken> REPEAT_ONE_OR_MORE  /* [+] is an abbreviation for [*1:$] */
 %token <itoken> CONSECUTIVE_REPEAT_OPERATOR
@@ -280,7 +295,9 @@
 %token <itoken> LEFT_SHIFT
 %token <itoken> RIGHT_SHIFT
 %token <itoken> GT_OR_EQ
-%token <itoken> LT_OR_EQ
+%token <itoken> NON_BLOCK_ASSIGNMENT
+%token <itoken> PARALLEL_CONNECTION
+%token <itoken> DOUBLE_AT_SIGN
 %token <itoken> LOGICAL_NOT
 %token <itoken> BIT_WISE_XOR
 %token <itoken> BIT_WISE_OR
@@ -2384,6 +2401,11 @@ data_type_or_implicit
 	| implicit_data_type
 	;
 
+data_type_or_implicit_or_null
+	: %empty
+	| data_type_or_implicit
+	;
+
 /* End of 'data_type_or_implicit' grammer rules */
 
 
@@ -4350,6 +4372,413 @@ assertion_variable_declaration_recurse_or_null
  *******************************************************/
 
 
+/********************************************************
+ * Start of 'Covergroup declarations' Grammer Rules     *
+ * Based off section: (A.2.11 Covergroup declarations). *
+ ********************************************************/
+
+/* Start of 'covergroup_declaration' grammer rules */
+
+cgroup_decl_tf_port_list
+	: '(' tf_port_list_or_null ')'
+	;
+
+cgroup_decl_tf_port_list_or_null
+	: %empty
+	| cgroup_decl_tf_port_list
+	;
+
+covergroup_declaration
+	: SVLOG_COVERGROUP identifier
+		cgroup_decl_tf_port_list_or_null
+			coverage_event_or_null ';'
+				coverage_spec_or_option_recurse_or_null
+					SVLOG_ENDGROUP colon_ident_or_null
+	| SVLOG_COVERGROUP SVLOG_EXTENDES identifier ';'
+		coverage_spec_or_option_recurse_or_null
+			SVLOG_ENDGROUP colon_ident_or_null
+	;
+
+/* End of 'covergroup_declaration' grammer rules */
+
+
+/* Start of 'coverage_spec_or_option' grammer rules */
+
+coverage_spec_or_option
+	: attribute_instance_recurse_or_null coverage_spec
+	| attribute_instance_recurse_or_null coverage_option ';'
+	;
+
+coverage_spec_or_option_recurse
+	: coverage_spec_or_option
+	| coverage_spec_or_option_recurse coverage_spec_or_option
+	;
+
+coverage_spec_or_option_recurse_or_null
+	: %empty
+	| coverage_spec_or_option
+	;
+
+/* End of 'coverage_spec_or_option' grammer rules */
+
+
+/* Start of 'coverage_option' grammer rules */
+
+coverage_option
+	: SVLOG_OPTION period_ident equal_expression
+	| SVLOG_TYPE_OPTION period_ident equal_constant_expression
+	;
+
+/* End of 'coverage_option' grammer rules */
+
+
+/* Start of 'coverage_spec' grammer rules */
+
+coverage_spec
+	: cover_point
+	| cover_cross
+	;
+
+/* End of 'coverage_spec' grammer rules */
+
+
+/* Start of 'coverage_event' grammer rules */
+
+coverage_event
+	: clocking_event
+	| SVLOG_WITH SVLOG_FUNCTION SVLOG_SAMPLE
+		'(' tf_port_list_or_null ')'
+	| DOUBLE_AT_SIGN '(' block_event_expression ')'
+	;
+
+coverage_event_or_null
+	: %empty
+	| coverage_event
+	;
+
+/* End of 'coverage_event' grammer rules */
+
+
+/* Start of 'block_event_expression' grammer rules */
+
+block_event_expression
+	: block_event_expression SVLOG_OR block_event_expression
+	| SVLOG_BEGIN hierarchical_btf_identifier
+	| SVLOG_END hierarchical_btf_identifier
+	;
+
+/* End of 'block_event_expression' grammer rules */
+
+
+/* Start of 'hierarchical_btf_identifier' grammer rules */
+
+hierarchical_btf_identifier
+	: hierarchical_tf_identifier
+	| hierarchical_block_identifier
+	| hierarchical_identifier_period_or_class_scope_or_null identifier
+	;
+
+/* End of 'hierarchical_btf_identifier' grammer rules */
+
+
+/* Start of 'cover_point' grammer rules */
+
+cover_point_dt_or_imp_colon_ident_or_null
+	: %empty
+	| data_type_or_implicit_or_null colon_ident
+	;
+
+cover_point
+	: cover_point_dt_or_imp_colon_ident_or_null
+		SVLOG_COVERPOINT expression iff_expression_or_null
+			bins_or_empty
+	;
+
+/* End of 'cover_point' grammer rules */
+
+
+/* Start of 'bins_or_empty' grammer rules */
+
+bins_or_empty
+	: '{' attribute_instance_recurse_or_null
+		bins_or_options_semicolon_recurse_or_null '}'
+	| ';'
+	;
+
+/* End of 'bins_or_empty' grammer rules */
+
+
+/* Start of 'bins_or_options' grammer rules */
+
+with_paren_expression
+	: SVLOG_WITH paren_expression
+	;
+
+with_paren_expression_or_null
+	: %empty
+	| with_paren_expression
+	;
+
+bins_or_options
+	: coverage_option
+	| wildcard_or_null bins_keyword identifier
+		square_brackets_expression_or_null '=' '{' covergroup_range_list '}'
+			with_paren_expression_or_null iff_expression_or_null
+	| wildcard_or_null bins_keyword identifier
+		square_brackets_expression_or_null '=' identifier
+			with_paren_expression iff_expression_or_null
+	| wildcard_or_null bins_keyword identifier
+		square_brackets_expression_or_null '=' expression
+			iff_expression_or_null
+	| wildcard_or_null bins_keyword identifier
+		square_brackets_or_null '=' trans_list
+			iff_expression_or_null
+	| bins_keyword identifier
+		square_brackets_expression_or_null '=' SVLOG_DEFAULT
+			iff_expression_or_null
+	| bins_keyword identifier
+		'=' SVLOG_DEFAULT SVLOG_SEQUENCE
+			iff_expression_or_null
+	;
+
+bins_or_options_semicolon
+	: bins_or_options ';'
+	;
+
+bins_or_options_semicolon_recurse
+	: bins_or_options_semicolon
+	| bins_or_options_semicolon_recurse bins_or_options_semicolon
+	;
+
+bins_or_options_semicolon_recurse_or_null
+	: %empty
+	| bins_or_options_semicolon_recurse
+	;
+
+/* End of 'bins_or_options' grammer rules */
+
+
+/* Start of 'bins_keyword' grammer rules */
+
+bins_keyword
+	: SVLOG_BINS
+	| SVLOG_ILLEGAL_BINS
+	| SVLOG_IGNORE_BINS
+	;
+
+/* End of 'bins_keyword' grammer rules */
+
+
+/* Start of 'trans_list' grammer rules */
+
+trans_list
+	: '(' trans_set ')'
+	| trans_list ',' '(' trans_set ')'
+	;
+
+/* End of 'trans_list' grammer rules */
+
+
+/* Start of 'trans_set' grammer rules */
+
+trans_set
+	: trans_range_list
+	| trans_set PARALLEL_CONNECTION trans_range_list
+	;
+
+/* End of 'trans_set' grammer rules */
+
+
+/* Start of 'trans_range_list' grammer rules */
+
+trans_range_list
+	: covergroup_range_list
+	| covergroup_range_list CONSECUTIVE_REPEAT_OPERATOR repeat_range ']'
+	| covergroup_range_list GOTO_REPETITION_OPERATOR repeat_range ']'
+	| covergroup_range_list NON_CONSECUTIVE_REPEAT_OPERATOR repeat_range ']'
+	;
+
+/* End of 'trans_range_list' grammer rules */
+
+
+/* Start of 'repeat_range' grammer rules */
+
+repeat_range
+	: expression
+	| expression ':' expression
+	;
+
+/* End of 'repeat_range' grammer rules */
+
+
+/* Start of 'cover_cross' grammer rules */
+
+cover_cross
+	: period_ident_or_null SVLOG_CROSS list_of_cross_items
+		iff_expression_or_null cross_body
+	;
+
+/* End of 'cover_cross' grammer rules */
+
+
+/* Start of 'list_of_cross_items' grammer rules */
+
+list_of_cross_items
+	: cross_item ',' cross_item_seq_list
+	;
+
+/* End of 'list_of_cross_items' grammer rules */
+
+
+/* Start of 'cross_item' grammer rules */
+
+cross_item
+	: identifier
+	;
+
+cross_item_seq_list
+	: identifier
+	| cross_item_seq_list ',' identifier
+	;
+
+/* End of 'cross_item' grammer rules */
+
+
+/* Start of 'cross_body' grammer rules */
+
+cross_body
+	: '{' cross_body_item_recurse_or_null '}'
+	| ';'
+	;
+
+/* End of 'cross_body' grammer rules */
+
+
+/* Start of 'cross_body_item' grammer rules */
+
+cross_body_item
+	: function_declaration
+	| bins_selection_or_option ';'
+	;
+
+cross_body_item_recurse
+	: cross_body_item
+	| cross_body_item_recurse cross_body_item
+	;
+
+cross_body_item_recurse_or_null
+	: %empty
+	| cross_body_item_recurse
+	;
+
+/* End of 'cross_body_item' grammer rules */
+
+
+/* Start of 'bins_selection_or_option' grammer rules */
+
+bins_selection_or_option
+	: attribute_instance_recurse_or_null coverage_option
+	| attribute_instance_recurse_or_null bins_selection
+	;
+
+/* End of 'bins_selection_or_option' grammer rules */
+
+
+/* Start of 'bins_selection' grammer rules */
+
+bins_selection
+	: bins_keyword identifier '='
+		select_expression iff_expression_or_null
+	;
+
+/* End of 'bins_selection' grammer rules */
+
+
+/* Start of 'select_expression' grammer rules */
+
+select_expression_matches_ice_or_null
+	: %empty
+	| SVLOG_MATCHES integer_covergroup_expression
+	;
+
+select_expression
+	: select_condition
+	| LOGICAL_NOT select_condition
+	| select_expression LOGICAL_AND select_expression
+	| select_expression LOGICAL_OR select_expression
+	| '(' select_expression ')'
+	| select_expression SVLOG_WITH '(' expression ')'
+		select_expression_matches_ice_or_null
+	| identifier
+	| expression select_expression_matches_ice_or_null
+	;
+
+/* End of 'select_expression' grammer rules */
+
+
+/* Start of 'select_condition' grammer rules */
+
+intersect_covergroup_range_list_or_null
+	: %empty
+	| SVLOG_INTERSECT '{' covergroup_range_list '}'
+	;
+
+select_condition
+	: SVLOG_BINSOF '(' bins_expression ')'
+		intersect_covergroup_range_list_or_null
+	;
+
+/* End of 'select_condition' grammer rules */
+
+
+/* Start of 'bins_expression' grammer rules */
+
+bins_expression
+	: identifier period_ident_or_null
+	;
+
+/* End of 'bins_expression' grammer rules */
+
+
+/* Start of 'covergroup_range_list' grammer rules */
+
+covergroup_range_list
+	: covergroup_value_range
+	| covergroup_range_list ',' covergroup_value_range
+	;
+
+/* End of 'covergroup_range_list' grammer rules */
+
+
+/* Start of 'covergroup_value_range' grammer rules */
+
+covergroup_value_range
+	: expression
+	| '[' expression ':' expression ']'
+	| BOUNDED_QUEUE_INITIALIZE expression ']'
+	| '[' expression BOUNDED_QUEUE_FINALIZE
+	| '[' expression ABSOLUTE_TOLERANCE_RANGE expression ']'
+	| '[' expression RELATIVE_TOLERANCE_RANGE expression ']'
+	;
+
+/* End of 'covergroup_value_range' grammer rules */
+
+
+/* Start of 'integer_covergroup_expression' grammer rules */
+
+integer_covergroup_expression
+	: expression
+	| '$'
+	;
+
+/* End of 'integer_covergroup_expression' grammer rules */
+
+/********************************************************
+ * End of 'Covergroup declarations' Grammer Rules       *
+ * Based off section: (A.2.11 Covergroup declarations). *
+ ********************************************************/
+
+
 /*************************************************
  * Start of 'Let declarations' Grammer Rules     *
  * Based off section: (A.2.12 Let declarations). *
@@ -4597,8 +5026,8 @@ assignment_operator
 	;
 
 nonblocking_assignment
-	: variable_lvalue LT_OR_EQ expression
-	| variable_lvalue LT_OR_EQ delay_or_event_control expression
+	: variable_lvalue NON_BLOCK_ASSIGNMENT expression
+	| variable_lvalue NON_BLOCK_ASSIGNMENT delay_or_event_control expression
 	;
 
 procedural_continuous_assignment
@@ -5327,7 +5756,7 @@ clocking_skew
 	;
 
 clocking_drive
-	: clockvar_expression LT_OR_EQ cycle_delay_or_null expression
+	: clockvar_expression NON_BLOCK_ASSIGNMENT cycle_delay_or_null expression
 	;
 
 cycle_delay
@@ -5761,9 +6190,10 @@ constant_indexed_range
 	| constant_expression REDUCTION_OPERATOR constant_expression
 	;
 
+/* Start of 'expression' grammer rules */
+
 expression
-	:	
-	| primary
+	: primary
 	| unary_operator attribute_instance_recurse_or_null primary
 	| inc_or_dec_expression
 	| '(' operator_assignment ')'
@@ -5782,6 +6212,44 @@ expression_seq_list
 	: expression
 	| expression_seq_list ',' expression
 	;
+
+equal_expression
+	: '=' expression
+	;
+
+equal_expression_or_null
+	: %empty
+	| equal_expression
+	;
+
+square_brackets_expression
+	: '[' expression ']'
+	;
+
+square_brackets_expression_or_null
+	: %empty
+	| square_brackets_expression
+	;
+
+paren_expression
+	: '(' expression ')'
+	;
+
+paren_expression_or_null
+	: %empty
+	| paren_expression
+	;
+
+iff_expression
+	: SVLOG_IF_AND_ONLY_IF '(' expression ')'
+	;
+
+iff_expression_or_null
+	: %empty
+	| iff_expression
+	;
+
+/* End of 'expression' grammer rules */
 
 mintypmax_expression
 	: expression
@@ -6010,7 +6478,7 @@ binary_operator
 	| LOGICAL_OR
 	| POWER_OF_OPERATOR
 	| '<'
-	| LT_OR_EQ
+	| NON_BLOCK_ASSIGNMENT
 	| '>'
 	| GT_OR_EQ
 	| BIT_WISE_AND
@@ -6302,6 +6770,16 @@ hierarchical_identifier_seq_list
 	| hierarchical_identifier_seq_list ',' hierarchical_identifier
 	;
 
+hierarchical_identifier_period_or_class_scope
+	: hierarchical_identifier '.'
+	| class_scope
+	;
+
+hierarchical_identifier_period_or_class_scope_or_null
+	: %empty
+	| hierarchical_identifier_period_or_class_scope
+	;
+
 identifier
 	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
 	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
@@ -6419,7 +6897,7 @@ semicolon_or_null
 
 colon_ident
 	: ':' identifier
-	| identifer ':'
+	| identifier ':'
 	;
 
 colon_ident_or_null
@@ -6478,15 +6956,6 @@ var_or_null
 	| %empty
 	;
 
-equal_expression
-	: '=' expression
-	;
-
-equal_expression_or_null
-	: equal_expression
-	| %empty
-	;
-
 equal_constant_expression
 	: '=' constant_expression
 	;
@@ -6511,6 +6980,11 @@ virtual_or_null
 	| SVLOG_VIRTUAL
 	;
 
+wildcard_or_null
+	: %empty
+	| SVLOG_WILDCARD
+	;
+
 rand_or_null
 	: %empty
 	| SVLOG_RAND
@@ -6532,6 +7006,11 @@ colon_new
 colon_new_or_null
 	: %empty
 	| colon_new
+	;
+
+square_brackets_or_null
+	: %empty
+	| '[' ']'
 	;
 
 /*********************************
