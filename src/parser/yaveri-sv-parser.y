@@ -238,6 +238,8 @@
 %token <itoken> SVLOG_SEC
 
 
+%token <itoken> CYCLE_DELAY_ZERO_OR_MORE
+%token <itoken> CYCLE_DELAY_ONE_OR_MORE
 %token <itoken> EXPORT_DECLARATION
 %token <itoken> CASE_EQUAL
 %token <itoken> CASE_NOT_EQUAL
@@ -3723,11 +3725,17 @@ import_export
  * Based off section: (A.2.10 Assertion declarations). *
  *******************************************************/
 
+/* Start of 'concurrent_assertion_item' grammer rules */
+
 concurrent_assertion_item
-	: concurrent_assertion_statement
-	| identifier ':' concurrent_assertion_statement
+	: colon_ident_or_null concurrent_assertion_statement
 	| checker_instantiation
 	;
+
+/* End of 'concurrent_assertion_item' grammer rules */
+
+
+/* Start of 'concurrent_assertion_statement' grammer rules */
 
 concurrent_assertion_statement
 	: assert_property_statement
@@ -3737,47 +3745,83 @@ concurrent_assertion_statement
 	| restrict_property_statement
 	;
 
+/* End of 'concurrent_assertion_statement' grammer rules */
+
+
+/* Start of 'assert_property_statement' grammer rules */
+
 assert_property_statement
 	: SVLOG_ASSERT SVLOG_PROPERTY '(' property_spec ')' action_block
 	;
+
+/* End of 'assert_property_statement' grammer rules */
+
+
+/* Start of 'assume_property_statement' grammer rules */
 
 assume_property_statement
 	: SVLOG_ASSUME SVLOG_PROPERTY '(' property_spec ')' action_block
 	;
 
+/* End of 'assume_property_statement' grammer rules */
+
+
+/* Start of 'cover_property_statement' grammer rules */
+
 cover_property_statement
 	: SVLOG_COVER SVLOG_PROPERTY '(' property_spec ')' statement_or_null
 	;
+
+/* End of 'cover_property_statement' grammer rules */
+
+
+/* Start of 'expect_property_statement' grammer rules */
 
 expect_property_statement
 	: SVLOG_EXPECT '(' property_spec ')' action_block
 	;
 
+/* End of 'expect_property_statement' grammer rules */
+
+
+/* Start of 'cover_sequence_statement' grammer rules */
+
 cover_sequence_statement
-	: SVLOG_COVER SVLOG_SEQUENCE '(' sequence_expr ')' statement_or_null
-	| SVLOG_COVER SVLOG_SEQUENCE '('
-		clocking_event sequence_expr
-	  ')' statement_or_null
-	| SVLOG_COVER SVLOG_SEQUENCE '('
-		clocking_event disable_iff_expr_or_dist sequence_expr
-	  ')' statement_or_null
-	| SVLOG_COVER SVLOG_SEQUENCE '('
-		disable_iff_expr_or_dist sequence_expr
-	  ')' statement_or_null
+	: SVLOG_COVER SVLOG_SEQUENCE '('
+		clocking_event_or_null disable_iff_expr_or_dist_or_null
+			sequence_expr ')' statement_or_null
 	;
+
+/* End of 'cover_sequence_statement' grammer rules */
+
+
+/* Start of 'restrict_property_statement' grammer rules */
 
 restrict_property_statement
 	: SVLOG_RESTRICT SVLOG_PROPERTY '(' property_spec ')' ';'
 	;
 
+/* End of 'restrict_property_statement' grammer rules */
+
+
+/* Start of 'property_instance' grammer rules */
+
 property_instance
 	: ps_or_hierarchical_property_identifier
-	| ps_or_hierarchical_property_identifier '(' property_list_of_arguments_or_null ')'
+	| ps_or_hierarchical_property_identifier
+		'(' property_list_of_arguments_or_null ')'
 	;
 
+/* End of 'property_instance' grammer rules */
+
+
+/* Start of 'property_list_of_arguments' grammer rules */
+
 property_list_of_arguments
-	: property_actual_arg_seq_list ident_property_actual_arg_seq_list
-	| '.' identifier '(' property_actual_arg_or_null ')' ident_property_actual_arg_seq_list
+	: property_actual_arg_seq_list_or_null
+		property_actual_arg_ident_seq_list_or_null
+	| period_ident '(' property_actual_arg_or_null ')'
+		property_actual_arg_ident_seq_list_or_null
 	;
 
 property_list_of_arguments_or_null
@@ -3785,14 +3829,28 @@ property_list_of_arguments_or_null
 	| property_list_of_arguments
 	;
 
+/* End of 'property_list_of_arguments' grammer rules */
+
+
+/* Start of 'property_actual_arg' grammer rules */
+
+property_actual_arg
+	: property_expr
+	| sequence_actual_arg
+	;
+
 property_actual_arg_or_null
 	: %empty
 	| property_actual_arg
 	;
 
-property_actual_arg
-	: property_expr
-	| sequence_actual_arg
+equal_property_actual_arg
+	: '=' property_actual_arg
+	;
+
+equal_property_actual_arg_or_null
+	: %empty
+	| equal_property_actual_arg
 	;
 
 property_actual_arg_seq_list
@@ -3800,11 +3858,25 @@ property_actual_arg_seq_list
 	| property_actual_arg_seq_list ',' property_actual_arg
 	;
 
-ident_property_actual_arg_seq_list
+property_actual_arg_seq_list_or_null
 	: %empty
-	| ',' '.' identifier '(' property_actual_arg_or_null ')'
-	| ident_property_actual_arg_seq_list ',' '.' identifier '(' property_actual_arg_or_null ')'
+	| property_actual_arg_seq_list
 	;
+
+property_actual_arg_ident_seq_list
+	: ',' '.' identifier '(' property_actual_arg_or_null ')'
+	| property_actual_arg_ident_seq_list ',' '.' identifier '(' property_actual_arg_or_null ')'
+	;
+
+property_actual_arg_ident_seq_list_or_null
+	: %empty
+	| property_actual_arg_ident_seq_list
+	;
+
+/* End of 'property_actual_arg' grammer rules */
+
+
+/* Start of 'assertion_item_declaration' grammer rules */
 
 assertion_item_declaration
 	: property_declaration
@@ -3812,45 +3884,86 @@ assertion_item_declaration
 	| let_declaration
 	;
 
-property_declaration
-	: SVLOG_PROPERTY identifier property_decl_pp_list_or_null ';'
-		assertion_variable_declaration_recurse
-		property_spec semicolon_or_null
-	  SVLOG_ENDPROPERTY colon_ident_or_null
+/* End of 'assertion_item_declaration' grammer rules */
+
+
+/* Start of 'property_declaration' grammer rules */
+
+property_decl_pp_list
+	: '(' ')'
+	| '(' property_port_list ')'
 	;
 
 property_decl_pp_list_or_null
 	: %empty
-	| '(' ')'
-	| '(' property_port_list ')'
+	| property_decl_pp_list
 	;
+
+property_declaration
+	: SVLOG_PROPERTY identifier property_decl_pp_list_or_null ';'
+		assertion_variable_declaration_recurse
+			property_spec semicolon_or_null
+				SVLOG_ENDPROPERTY colon_ident_or_null
+	;
+
+/* End of 'property_declaration' grammer rules */
+
+
+/* Start of 'property_port_list' grammer rules */
 
 property_port_list
 	: property_port_item
 	| property_port_list ',' property_port_item
 	;
 
-property_port_item
-	: attribute_instance_recurse_or_null pp_item_local_direction_or_null property_formal_type
-	  identifier variable_dimension_recurse_or_null
-	| attribute_instance_recurse_or_null pp_item_local_direction_or_null property_formal_type
-	  identifier variable_dimension_recurse_or_null '=' property_actual_arg
+/* End of 'property_port_list' grammer rules */
+
+
+/* Start of 'property_port_item' grammer rules */
+
+pp_item_local_direction
+	: SVLOG_LOCAL
+	| SVLOG_LOCAL SVLOG_INPUT
 	;
 
 pp_item_local_direction_or_null
-	: SVLOG_LOCAL
-	| SVLOG_LOCAL SVLOG_INPUT
-	| %empty
+	: %empty
+	| pp_item_local_direction
 	;
+
+property_port_item
+	: attribute_instance_recurse_or_null
+		pp_item_local_direction_or_null
+			property_formal_type identifier
+				variable_dimension_recurse_or_null
+					equal_property_actual_arg_or_null
+	;
+
+/* End of 'property_port_item' grammer rules */
+
+
+/* Start of 'property_formal_type' grammer rules */
 
 property_formal_type
 	: sequence_formal_type
 	| SVLOG_PROPERTY
 	;
 
+/* End of 'property_formal_type' grammer rules */
+
+
+/* Start of 'property_spec' grammer rules */
+
 property_spec
-	: clocking_event_or_null disable_iff_expr_or_dist_or_null property_expr
+	: clocking_event_or_null
+		disable_iff_expr_or_dist_or_null
+			property_expr
 	;
+
+/* End of 'property_spec' grammer rules */
+
+
+/* Start of 'property_expr' grammer rules */
 
 property_expr
 	: sequence_expr
@@ -3891,10 +4004,14 @@ property_expr
 	| clocking_event property_expr
 	;
 
+/* End of 'property_expr' grammer rules */
+
+
+/* Start of 'property_case_item' grammer rules */
+
 property_case_item
 	: expression_or_dist_seq_list ':' property_expr ';'
-	| SVLOG_DEFAULT property_expr ';'
-	| SVLOG_DEFAULT ':' property_expr ';'
+	| SVLOG_DEFAULT colon_or_null property_expr ';'
 	;
 
 property_case_item_recurse
@@ -3902,36 +4019,66 @@ property_case_item_recurse
 	| property_case_item_recurse property_case_item
 	;
 
-sequence_declaration_port_list_or_null
-	: %empty
-	| '(' ')'
+/* End of 'property_expr' grammer rules */
+
+
+/* Start of 'sequence_declaration' grammer rules */
+
+sequence_declaration_port_list
+	: '(' ')'
 	| '(' sequence_port_list ')'
 	;
 
-sequence_declaration
-	: SVLOG_SEQUENCE identifier sequence_declaration_port_list_or_null ';'
-		assertion_variable_declaration_recurse_or_null
-		sequence_expr semicolon_or_null
-	  SVLOG_ENDSEQUENCE colon_ident_or_null
+sequence_declaration_port_list_or_null
+	: %empty
+	| sequence_declaration_port_list
 	;
+
+sequence_declaration
+	: SVLOG_SEQUENCE identifier
+		sequence_declaration_port_list_or_null ';'
+			assertion_variable_declaration_recurse_or_null
+				sequence_expr semicolon_or_null
+					SVLOG_ENDSEQUENCE colon_ident_or_null
+	;
+
+/* End of 'sequence_declaration' grammer rules */
+
+
+/* Start of 'sequence_port_list' grammer rules */
 
 sequence_port_list
 	: sequence_port_item
 	| sequence_port_list sequence_port_item
 	;
 
-sp_item_local_slp_direction_or_null
-	: %empty
-	| SVLOG_LOCAL
+/* End of 'sequence_port_list' grammer rules */
+
+
+/* Start of 'sequence_port_item' grammer rules */
+
+sp_item_local_slp_direction
+	: SVLOG_LOCAL
 	| SVLOG_LOCAL sequence_lvar_port_direction
 	;
 
-sequence_port_item
-	: attribute_instance_recurse_or_null sp_item_local_slp_direction_or_null
-          sequence_formal_type identifier variable_dimension_recurse_or_null
-	| attribute_instance_recurse_or_null sp_item_local_slp_direction_or_null
-          sequence_formal_type identifier variable_dimension_recurse_or_null '=' sequence_actual_arg
+sp_item_local_slp_direction_or_null
+	: %empty
+	| sp_item_local_slp_direction
 	;
+
+sequence_port_item
+	: attribute_instance_recurse_or_null
+		sp_item_local_slp_direction_or_null
+          		sequence_formal_type identifier
+				variable_dimension_recurse_or_null
+					equal_sequence_actual_arg_or_null
+	;
+
+/* End of 'sequence_port_item' grammer rules */
+
+
+/* Start of 'sequence_lvar_port_direction' grammer rules */
 
 sequence_lvar_port_direction
 	: SVLOG_INPUT
@@ -3939,40 +4086,77 @@ sequence_lvar_port_direction
 	| SVLOG_OUTPUT
 	;
 
+/* End of 'sequence_lvar_port_direction' grammer rules */
+
+
+/* Start of 'sequence_formal_type' grammer rules */
+
 sequence_formal_type
 	: data_type_or_implicit
 	| SVLOG_SEQUENCE
 	| SVLOG_UNTYPED
 	;
 
-sequence_expr
+/* End of 'sequence_formal_type' grammer rules */
+
+
+/* Start of 'sequence_expr' grammer rules */
+
+sequence_expr_cdelay_range_sexpr
 	: cycle_delay_range sequence_expr
-	| sequence_expr cycle_delay_range sequence_expr
-	| expression_or_dist
-	| expression_or_dist boolean_abbrev
-	| sequence_instance
-	| sequence_instance sequence_abbrev
-	| '(' sequence_expr sequence_match_item_seq_list ')'
-	| '(' sequence_expr sequence_match_item_seq_list ')' sequence_abbrev
+	| sequence_expr_cdelay_range_sexpr
+		cycle_delay_range sequence_expr
+	;
+
+sequence_expr_sexpr_cdelay_range
+	: sequence_expr cycle_delay_range
+	| sequence_expr_cdelay_range_sexpr
+		sequence_expr cycle_delay_range
+	;
+
+sequence_expr
+	: sequence_expr_cdelay_range_sexpr
+	| sequence_expr_sexpr_cdelay_range
+	| expression_or_dist boolean_abbrev_or_null
+	| sequence_instance sequence_abbrev_or_null
+	| '(' sequence_expr
+		sequence_match_item_seq_list_or_null ')'
+			sequence_abbrev_or_null
 	| sequence_expr SVLOG_AND sequence_expr
 	| sequence_expr SVLOG_INTERSECT sequence_expr
 	| sequence_expr SVLOG_OR sequence_expr
-	| SVLOG_FIRST_MATCH '(' sequence_expr sequence_match_item_seq_list ')'
+	| SVLOG_FIRST_MATCH '(' sequence_expr
+		sequence_match_item_seq_list_or_null ')'
 	| expression_or_dist SVLOG_THROUGHOUT sequence_expr
 	| sequence_expr SVLOG_WITHIN sequence_expr
 	| clocking_event sequence_expr
 	;
 
+/* End of 'sequence_expr' grammer rules */
+
+
+/* Start of 'cycle_delay_range' grammer rules */
+
 cycle_delay_range
 	: '#' '#' constant_primary
 	| '#' '#' '[' cycle_delay_const_range_expression ']'
-	| '#' '#' '[' '*' ']'
-	| '#' '#' '[' '+' ']'
+	| CYCLE_DELAY_ZERO_OR_MORE
+	| CYCLE_DELAY_ONE_OR_MORE
 	;
 
+/* End of 'cycle_delay_range' grammer rules */
+
+
+/* Start of 'sequence_method_call' grammer rules */
+
 sequence_method_call
-	: sequence_instance '.' identifier
+	: sequence_instance period_ident
 	;
+
+/* End of 'sequence_method_call' grammer rules */
+
+
+/* Start of 'sequence_match_item' grammer rules */
 
 sequence_match_item
 	: operator_assignment
@@ -3990,22 +4174,52 @@ sequence_match_item_seq_list_or_null
 	| sequence_match_item_seq_list
 	;
 
+/* End of 'sequence_match_item' grammer rules */
+
+
+/* Start of 'sequence_instance' grammer rules */
+
 sequence_instance
 	: ps_or_hierarchical_sequence_identifier
 	| ps_or_hierarchical_sequence_identifier '(' ')'
 	| ps_or_hierarchical_sequence_identifier '(' sequence_list_of_arguments ')'
 	;
 
+/* End of 'sequence_instance' grammer rules */
+
+
+/* Start of 'sequence_list_of_arguments' grammer rules */
+
 sequence_list_of_arguments
-	: sequence_actual_arg_seq_list_or_null sequence_actual_arg_ident_seq_list_or_null
-	| '.' identifier '(' ')' sequence_actual_arg_ident_seq_list_or_null
-	| '.' identifier '(' sequence_actual_arg ')' sequence_actual_arg_ident_seq_list_or_null
+	: sequence_actual_arg_seq_list_or_null
+		sequence_actual_arg_ident_seq_list_or_null
+	| period_ident '(' sequence_actual_arg_or_null ')'
+		sequence_actual_arg_ident_seq_list_or_null
 	;
+
+/* End of 'sequence_list_of_arguments' grammer rules */
+
+
+/* Start of 'sequence_actual_arg' grammer rules */
 
 sequence_actual_arg
 	: event_expression
 	| sequence_expr
 	| '$'
+	;
+
+sequence_actual_arg_or_null
+	: %empty
+	| sequence_actual_arg
+	;
+
+equal_sequence_actual_arg
+	: '=' sequence_actual_arg
+	;
+
+equal_sequence_actual_arg_or_null
+	: %empty
+	| equal_sequence_actual_arg
 	;
 
 sequence_actual_arg_ident_seq_list
@@ -4030,15 +4244,40 @@ sequence_actual_arg_seq_list_or_null
 	| sequence_actual_arg_seq_list
 	;
 
+/* End of 'sequence_actual_arg' grammer rules */
+
+
+/* Start of 'boolean_abbrev' grammer rules */
+
 boolean_abbrev
 	: consecutive_repetition
 	| nonconsecutive_repetition
 	| goto_repetition
 	;
 
+boolean_abbrev_or_null
+	: %empty
+	| boolean_abbrev
+	;
+
+/* End of 'boolean_abbrev' grammer rules */
+
+
+/* Start of 'sequence_abbrev' grammer rules */
+
 sequence_abbrev
 	: consecutive_repetition
 	;
+
+sequence_abbrev_or_null
+	: %empty
+	| sequence_abbrev
+	;
+
+/* End of 'sequence_abbrev' grammer rules */
+
+
+/* Start of 'consecutive_repetition' grammer rules */
 
 consecutive_repetition
 	: CONSECUTIVE_REPEAT_OPERATOR const_or_range_expression ']'
@@ -4046,23 +4285,48 @@ consecutive_repetition
 	| REPEAT_ONE_OR_MORE
 	;
 
+/* End of 'consecutive_repetition' grammer rules */
+
+
+/* Start of 'nonconsecutive_repetition' grammer rules */
+
 nonconsecutive_repetition
 	: NON_CONSECUTIVE_REPEAT_OPERATOR const_or_range_expression ']'
 	;
 
+/* End of 'nonconsecutive_repetition' grammer rules */
+
+
+/* Start of 'goto_repetition' grammer rules */
+
 goto_repetition
 	: GOTO_REPETITION_OPERATOR const_or_range_expression ']'
 	;
+
+/* End of 'goto_repetition' grammer rules */
+
+
+/* Start of 'const_or_range_expression' grammer rules */
 
 const_or_range_expression
 	: constant_expression
 	| cycle_delay_const_range_expression
 	;
 
+/* End of 'const_or_range_expression' grammer rules */
+
+
+/* Start of 'cycle_delay_const_range_expression' grammer rules */
+
 cycle_delay_const_range_expression
 	: constant_expression ':' constant_expression
 	| constant_expression ':' '$'
 	;
+
+/* End of 'cycle_delay_const_range_expression' grammer rules */
+
+
+/* Start of 'assertion_variable_declaration' grammer rules */
 
 assertion_variable_declaration
 	: var_data_type list_of_variable_decl_assignments ';'
@@ -4077,6 +4341,8 @@ assertion_variable_declaration_recurse_or_null
 	: %empty
 	| assertion_variable_declaration_recurse
 	;
+
+/* End of 'assertion_variable_declaration' grammer rules */
 
 /*******************************************************
  * End of 'Assertion declarations' Grammer Rules       *
@@ -4511,8 +4777,8 @@ clocking_event
 	;
 
 clocking_event_or_null
-	: clocking_event
-	| %empty
+	: %empty
+	| clocking_event
 	;
 
 event_expression
@@ -6141,14 +6407,24 @@ system_tf_identifier
  * Start of 'helper' grammer rules *
  ***********************************/
 
+colon_or_null
+	: %empty
+	| ':'
+	;
+
 semicolon_or_null
-	: ';'
-	| %empty
+	: %empty
+	| ';'
+	;
+
+colon_ident
+	: ':' identifier
+	| identifer ':'
 	;
 
 colon_ident_or_null
-	: ':' identifier
-	| %empty
+	: %empty
+	| colon_ident
 	;
 
 disable_iff_expr_or_dist
@@ -6156,8 +6432,8 @@ disable_iff_expr_or_dist
 	;
 
 disable_iff_expr_or_dist_or_null
-	: disable_iff_expr_or_dist
-	| %empty
+	: %empty
+	| disable_iff_expr_or_dist
 	;
 
 interface_or_null
@@ -6218,15 +6494,6 @@ equal_constant_expression
 equal_constant_expression_or_null
 	: equal_constant_expression
 	| %empty
-	;
-
-equal_property_actual_arg
-	: '=' property_actual_arg
-	;
-
-equal_property_actual_arg_or_null
-	: %empty
-	| equal_property_actual_arg
 	;
 
 const_or_null

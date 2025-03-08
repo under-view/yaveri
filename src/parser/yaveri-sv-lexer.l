@@ -285,6 +285,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "s"              { return SVLOG_SEC;            }
 
 
+"##[*]"        { return CYCLE_DELAY_ZERO_OR_MORE;           }
+"##[+]"        { return CYCLE_DELAY_ONE_OR_MORE;            }
 "*::*"         { return EXPORT_DECLARATION;                 }
 "&&&"          { return IF_AND_ONLY_IF;                     }
 "==="          { return CASE_EQUAL;                         }
