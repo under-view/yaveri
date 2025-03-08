@@ -3575,6 +3575,8 @@ final_specifier_or_null
  * Based off section: (A.2.8 Block item declarations). *
  *******************************************************/
 
+/* Start of 'block_item_declaration' grammer rules */
+
 block_item_declaration
 	: attribute_instance_recurse_or_null data_declaration
 	| attribute_instance_recurse_or_null local_parameter_declaration ';'
@@ -3592,6 +3594,8 @@ block_item_declaration_recurse_or_null
 	| block_item_declaration_recurse
 	;
 
+/* End of 'block_item_declaration' grammer rules */
+
 /*******************************************************
  * End of 'Block item declarations' Grammer Rules      *
  * Based off section: (A.2.8 Block item declarations). *
@@ -3603,9 +3607,16 @@ block_item_declaration_recurse_or_null
  * Based off section: (A.2.9 Interface declarations). *
  ******************************************************/
 
+/* Start of 'modport_declaration' grammer rules */
+
 modport_declaration
 	: SVLOG_MODPORT modport_item_seq_list
 	;
+
+/* End of 'modport_declaration' grammer rules */
+
+
+/* Start of 'modport_item' grammer rules */
 
 modport_item
 	: identifier '(' modport_ports_declaration_seq_list ')'
@@ -3615,6 +3626,11 @@ modport_item_seq_list
 	: modport_item
 	| modport_item_seq_list ',' modport_item
 	;
+
+/* End of 'modport_item' grammer rules */
+
+
+/* Start of 'modport_ports_declaration' grammer rules */
 
 modport_ports_declaration
 	: attribute_instance_recurse_or_null modport_simple_ports_declaration
@@ -3627,13 +3643,28 @@ modport_ports_declaration_seq_list
 	| modport_ports_declaration_seq_list ',' modport_ports_declaration
 	;
 
+/* End of 'modport_ports_declaration' grammer rules */
+
+
+/* Start of 'modport_clocking_declaration' grammer rules */
+
 modport_clocking_declaration
 	: SVLOG_CLOCKING identifier
 	;
 
+/* End of 'modport_clocking_declaration' grammer rules */
+
+
+/* Start of 'modport_simple_ports_declaration' grammer rules */
+
 modport_simple_ports_declaration
 	: port_direction modport_simple_port_seq_list
 	;
+
+/* End of 'modport_simple_ports_declaration' grammer rules */
+
+
+/* Start of 'modport_simple_port' grammer rules */
 
 modport_simple_port
 	: identifier
@@ -3645,9 +3676,19 @@ modport_simple_port_seq_list
 	| modport_simple_port_seq_list ',' modport_simple_port
 	;
 
+/* End of 'modport_simple_port' grammer rules */
+
+
+/* Start of 'modport_tf_ports_declaration' grammer rules */
+
 modport_tf_ports_declaration
 	: import_export modport_tf_port_seq_list
 	;
+
+/* End of 'modport_tf_ports_declaration' grammer rules */
+
+
+/* Start of 'modport_tf_port' grammer rules */
 
 modport_tf_port
 	: method_prototype
@@ -3659,10 +3700,17 @@ modport_tf_port_seq_list
 	| modport_tf_port_seq_list ',' modport_tf_port
 	;
 
+/* End of 'modport_tf_port' grammer rules */
+
+
+/* Start of 'import_export' grammer rules */
+
 import_export
 	: SVLOG_IMPORT
 	| SVLOG_EXPORT
 	;
+
+/* End of 'import_export' grammer rules */
 
 /******************************************************
  * End of 'Interface declarations' Grammer Rules      *
