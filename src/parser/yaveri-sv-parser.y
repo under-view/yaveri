@@ -3335,7 +3335,7 @@ c_ident_equal_or_null
 
 dpi_import_export
 	: SVLOG_IMPORT dpi_spec_string
-		dpi_function_import_property_or_nul
+		dpi_function_import_property_or_null
 			 c_ident_equal_or_null function_prototype ';'
 	| SVLOG_IMPORT dpi_spec_string
 		dpi_task_import_property_or_null
@@ -3400,20 +3400,34 @@ dpi_task_import_property_or_null
  * Based off section: (A.2.7 Task declarations).   *
  ***************************************************/
 
+/* Start of 'task_declaration' grammer rules */
+
 task_declaration
-	: SVLOG_TASK dynamic_override_specifiers_or_null lifetime_or_null task_body_declaration
+	: SVLOG_TASK dynamic_override_specifiers_or_null
+		lifetime_or_null task_body_declaration
 	;
+
+/* End of 'task_declaration' grammer rules */
+
+
+/* Start of 'task_body_declaration' grammer rules */
 
 task_body_declaration
 	: ident_or_class_scope_or_null identifier ';'
 		tf_item_declaration_recurse_or_null
-		statement_or_null_recurse_or_null
-	  SVLOG_ENDTASK colon_ident_or_null
-	| ident_or_class_scope_or_null identifier '(' tf_port_list_or_null ')' ';'
-		block_item_declaration_recurse_or_null
-		statement_or_null_recurse_or_null
-	  SVLOG_ENDTASK colon_ident_or_null
+			statement_or_null_recurse_or_null
+				SVLOG_ENDTASK colon_ident_or_null
+	| ident_or_class_scope_or_null identifier
+		'(' tf_port_list_or_null ')' ';'
+			block_item_declaration_recurse_or_null
+				statement_or_null_recurse_or_null
+					SVLOG_ENDTASK colon_ident_or_null
 	;
+
+/* End of 'task_declaration' grammer rules */
+
+
+/* Start of 'tf_item_declaration' grammer rules */
 
 tf_item_declaration
 	: block_item_declaration
@@ -3426,9 +3440,14 @@ tf_item_declaration_recurse
 	;
 
 tf_item_declaration_recurse_or_null
-	: tf_item_declaration_recurse
-	| %empty
+	: %empty
+	| tf_item_declaration_recurse
 	;
+
+/* End of 'tf_item_declaration' grammer rules */
+
+
+/* Start of 'tf_port_list' grammer rules */
 
 tf_port_list
 	: tf_port_item
@@ -3436,20 +3455,32 @@ tf_port_list
 	;
 
 tf_port_list_or_null
-	: tf_port_list
-	| %empty
+	: %empty
+	| tf_port_list
 	;
 
+/* End of 'tf_port_list' grammer rules */
+
+
+/* Start of 'tf_port_item' grammer rules */
+
 tf_port_item_var_dimension_expr_or_null
-	: identifier variable_dimension_recurse_or_null equal_expression_or_null
-	| %empty
+	: %empty
+	| identifier variable_dimension_recurse_or_null
+		equal_expression_or_null
 	;
 
 tf_port_item
-	: attribute_instance_recurse_or_null tf_port_direction_or_null
-	  var_or_null data_type_or_implicit
-	  tf_port_item_var_dimension_expr_or_null
+	: attribute_instance_recurse_or_null
+		tf_port_direction_or_null
+			var_or_null data_type_or_implicit
+				tf_port_item_var_dimension_expr_or_null
 	;
+
+/* End of 'tf_port_item' grammer rules */
+
+
+/* Start of 'tf_port_direction' grammer rules */
 
 tf_port_direction
 	: port_direction
@@ -3457,28 +3488,55 @@ tf_port_direction
 	;
 
 tf_port_direction_or_null
-	: tf_port_direction
-	| %empty
+	: %empty
+	| tf_port_direction
 	;
+
+/* End of 'tf_port_direction' grammer rules */
+
+
+/* Start of 'tf_port_declaration' grammer rules */
 
 tf_port_declaration
-	: attribute_instance_recurse_or_null tf_port_direction
-	  var_or_null data_type_or_implicit list_of_tf_variable_identifiers ';'
+	: attribute_instance_recurse_or_null
+		tf_port_direction var_or_null
+			data_type_or_implicit
+				list_of_tf_variable_identifiers ';'
 	;
+
+/* End of 'tf_port_declaration' grammer rules */
+
+
+/* Start of 'task_prototype' grammer rules */
 
 task_prototype
-	: SVLOG_TASK dynamic_override_specifiers_or_null identifier
-	| SVLOG_TASK dynamic_override_specifiers_or_null identifier '(' tf_port_list ')'
+	: SVLOG_TASK
+		dynamic_override_specifiers_or_null
+			identifier
+	| SVLOG_TASK
+		dynamic_override_specifiers_or_null
+			identifier '(' tf_port_list ')'
 	;
 
+/* End of 'task_prototype' grammer rules */
+
+
+/* Start of 'dynamic_override_specifiers' grammer rules */
+
 dynamic_override_specifiers
-	: initial_or_extends_specifier_or_null final_specifier_or_null
+	: initial_or_extends_specifier_or_null
+		final_specifier_or_null
 	;
 
 dynamic_override_specifiers_or_null
-	: dynamic_override_specifiers
-	| %empty
+	: %empty
+	| dynamic_override_specifiers
 	;
+
+/* End of 'dynamic_override_specifiers' grammer rules */
+
+
+/* Start of 'initial_or_extends_specifier' grammer rules */
 
 initial_or_extends_specifier
 	: ':' SVLOG_INITIAL
@@ -3486,18 +3544,25 @@ initial_or_extends_specifier
 	;
 
 initial_or_extends_specifier_or_null
-	: initial_or_extends_specifier
-	| %empty
+	: %empty
+	| initial_or_extends_specifier
 	;
+
+/* End of 'initial_or_extends_specifier' grammer rules */
+
+
+/* Start of 'final_specifier' grammer rules */
 
 final_specifier
 	: ':' SVLOG_FINAL
 	;
 
 final_specifier_or_null
-	: final_specifier
-	| %empty
+	: %empty
+	| final_specifier
 	;
+
+/* End of 'final_specifier' grammer rules */
 
 /*************************************************
  * End of 'Task declarations' Grammer Rules      *
