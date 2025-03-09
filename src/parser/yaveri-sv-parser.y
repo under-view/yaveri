@@ -306,22 +306,6 @@
 %token <itoken> APOSTROPHE
 
 
-/* exp lowercase 'e' or upercase 'E' */
-%token <itoken> SVLOG_EXP
-/* decimal_base 'd','D' */
-%token <itoken> SVLOG_DEC_BASE_D
-/* decimal_base 's','S' */
-%token <itoken> SVLOG_DEC_BASE_S
-/* binary_base 'b','B' */
-%token <itoken> SVLOG_BIN_BASE
-/* octal_base 'o','O' */
-%token <itoken> SVLOG_OCT_BASE
-/* hex_base 'h','H' */
-%token <itoken> SVLOG_HEX_BASE
-/* x digit 'x','X' */
-%token <itoken> SVLOG_X_DIGIT
-/* z digit 'z','Z' */
-%token <itoken> SVLOG_Z_DIGIT
 /* letters between a-fA-F */
 %token <itoken> SVLOG_HEXCHAR
 /* Simple Identifier */
@@ -6573,14 +6557,19 @@ size
 
 real_number
 	: fixed_point_number
-	| unsigned_number SVLOG_EXP unsigned_number
-	| unsigned_number SVLOG_EXP sign unsigned_number
-	| unsigned_number '.' unsigned_number SVLOG_EXP unsigned_number
-	| unsigned_number '.' unsigned_number SVLOG_EXP sign unsigned_number
+	| unsigned_number exp unsigned_number
+	| unsigned_number exp sign unsigned_number
+	| unsigned_number '.' unsigned_number exp unsigned_number
+	| unsigned_number '.' unsigned_number exp sign unsigned_number
 	;
 
 fixed_point_number
 	: unsigned_number '.' unsigned_number
+	;
+
+exp
+	: 'e'
+	| 'E'
 	;
 
 unsigned_number
@@ -6608,23 +6597,39 @@ hex_value
 	;
 
 decimal_base
-	: '\'' SVLOG_DEC_BASE_S SVLOG_DEC_BASE_D
-	| '\'' SVLOG_DEC_BASE_D
+	: APOSTROPHE 'd'
+	| APOSTROPHE 'D'
+	| APOSTROPHE 's' 'd'
+	| APOSTROPHE 'S' 'd'
+	| APOSTROPHE 's' 'D'
+	| APOSTROPHE 'S' 'D'
 	;
 
 binary_base
-	: '\'' SVLOG_DEC_BASE_S SVLOG_BIN_BASE
-	| '\'' SVLOG_BIN_BASE
+	: APOSTROPHE 'b'
+	| APOSTROPHE 'B'
+	| APOSTROPHE 's' 'b'
+	| APOSTROPHE 's' 'B'
+	| APOSTROPHE 'S' 'b'
+	| APOSTROPHE 'S' 'B'
 	;
 
 octal_base
-	: '\'' SVLOG_DEC_BASE_S SVLOG_OCT_BASE
-	| '\'' SVLOG_OCT_BASE
+	: APOSTROPHE 'o'
+	| APOSTROPHE 'O'
+	| APOSTROPHE 's' 'o'
+	| APOSTROPHE 's' 'O'
+	| APOSTROPHE 'S' 'o'
+	| APOSTROPHE 'S' 'O'
 	;
 
 hex_base
-	: '\'' SVLOG_DEC_BASE_S SVLOG_HEX_BASE
-	| '\'' SVLOG_HEX_BASE
+	: APOSTROPHE 'h'
+	| APOSTROPHE 'H'
+	| APOSTROPHE 's' 'h'
+	| APOSTROPHE 's' 'H'
+	| APOSTROPHE 'S' 'h'
+	| APOSTROPHE 'S' 'H'
 	;
 
 // make sure it's between 0-9
@@ -6655,11 +6660,14 @@ hex_digit
 	;
 
 x_digit
-	: SVLOG_X_DIGIT
+	: 'x'
+	| 'X'
 	;
 
 z_digit
-	: SVLOG_Z_DIGIT
+	: 'z'
+	| 'Z'
+	| '?'
 	;
 
 // make sure digit between 0 and 1

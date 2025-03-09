@@ -39,22 +39,6 @@ TRIPLEQS [^\\]+
 SESCAPESEQ ^[\\].*
 	/* System task and functions identifier regex */
 STFIDENT ^[$][a-zA-Z0-9_$]+[^;]
-	/* system-verilog exp regex */
-SVEXP [e|E]
-	/* decimal-base D regex */
-SVDECBASED [d|D]
-	/* decimal-base S regex */
-SVDECBASES [s|S]
-	/* binary-base B regex */
-SVBINBASE [b|B]
-	/* octal-base O regex */
-SVOCTBASE [o|O]
-	/* hex-base H regex */
-SVHEXBASE [h|H]
-	/* X digit regex */
-SVXDIGIT [x|X]
-	/* Z digit regex */
-SVZDIGIT [z|Z|?]
 	/* Single comment regex */
 SCOMMENT \/\/(.*)
 	/* Multi comment regex */
@@ -294,7 +278,22 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "or"             { return SVLOG_OR;             }
 "ps"             { return SVLOG_PICOSEC;        }
 "us"             { return SVLOG_MICROSEC;       }
-"s"              { return SVLOG_SEC;            }
+"B"              { return 'B';                  }
+"D"              { return 'D';                  }
+"E"              { return 'E';                  }
+"H"              { return 'H';                  }
+"S"              { return 'S';                  }
+"O"              { return 'O';                  }
+"X"              { return 'X';                  }
+"Z"              { return 'Z';                  }
+"b"              { return 'b';                  }
+"d"              { return 'd';                  }
+"e"              { return 'e';                  }
+"h"              { return 'h';                  }
+"s"              { return 's';                  }
+"o"              { return 'o';                  }
+"x"              { return 'x';                  }
+"z"              { return 'z';                  }
 
 
 "##[*]"        { return CYCLE_DELAY_ZERO_OR_MORE;           }
@@ -374,16 +373,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 ")"            { return ')';                                }
 "["            { return '[';                                }
 "]"            { return ']';                                }
-
-
-{SVEXP}        { return SVLOG_EXP;        }
-{SVDECBASED}   { return SVLOG_DEC_BASE_D; }
-{SVDECBASES}   { return SVLOG_DEC_BASE_S; }
-{SVBINBASE}    { return SVLOG_BIN_BASE;   }
-{SVOCTBASE}    { return SVLOG_OCT_BASE;   }
-{SVHEXBASE}    { return SVLOG_HEX_BASE;   }
-{SVXDIGIT}     { return SVLOG_Z_DIGIT;    }
-{SVZDIGIT}     { return SVLOG_X_DIGIT;    }
+"?"            { return '?';                                }
 
 	/* End of reserved words */
 
