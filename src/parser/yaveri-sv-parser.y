@@ -5025,6 +5025,38 @@ pull_gate_instance_seq_list
  *********************************************************************/
 
 
+/***************************************************
+ * Start of 'Primitive strengths' Grammer Rules    *
+ * Based off section: (A.3.2 Primitive strengths). *
+ ***************************************************/
+
+/* Start of 'pulldown_strength' grammer rules */
+
+pulldown_strength
+	: '(' strength0 ',' strength1 ')'
+	| '(' strength1 ',' strength0 ')'
+	| '(' strength0 ')'
+	;
+
+/* End of 'pulldown_strength' grammer rules */
+
+
+/* Start of 'pullup_strength' grammer rules */
+
+pullup_strength
+	: '(' strength0 ',' strength1 ')'
+	| '(' strength1 ',' strength0 ')'
+	| '(' strength1 ')'
+	;
+
+/* End of 'pullup_strength' grammer rules */
+
+/***************************************************
+ * End of 'Primitive strengths' Grammer Rules      *
+ * Based off section: (A.3.2 Primitive strengths). *
+ ***************************************************/
+
+
 /******************************************************
  * Start of 'Module instantiation' Grammer Rules      *
  * Based off section: (A.4.1.1 Module instantiation). *
