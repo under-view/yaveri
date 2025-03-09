@@ -32,9 +32,9 @@ CIDENT [a-zA-Z_][a-zA-Z0-9_]*[^;]
 	/* Simple identifier regex */
 SIDENT ^[_a-zA-Z][_$0-9a-zA-Z]*[^;]
 	/* Quoted String regex */
-QUOTEDS [^\n"\\]+
+QUOTEDS [^\\\n]*
 	/* Triple Quoted String regex */
-TRIPLEQS [^\\]+
+TRIPLEQS [^\\]*
 	/* String Escape Sequence regex */
 SESCAPESEQ ^[\\].*
 	/* System task and functions identifier regex */
