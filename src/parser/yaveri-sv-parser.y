@@ -4768,54 +4768,93 @@ integer_covergroup_expression
  * Based off section: (A.2.12 Let declarations). *
  *************************************************/
 
+/* Start of 'let_declaration' grammer rules */
+
 let_declaration
 	: SVLOG_LET identifier equal_expression ';'
-	| SVLOG_LET identifier '(' ')' equal_expression ';'
-	| SVLOG_LET identifier '(' let_port_list ')' equal_expression ';'
+	| SVLOG_LET identifier
+		'(' let_port_list_or_null ')'
+			equal_expression ';'
 	;
+
+/* End of 'let_declaration' grammer rules */
+
+
+/* Start of 'let_port_list' grammer rules */
 
 let_port_list
 	: let_port_item
 	| let_port_list ',' let_port_item
 	;
 
-let_port_item
-	: attribute_instance_recurse_or_null let_formal_type identifier variable_dimension_recurse equal_expression_or_null
+let_port_list_or_null
+	: %empty
+	| let_port_list
 	;
+
+/* End of 'let_port_list' grammer rules */
+
+
+/* Start of 'let_port_item' grammer rules */
+
+let_port_item
+	: attribute_instance_recurse_or_null
+		let_formal_type identifier
+			variable_dimension_recurse
+				equal_expression_or_null
+	;
+
+/* End of 'let_port_item' grammer rules */
+
+
+/* Start of 'let_formal_type' grammer rules */
 
 let_formal_type
 	: data_type_or_implicit
 	| SVLOG_UNTYPED
 	;
 
+/* End of 'let_formal_type' grammer rules */
+
+
+/* Start of 'let_expression' grammer rules */
+
 let_expression
-	: identifier
-	| identifier '(' let_list_of_arguments ')'
-	| package_scope identifier
-	| package_scope identifier '(' let_list_of_arguments ')'
+	: package_scope_or_null identifier
+	| package_scope_or_null identifier
+		'(' let_list_of_arguments_or_null ')'
 	;
 
-let_list_of_arguments
-	: %empty
-	| let_actual_arg_seq_list let_list_of_arguments_ident_seq_list
-	| '.' identifier '(' let_actual_arg ')' let_list_of_arguments_ident_seq_list
-	;
+/* End of 'let_expression' grammer rules */
+
+
+/* Start of 'let_list_of_arguments' grammer rules */
 
 let_list_of_arguments_ident_seq_list
 	: %empty
-	| ',' '.' identifier '(' let_actual_arg ')'
-	| let_list_of_arguments_ident_seq_list ',' '.' identifier '(' let_actual_arg ')'
-	;
-
-let_actual_arg
-	: %empty
-	| expression
+	| ',' '.' identifier '(' expression_or_null ')'
+	| let_list_of_arguments_ident_seq_list ',' '.' identifier '(' expression_or_null ')'
 	;
 
 let_actual_arg_seq_list
-	: let_actual_arg
-	| let_actual_arg_seq_list ',' let_actual_arg
+	: expression_or_null
+	| let_actual_arg_seq_list ',' expression_or_null
 	;
+
+let_list_of_arguments
+	: let_actual_arg_seq_list
+		let_list_of_arguments_ident_seq_list
+	| '.' identifier
+		'(' expression_or_null ')'
+			let_list_of_arguments_ident_seq_list
+	;
+
+let_list_of_arguments_or_null
+	: %empty
+	| let_list_of_arguments
+	;
+
+/* End of 'let_list_of_arguments' grammer rules */
 
 /*************************************************
  * End of 'Let declarations' Grammer Rules       *
@@ -6806,6 +6845,11 @@ identifier_recurse_or_null
 package_scope
 	: identifier CLASS_SCOPE_OPERATOR
 	| SVLOG_DSUNIT CLASS_SCOPE_OPERATOR
+	;
+
+package_scope_or_null
+	: %empty
+	| package_scope
 	;
 
 ps_class_identifier
