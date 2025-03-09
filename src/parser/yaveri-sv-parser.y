@@ -5072,6 +5072,80 @@ pullup_strength_or_null
  ***************************************************/
 
 
+/***************************************************
+ * Start of 'Primitive terminals' Grammer Rules    *
+ * Based off section: (A.3.3 Primitive terminals). *
+ ***************************************************/
+
+/* Start of 'enable_terminal' grammer rules */
+
+enable_terminal
+	: expression
+	;
+
+/* End of 'enable_terminal' grammer rules */
+
+
+/* Start of 'inout_terminal' grammer rules */
+
+inout_terminal
+	: net_lvalue
+	;
+
+/* End of 'inout_terminal' grammer rules */
+
+
+/* Start of 'input_terminal' grammer rules */
+
+input_terminal
+	: expression
+	;
+
+input_terminal_seq_list
+	: expression
+	| input_terminal_seq_list ',' expression
+	;
+
+/* End of 'input_terminal' grammer rules */
+
+
+/* Start of 'ncontrol_terminal' grammer rules */
+
+ncontrol_terminal
+	: expression
+	;
+
+/* End of 'ncontrol_terminal' grammer rules */
+
+
+/* Start of 'output_terminal' grammer rules */
+
+output_terminal
+	: net_lvalue
+	;
+
+output_terminal_seq_list
+	: expression
+	| output_terminal_seq_list ',' expression
+	;
+
+/* End of 'output_terminal' grammer rules */
+
+
+/* Start of 'pcontrol_terminal' grammer rules */
+
+pcontrol_terminal
+	: expression
+	;
+
+/* End of 'pcontrol_terminal' grammer rules */
+
+/***************************************************
+ * End of 'Primitive terminals' Grammer Rules      *
+ * Based off section: (A.3.3 Primitive terminals). *
+ ***************************************************/
+
+
 /******************************************************
  * Start of 'Module instantiation' Grammer Rules      *
  * Based off section: (A.4.1.1 Module instantiation). *
