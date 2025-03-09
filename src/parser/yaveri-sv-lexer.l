@@ -106,6 +106,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "nexttime"       { return SVLOG_NEXTTIME;       }
 "priority"       { return SVLOG_PRIORITY;       }
 "property"       { return SVLOG_PROPERTY;       }
+"pulldown"       { return SVLOG_PULLDOWN;       }
 "randcase"       { return SVLOG_RANDCASE;       }
 "realtime"       { return SVLOG_REALTIME;       }
 "restrict"       { return SVLOG_RESTRICT;       }
@@ -174,6 +175,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "option"         { return SVLOG_OPTION;         }
 "output"         { return SVLOG_OUTPUT;         }
 "packed"         { return SVLOG_PACKED;         }
+"pullup"         { return SVLOG_PULLUP;         }
 "repeat"         { return SVLOG_REPEAT;         }
 "return"         { return SVLOG_RETURN;         }
 "sample"         { return SVLOG_SAMPLE;         }

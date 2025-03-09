@@ -75,6 +75,7 @@
 %token <itoken> SVLOG_NEXTTIME
 %token <itoken> SVLOG_PRIORITY
 %token <itoken> SVLOG_PROPERTY
+%token <itoken> SVLOG_PULLDOWN
 %token <itoken> SVLOG_RANDCASE
 %token <itoken> SVLOG_REALTIME
 %token <itoken> SVLOG_RESTRICT
@@ -143,6 +144,7 @@
 %token <itoken> SVLOG_OPTION
 %token <itoken> SVLOG_OUTPUT
 %token <itoken> SVLOG_PACKED
+%token <itoken> SVLOG_PULLUP
 %token <itoken> SVLOG_REPEAT
 %token <itoken> SVLOG_RETURN
 %token <itoken> SVLOG_SAMPLE
@@ -4860,6 +4862,167 @@ let_list_of_arguments_or_null
  * End of 'Let declarations' Grammer Rules       *
  * Based off section: (A.2.12 Let declarations). *
  *************************************************/
+
+
+/*********************************************************************
+ * Start of 'Primitive instantiation and instances' Grammer Rules    *
+ * Based off section: (A.3.1 Primitive instantiation and instances). *
+ *********************************************************************/
+
+/* Start of 'gate_instantiation' grammer rules */
+
+gate_instantiation
+	: cmos_switchtype delay3_or_null
+		cmos_switch_instance_seq_list ';'
+	| mos_switchtype delay3_or_null
+		mos_switch_instance_seq_list ';'
+	| enable_gatetype drive_strength_or_null
+		delay3_or_null enable_gate_instance_seq_list ';'
+	| n_input_gatetype drive_strength_or_null
+		delay2_or_null n_input_gate_instance_seq_list ';'
+	| n_output_gatetype drive_strength_or_null
+		delay2_or_null n_output_gate_instance_seq_list ';'
+	| pass_en_switchtype delay2_or_null
+		pass_enable_switch_instance_seq_list ';'
+	| pass_switchtype pass_switch_instance_seq_list ';'
+	| SVLOG_PULLDOWN pulldown_strength_or_null
+		pull_gate_instance_seq_list ';'
+	| SVLOG_PULLUP pullup_strength_or_null
+		pull_gate_instance_seq_list ';'
+	;
+
+/* End of 'gate_instantiation' grammer rules */
+
+
+/* Start of 'cmos_switch_instance' grammer rules */
+
+cmos_switch_instance
+	: name_of_instance_or_null
+		'(' output_terminal ','
+			input_terminal ','
+				ncontrol_terminal ','
+					pcontrol_terminal ')'
+	;
+
+cmos_switch_instance_seq_list
+	: cmos_switch_instance
+	| cmos_switch_instance_seq_list ',' cmos_switch_instance
+	;
+
+/* End of 'cmos_switch_instance' grammer rules */
+
+
+/* Start of 'enable_gate_instance' grammer rules */
+
+enable_gate_instance
+	: name_of_instance_or_null
+		'(' output_terminal ','
+			input_terminal ','
+				enable_terminal ')'
+	;
+
+enable_gate_instance_seq_list
+	: enable_gate_instance
+	| enable_gate_instance_seq_list ',' enable_gate_instance
+	;
+
+/* End of 'enable_gate_instance' grammer rules */
+
+
+/* Start of 'mos_switch_instance' grammer rules */
+
+mos_switch_instance
+	: name_of_instance_or_null
+		'(' output_terminal ','
+			input_terminal ','
+				enable_terminal ')'
+	;
+
+mos_switch_instance_seq_list
+	: mos_switch_instance
+	| mos_switch_instance_seq_list ',' mos_switch_instance
+	;
+
+/* End of 'mos_switch_instance' grammer rules */
+
+
+/* Start of 'n_input_gate_instance' grammer rules */
+
+n_input_gate_instance
+	: name_of_instance_or_null
+		'(' output_terminal ','
+			input_terminal_seq_list ')'
+	;
+
+n_input_gate_instance_seq_list
+	: n_input_gate_instance
+	| n_input_gate_instance_seq_list ',' n_input_gate_instance
+	;
+
+/* End of 'n_input_gate_instance' grammer rules */
+
+
+/* Start of 'n_output_gate_instance' grammer rules */
+
+n_output_gate_instance
+	: name_of_instance_or_null
+		'(' output_terminal_seq_list ','
+			input_terminal ')'
+	;
+
+n_output_gate_instance_seq_list
+	: n_output_gate_instance
+	| n_output_gate_instance_seq_list ',' n_output_gate_instance
+	;
+
+/* End of 'n_output_gate_instance' grammer rules */
+
+
+/* Start of 'pass_switch_instance' grammer rules */
+
+pass_switch_instance
+	: name_of_instance_or_null
+		'(' inout_terminal ',' inout_terminal ')'
+	;
+
+/* End of 'pass_switch_instance' grammer rules */
+
+
+/* Start of 'pass_enable_switch_instance' grammer rules */
+
+pass_enable_switch_instance
+	: name_of_instance_or_null
+		'(' inout_terminal ','
+			inout_terminal ','
+				enable_terminal ')'
+	;
+
+pass_enable_switch_instance_seq_list
+	: pass_enable_switch_instance
+	| pass_enable_switch_instance_seq_list ',' pass_enable_switch_instance
+	;
+
+/* End of 'pass_enable_switch_instance' grammer rules */
+
+
+/* Start of 'pull_gate_instance' grammer rules */
+
+pull_gate_instance
+	: name_of_instance_or_null
+		'(' output_terminal ')'
+	;
+
+pull_gate_instance_seq_list
+	: pull_gate_instance
+	| pull_gate_instance_seq_list pull_gate_instance
+	;
+
+/* End of 'pull_gate_instance' grammer rules */
+
+/*********************************************************************
+ * End of 'Primitive instantiation and instances' Grammer Rules      *
+ * Based off section: (A.3.1 Primitive instantiation and instances). *
+ *********************************************************************/
 
 
 /******************************************************
