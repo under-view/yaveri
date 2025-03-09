@@ -1371,7 +1371,7 @@ program_generate_item
 	: loop_generate_construct
 	| conditional_generate_construct
 	| generate_region
-	| elaboration_severity_system_task
+	| severity_system_task
 	;
 
 /* End of 'program_generate_item' grammer rules */
@@ -2741,6 +2741,11 @@ drive_strength
 	| '(' strength1 ',' SVLOG_HIGHZ0 ')'
 	| '(' SVLOG_HIGHZ0 ',' strength1 ')'
 	| '(' SVLOG_HIGHZ1 ',' strength0 ')'
+	;
+
+drive_strength_or_null
+	: %empty
+	| drive_strength
 	;
 
 /* End of 'drive_strength' grammer rules */
@@ -5038,6 +5043,11 @@ pulldown_strength
 	| '(' strength0 ')'
 	;
 
+pulldown_strength_or_null
+	: %empty
+	| pulldown_strength
+	;
+
 /* End of 'pulldown_strength' grammer rules */
 
 
@@ -5047,6 +5057,11 @@ pullup_strength
 	: '(' strength0 ',' strength1 ')'
 	| '(' strength1 ',' strength0 ')'
 	| '(' strength1 ')'
+	;
+
+pullup_strength_or_null
+	: %empty
+	| pullup_strength
 	;
 
 /* End of 'pullup_strength' grammer rules */
