@@ -79,6 +79,8 @@
 %token <itoken> SVLOG_RANDCASE
 %token <itoken> SVLOG_REALTIME
 %token <itoken> SVLOG_RESTRICT
+%token <itoken> SVLOG_RTRANIF0
+%token <itoken> SVLOG_RTRANIF1
 %token <itoken> SVLOG_SCALARED
 %token <itoken> SVLOG_SEQUENCE
 %token <itoken> SVLOG_SHORTINT
@@ -118,6 +120,8 @@
 %token <itoken> SVLOG_SUPPLY0
 %token <itoken> SVLOG_SUPPLY1
 %token <itoken> SVLOG_S_UNTIL
+%token <itoken> SVLOG_TRANIF0
+%token <itoken> SVLOG_TRANIF1
 %token <itoken> SVLOG_UNIQUE0
 %token <itoken> SVLOG_UNTYPED
 %token <itoken> SVLOG_VIRTUAL
@@ -128,6 +132,8 @@
 %token <itoken> SVLOG_ASSUME
 %token <itoken> SVLOG_BEFORE
 %token <itoken> SVLOG_BINSOF
+%token <itoken> SVLOG_BUFIF0
+%token <itoken> SVLOG_BUFIF1
 %token <itoken> SVLOG_CONFIG
 %token <itoken> SVLOG_DESIGN
 %token <itoken> SVLOG_EXPECT
@@ -141,6 +147,8 @@
 %token <itoken> SVLOG_INSIDE
 %token <itoken> SVLOG_MEDIUM
 %token <itoken> SVLOG_MODULE
+%token <itoken> SVLOG_NOTIF0
+%token <itoken> SVLOG_NOTIF1
 %token <itoken> SVLOG_OPTION
 %token <itoken> SVLOG_OUTPUT
 %token <itoken> SVLOG_PACKED
@@ -181,6 +189,10 @@
 %token <itoken> SVLOG_PULL0
 %token <itoken> SVLOG_PULL1
 %token <itoken> SVLOG_RANDC
+%token <itoken> SVLOG_RCMOS
+%token <itoken> SVLOG_RPMOS
+%token <itoken> SVLOG_RNMOS
+%token <itoken> SVLOG_RTRAN
 %token <itoken> SVLOG_SOLVE
 %token <itoken> SVLOG_SMALL
 %token <itoken> SVLOG_SUPER
@@ -199,13 +211,17 @@
 %token <itoken> SVLOG_BYTE
 %token <itoken> SVLOG_CASE
 %token <itoken> SVLOG_CELL
+%token <itoken> SVLOG_CMOS
 %token <itoken> SVLOG_DIST
 %token <itoken> SVLOG_EDGE
 %token <itoken> SVLOG_ELSE
 %token <itoken> SVLOG_ENUM
 %token <itoken> SVLOG_FORK
 %token <itoken> SVLOG_JOIN
+%token <itoken> SVLOG_NAND
+%token <itoken> SVLOG_NMOS
 %token <itoken> SVLOG_NULL
+%token <itoken> SVLOG_PMOS
 %token <itoken> SVLOG_PURE
 %token <itoken> SVLOG_RAND
 %token <itoken> SVLOG_REAL
@@ -214,6 +230,7 @@
 %token <itoken> SVLOG_TASK
 %token <itoken> SVLOG_THIS
 %token <itoken> SVLOG_TIME
+%token <itoken> SVLOG_TRAN
 %token <itoken> SVLOG_TRI0
 %token <itoken> SVLOG_TRI1
 %token <itoken> SVLOG_TYPE
@@ -223,8 +240,10 @@
 %token <itoken> SVLOG_WEAK
 %token <itoken> SVLOG_WIRE
 %token <itoken> SVLOG_WITH
+%token <itoken> SVLOG_XNOR
 %token <itoken> SVLOG_AND
 %token <itoken> SVLOG_BIT
+%token <itoken> SVLOG_BUF
 %token <itoken> SVLOG_DPI
 %token <itoken> SVLOG_END
 %token <itoken> SVLOG_FOR
@@ -232,6 +251,7 @@
 %token <itoken> SVLOG_INT
 %token <itoken> SVLOG_LET
 %token <itoken> SVLOG_NEW
+%token <itoken> SVLOG_NOR
 %token <itoken> SVLOG_NOT
 %token <itoken> SVLOG_REF
 %token <itoken> SVLOG_REG
@@ -4990,6 +5010,11 @@ pass_switch_instance
 		'(' inout_terminal ',' inout_terminal ')'
 	;
 
+pass_switch_instance_seq_list
+	: pass_switch_instance
+	| pass_switch_instance_seq_list ',' pass_switch_instance
+	;
+
 /* End of 'pass_switch_instance' grammer rules */
 
 
@@ -5144,6 +5169,96 @@ pcontrol_terminal
  * End of 'Primitive terminals' Grammer Rules      *
  * Based off section: (A.3.3 Primitive terminals). *
  ***************************************************/
+
+
+/***************************************************************
+ * Start of 'Primitive gate and switch types' Grammer Rules    *
+ * Based off section: (A.3.4 Primitive gate and switch types). *
+ ***************************************************************/
+
+/* Start of 'cmos_switchtype' grammer rules */
+
+cmos_switchtype
+	: SVLOG_CMOS
+	| SVLOG_RCMOS
+	;
+
+/* End of 'cmos_switchtype' grammer rules */
+
+
+/* Start of 'enable_gatetype' grammer rules */
+
+enable_gatetype
+	: SVLOG_BUFIF0
+	| SVLOG_BUFIF1
+	| SVLOG_NOTIF0
+	| SVLOG_NOTIF1
+	;
+
+/* End of 'enable_gatetype' grammer rules */
+
+
+/* Start of 'mos_switchtype' grammer rules */
+
+mos_switchtype
+	: SVLOG_NMOS
+	| SVLOG_PMOS
+	| SVLOG_RNMOS
+	| SVLOG_RPMOS
+	;
+
+/* End of 'mos_switchtype' grammer rules */
+
+
+/* Start of 'n_input_gatetype' grammer rules */
+
+n_input_gatetype
+	: SVLOG_AND
+	| SVLOG_NAND
+	| SVLOG_OR
+	| SVLOG_NOR
+	| SVLOG_XOR
+	| SVLOG_XNOR
+	;
+
+/* End of 'n_input_gatetype' grammer rules */
+
+
+/* Start of 'n_output_gatetype' grammer rules */
+
+n_output_gatetype
+	: SVLOG_BUF
+	| SVLOG_NOT
+	;
+
+/* End of 'n_output_gatetype' grammer rules */
+
+
+/* Start of 'pass_en_switchtype' grammer rules */
+
+pass_en_switchtype
+	: SVLOG_TRANIF0
+	| SVLOG_TRANIF1
+	| SVLOG_RTRANIF1
+	| SVLOG_RTRANIF0
+	;
+
+/* End of 'pass_en_switchtype' grammer rules */
+
+
+/* Start of 'pass_switchtype' grammer rules */
+
+pass_switchtype
+	: SVLOG_TRAN
+	| SVLOG_RTRAN
+	;
+
+/* End of 'pass_switchtype' grammer rules */
+
+/***************************************************************
+ * End of 'Primitive gate and switch types' Grammer Rules      *
+ * Based off section: (A.3.4 Primitive gate and switch types). *
+ ***************************************************************/
 
 
 /******************************************************

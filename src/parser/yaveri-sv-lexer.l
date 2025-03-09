@@ -110,6 +110,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "randcase"       { return SVLOG_RANDCASE;       }
 "realtime"       { return SVLOG_REALTIME;       }
 "restrict"       { return SVLOG_RESTRICT;       }
+"rtranif0"       { return SVLOG_RTRANIF0;       }
+"rtranif1"       { return SVLOG_RTRANIF1;       }
 "scalared"       { return SVLOG_SCALARED;       }
 "sequence"       { return SVLOG_SEQUENCE;       }
 "shortint"       { return SVLOG_SHORTINT;       }
@@ -149,6 +151,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "supply0"        { return SVLOG_SUPPLY0;        }
 "supply1"        { return SVLOG_SUPPLY1;        }
 "s_until"        { return SVLOG_S_UNTIL;        }
+"tranif0"        { return SVLOG_TRANIF0;        }
+"tranif1"        { return SVLOG_TRANIF1;        }
 "unique0"        { return SVLOG_UNIQUE0;        }
 "untyped"        { return SVLOG_UNTYPED;        }
 "virtual"        { return SVLOG_VIRTUAL;        }
@@ -159,6 +163,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "assume"         { return SVLOG_ASSUME;         }
 "before"         { return SVLOG_BEFORE;         }
 "binsof"         { return SVLOG_BINSOF;         }
+"bufif0"         { return SVLOG_BUFIF0;         }
+"bufif1"         { return SVLOG_BUFIF1;         }
 "config"         { return SVLOG_CONFIG;         }
 "design"         { return SVLOG_DESIGN;         }
 "expect"         { return SVLOG_EXPECT;         }
@@ -172,6 +178,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "inside"         { return SVLOG_INSIDE;         }
 "medium"         { return SVLOG_MEDIUM;         }
 "module"         { return SVLOG_MODULE;         }
+"notif0"         { return SVLOG_NOTIF0;         }
+"notif1"         { return SVLOG_NOTIF1;         }
 "option"         { return SVLOG_OPTION;         }
 "output"         { return SVLOG_OUTPUT;         }
 "packed"         { return SVLOG_PACKED;         }
@@ -212,6 +220,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "pull0"          { return SVLOG_PULL0;          }
 "pull1"          { return SVLOG_PULL1;          }
 "randc"          { return SVLOG_RANDC;          }
+"rcmos"          { return SVLOG_RCMOS;          }
+"rpmos"          { return SVLOG_RPMOS;          }
+"rnmos"          { return SVLOG_RNMOS;          }
+"rtran"          { return SVLOG_RTRAN;          }
 "solve"          { return SVLOG_SOLVE;          }
 "small"          { return SVLOG_SMALL;          }
 "super"          { return SVLOG_SUPER;          }
@@ -230,13 +242,17 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "byte"           { return SVLOG_BYTE;           }
 "case"           { return SVLOG_CASE;           }
 "cell"           { return SVLOG_CELL;           }
+"cmos"           { return SVLOG_CMOS;           }
 "dist"           { return SVLOG_DIST;           }
 "edge"           { return SVLOG_EDGE;           }
 "else"           { return SVLOG_ELSE;           }
 "enum"           { return SVLOG_ENUM;           }
 "fork"           { return SVLOG_FORK;           }
 "join"           { return SVLOG_JOIN;           }
+"nand"           { return SVLOG_NAND;           }
+"nmos"           { return SVLOG_NMOS;           }
 "null"           { return SVLOG_NULL;           }
+"pmos"           { return SVLOG_PMOS;           }
 "pure"           { return SVLOG_PURE;           }
 "rand"           { return SVLOG_RAND;           }
 "real"           { return SVLOG_REAL;           }
@@ -245,6 +261,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "task"           { return SVLOG_TASK;           }
 "this"           { return SVLOG_THIS;           }
 "time"           { return SVLOG_TIME;           }
+"tran"           { return SVLOG_TRAN;           }
 "tri0"           { return SVLOG_TRI0;           }
 "tri1"           { return SVLOG_TRI1;           }
 "type"           { return SVLOG_TYPE;           }
@@ -254,8 +271,10 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "weak"           { return SVLOG_WEAK;           }
 "wire"           { return SVLOG_WIRE;           }
 "with"           { return SVLOG_WITH;           }
+"xnor"           { return SVLOG_XNOR;           }
 "and"            { return SVLOG_AND;            }
 "bit"            { return SVLOG_BIT;            }
+"buf"            { return SVLOG_BUF;            }
 "DPI"            { return SVLOG_DPI;            }
 "end"            { return SVLOG_END;            }
 "for"            { return SVLOG_FOR;            }
@@ -263,6 +282,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "int"            { return SVLOG_INT;            }
 "let"            { return SVLOG_LET;            }
 "new"            { return SVLOG_NEW;            }
+"nor"            { return SVLOG_NOR;            }
 "not"            { return SVLOG_NOT;            }
 "ref"            { return SVLOG_REF;            }
 "reg"            { return SVLOG_REG;            }
