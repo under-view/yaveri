@@ -3763,7 +3763,7 @@ import_export
 /* Start of 'concurrent_assertion_item' grammer rules */
 
 concurrent_assertion_item
-	: colon_ident_or_null concurrent_assertion_statement
+	: ident_colon_or_null concurrent_assertion_statement
 	| checker_instantiation
 	;
 
@@ -4496,13 +4496,13 @@ hierarchical_btf_identifier
 
 /* Start of 'cover_point' grammer rules */
 
-cover_point_dt_or_imp_colon_ident_or_null
+cover_point_dt_or_imp_ident_colon_or_null
 	: %empty
-	| data_type_or_implicit_or_null colon_ident
+	| data_type_or_implicit_or_null ident_colon
 	;
 
 cover_point
-	: cover_point_dt_or_imp_colon_ident_or_null
+	: cover_point_dt_or_imp_ident_colon_or_null
 		SVLOG_COVERPOINT expression iff_expression_or_null
 			bins_or_empty
 	;
@@ -7614,9 +7614,17 @@ semicolon_or_null
 	| ';'
 	;
 
+ident_colon
+	: identifier ':'
+	;
+
+ident_colon_or_null
+	: %empty
+	| ident_colon
+	;
+
 colon_ident
 	: ':' identifier
-	| identifier ':'
 	;
 
 colon_ident_or_null
