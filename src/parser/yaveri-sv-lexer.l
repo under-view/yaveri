@@ -58,6 +58,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "s_until_with"   { return SVLOG_S_UNTIL_WITH;   }
 "endclocking"    { return SVLOG_ENDCLOCKING;    }
 "endfunction"    { return SVLOG_ENDFUNCTION;    }
+"endgenerate"    { return SVLOG_ENDGENERATE;    }
 "endproperty"    { return SVLOG_ENDPROPERTY;    }
 "endsequence"    { return SVLOG_ENDSEQUENCE;    }
 "first_match"    { return SVLOG_FIRST_MATCH;    }
@@ -101,6 +102,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "extendes"       { return SVLOG_EXTENDES;       }
 "forkjoin"       { return SVLOG_FORKJOIN;       }
 "function"       { return SVLOG_FUNCTION;       }
+"generate"       { return SVLOG_GENERATE;       }
 "instance"       { return SVLOG_INSTANCE;       }
 "join_any"       { return SVLOG_JOIN_ANY;       }
 "nexttime"       { return SVLOG_NEXTTIME;       }

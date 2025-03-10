@@ -27,6 +27,7 @@
 %token <itoken> SVLOG_S_UNTIL_WITH
 %token <itoken> SVLOG_ENDCLOCKING
 %token <itoken> SVLOG_ENDFUNCTION
+%token <itoken> SVLOG_ENDGENERATE
 %token <itoken> SVLOG_ENDPROPERTY
 %token <itoken> SVLOG_ENDSEQUENCE
 %token <itoken> SVLOG_FIRST_MATCH
@@ -70,6 +71,7 @@
 %token <itoken> SVLOG_EXTENDES
 %token <itoken> SVLOG_FORKJOIN
 %token <itoken> SVLOG_FUNCTION
+%token <itoken> SVLOG_GENERATE
 %token <itoken> SVLOG_INSTANCE
 %token <itoken> SVLOG_JOIN_ANY
 %token <itoken> SVLOG_NEXTTIME
@@ -5521,43 +5523,137 @@ named_checker_port_connection_seq_list
 
 
 /*******************************************************
- * Start of 'Checker instantiation' Grammer Rules      *
- * Based off section: (A.4.1.4 Checker instantiation). *
+ * Start of 'Generated instantiation' Grammer Rules    *
+ * Based off section: (A.4.2 Generated instantiation). *
  *******************************************************/
 
-checker_instantiation
-	: ps_checker_identifier name_of_instance '(' ')' ';'
-	| ps_checker_identifier name_of_instance '(' list_of_checker_port_connections ')' ';'
+/* Start of 'generate_region' grammer rules */
+
+generate_region
+	: SVLOG_GENERATE
+		generate_item_recurse_or_null
+			SVLOG_ENDGENERATE
 	;
 
-list_of_checker_port_connections
-	: ordered_checker_port_connection_seq_list
-	| named_checker_port_connection_seq_list
+/* End of 'generate_region' grammer rules */
+
+
+/* Start of 'loop_generate_construct' grammer rules */
+
+loop_generate_construct
+	: SVLOG_FOR '(' genvar_initialization ';'
+		constant_expression ';' genvar_iteration ')'
+			generate_block
 	;
 
-ordered_checker_port_connection
-	: attribute_instance_recurse_or_null property_actual_arg_or_null
+/* End of 'loop_generate_construct' grammer rules */
+
+
+/* Start of 'genvar_initialization' grammer rules */
+
+genvar_initialization
+	: genvar_or_null identifier '=' constant_expression
 	;
 
-ordered_checker_port_connection_seq_list
-	: ordered_checker_port_connection
-	| ordered_checker_port_connection_seq_list ',' ordered_checker_port_connection
+/* End of 'genvar_initialization' grammer rules */
+
+
+/* Start of 'genvar_iteration' grammer rules */
+
+genvar_iteration
+	: identifier assignment_operator constant_expression
+	| inc_or_dec_operator identifier
+	| identifier inc_or_dec_operator
 	;
 
-named_checker_port_connection
-	: attribute_instance_recurse_or_null '.' identifier
-	| attribute_instance_recurse_or_null '.' identifier '(' property_actual_arg_or_null ')'
-	| attribute_instance_recurse_or_null '.' '*'
+/* End of 'genvar_iteration' grammer rules */
+
+
+/* Start of 'conditional_generate_construct' grammer rules */
+
+conditional_generate_construct
+	: if_generate_construct
+	| case_generate_construct
 	;
 
-named_checker_port_connection_seq_list
-	: named_checker_port_connection
-	| named_checker_port_connection_seq_list ',' named_checker_port_connection
+/* End of 'conditional_generate_construct' grammer rules */
+
+
+/* Start of 'if_generate_construct' grammer rules */
+
+else_generate_block_or_null
+	: %empty
+	| SVLOG_ELSE generate_block
 	;
+
+if_generate_construct
+	: SVLOG_IF '(' constant_expression ')'
+		generate_block else_generate_block_or_null
+	;
+
+/* End of 'if_generate_construct' grammer rules */
+
+
+/* Start of 'case_generate_construct' grammer rules */
+
+case_generate_construct
+	: SVLOG_CASE '(' constant_expression ')'
+		case_generate_item_recurse SVLOG_ENDCASE
+	;
+
+/* End of 'case_generate_construct' grammer rules */
+
+
+/* Start of 'case_generate_item' grammer rules */
+
+case_generate_item
+	: constant_expression_seq_list ':' generate_block
+	| SVLOG_DEFAULT colon_or_null generate_block
+	;
+
+case_generate_item_recurse
+	: case_generate_item
+	| case_generate_item_recurse case_generate_item
+	;
+
+/* End of 'case_generate_item' grammer rules */
+
+
+/* Start of 'generate_block' grammer rules */
+
+generate_block
+	: generate_item
+	| ident_colon_or_null SVLOG_BEGIN colon_ident_or_null
+		generate_item_recurse_or_null
+			SVLOG_END colon_ident_or_null
+	;
+
+/* End of 'generate_block' grammer rules */
+
+
+/* Start of 'generate_item' grammer rules */
+
+generate_item
+	: module_or_generate_item
+	| interface_or_generate_item
+	| checker_or_generate_item
+	;
+
+generate_item_recurse
+	: generate_item
+	| generate_item_recurse generate_item
+	;
+
+generate_item_recurse_or_null
+	: %empty
+	| generate_item_recurse
+	;
+
+/* End of 'generate_item' grammer rules */
 
 /*******************************************************
- * End of 'Checker instantiation' Grammer Rules        *
- * Based off section: (A.4.1.4 Checker instantiation). *
+ * End of 'Generated instantiation' Grammer Rules        *
+ * Based off section: (A.4.2 Generated instantiation). *
  *******************************************************/
 
 
@@ -6733,6 +6829,11 @@ constant_expression
 	| constant_expression '?' attribute_instance_recurse_or_null constant_expression ':' constant_expression
 	;
 
+constant_expression_seq_list
+	: constant_expression
+	| constant_expression_seq_list ',' constant_expression
+	;
+
 constant_mintypmax_expression
 	: constant_expression
 	| constant_expression ':' constant_expression ':' constant_expression
@@ -7606,6 +7707,11 @@ wildcard_or_null
 rand_or_null
 	: %empty
 	| SVLOG_RAND
+	;
+
+genvar_or_null
+	: %empty
+	| SVLOG_GENVAR
 	;
 
 colon_config
