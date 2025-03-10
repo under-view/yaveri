@@ -5657,6 +5657,57 @@ generate_item_recurse_or_null
  *******************************************************/
 
 
+/***********************************************
+ * Start of 'UDP declaration' Grammer Rules    *
+ * Based off section: (A.5.1 UDP declaration). *
+ ***********************************************/
+
+/* Start of 'udp_nonansi_declaration' grammer rules */
+
+udp_nonansi_declaration
+	: attribute_instance_recurse_or_null
+		SVLOG_PRIMITIVE identifier
+			'(' udp_port_list ')' ';'
+	;
+
+/* End of 'udp_nonansi_declaration' grammer rules */
+
+
+/* Start of 'udp_ansi_declaration' grammer rules */
+
+udp_ansi_declaration
+	: attribute_instance_recurse_or_null
+		SVLOG_PRIMITIVE identifier
+			'(' udp_declaration_port_list ')' ';'
+	;
+
+/* End of 'udp_ansi_declaration' grammer rules */
+
+
+/* Start of 'udp_declaration' grammer rules */
+
+udp_declaration
+	: udp_nonansi_declaration
+		udp_port_declaration_recurse udp_body
+			SVLOG_ENDPRIMITIVE colon_ident_or_null
+	| udp_ansi_declaration udp_body
+		SVLOG_ENDPRIMITIVE colon_ident_or_null
+	| SVLOG_EXTERN udp_nonansi_declaration
+	| SVLOG_EXTERN udp_ansi_declaration
+	| attribute_instance_recurse_or_null
+		SVLOG_PRIMITIVE identifier '(' '.' '*' ')' ';'
+			udp_port_declaration_recurse_or_null udp_body
+				SVLOG_ENDPRIMITIVE colon_ident_or_null
+	;
+
+/* End of 'udp_declaration' grammer rules */
+
+/***********************************************
+ * End of 'UDP declaration' Grammer Rules      *
+ * Based off section: (A.5.1 UDP declaration). *
+ ***********************************************/
+
+
 /******************************************************************************
  * Start of 'Continuous assignment and net alias statements' Grammer Rules    *
  * Based off section: (A.6.1 Continuous assignment and net alias statements). *
