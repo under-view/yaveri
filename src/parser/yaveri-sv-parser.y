@@ -5266,10 +5266,18 @@ pass_switchtype
  * Based off section: (A.4.1.1 Module instantiation). *
  ******************************************************/
 
+/* Start of 'module_instantiation' grammer rules */
+
 module_instantiation
-	: identifier hierarchical_instance_seq_list
-	| identifier parameter_value_assignment hierarchical_instance_seq_list
+	: identifier
+		parameter_value_assignment_or_null
+			hierarchical_instance_seq_list
 	;
+
+/* End of 'module_instantiation' grammer rules */
+
+
+/* Start of 'parameter_value_assignment' grammer rules */
 
 parameter_value_assignment
 	: '#' '(' ')'
@@ -5281,10 +5289,20 @@ parameter_value_assignment_or_null
 	| parameter_value_assignment
 	;
 
+/* End of 'parameter_value_assignment' grammer rules */
+
+
+/* Start of 'list_of_parameter_value_assignments' grammer rules */
+
 list_of_parameter_value_assignments
 	: ordered_parameter_assignment_seq_list
 	| named_parameter_assignment_seq_list
 	;
+
+/* End of 'list_of_parameter_value_assignments' grammer rules */
+
+
+/* Start of 'ordered_parameter_assignment' grammer rules */
 
 ordered_parameter_assignment
 	: param_expression
@@ -5295,9 +5313,13 @@ ordered_parameter_assignment_seq_list
 	| ordered_parameter_assignment_seq_list ',' ordered_parameter_assignment
 	;
 
+/* End of 'ordered_parameter_assignment' grammer rules */
+
+
+/* Start of 'named_parameter_assignment' grammer rules */
+
 named_parameter_assignment
-	: '.' identifier '(' ')'
-	| '.' identifier '(' param_expression ')'
+	: period_ident '(' param_expression_or_null ')'
 	;
 
 named_parameter_assignment_seq_list
@@ -5305,9 +5327,13 @@ named_parameter_assignment_seq_list
 	| named_parameter_assignment_seq_list ',' named_parameter_assignment
 	;
 
+/* End of 'named_parameter_assignment' grammer rules */
+
+
+/* Start of 'hierarchical_instance' grammer rules */
+
 hierarchical_instance
-	: name_of_instance '(' ')'
-	| name_of_instance '(' list_of_port_connections ')'
+	: name_of_instance '(' list_of_port_connections_or_null ')'
 	;
 
 hierarchical_instance_seq_list
@@ -5315,14 +5341,40 @@ hierarchical_instance_seq_list
 	| hierarchical_instance_seq_list ',' hierarchical_instance
 	;
 
+/* End of 'hierarchical_instance' grammer rules */
+
+
+/* Start of 'name_of_instance' grammer rules */
+
 name_of_instance
-	: identifier unpacked_dimension_recurse_or_null
+	: identifier
+		unpacked_dimension_recurse_or_null
 	;
+
+name_of_instance_or_null
+	: %empty
+	| name_of_instance
+	;
+
+/* End of 'name_of_instance' grammer rules */
+
+
+/* Start of 'list_of_port_connections' grammer rules */
 
 list_of_port_connections
 	: ordered_port_connection_seq_list
 	| named_port_connection_seq_list
 	;
+
+list_of_port_connections_or_null
+	: %empty
+	| list_of_port_connections
+	;
+
+/* End of 'list_of_port_connections' grammer rules */
+
+
+/* Start of 'ordered_port_connection' grammer rules */
 
 ordered_port_connection
 	: attribute_instance_recurse_or_null expression_or_null
@@ -5333,9 +5385,14 @@ ordered_port_connection_seq_list
 	| ordered_port_connection_seq_list ',' ordered_port_connection
 	;
 
+/* End of 'ordered_port_connection' grammer rules */
+
+
+/* Start of 'named_port_connection' grammer rules */
+
 named_port_connection
-	: attribute_instance_recurse_or_null '.' identifier
-	| attribute_instance_recurse_or_null '.' identifier '(' expression_or_null ')'
+	: attribute_instance_recurse_or_null period_ident 
+	| attribute_instance_recurse_or_null period_ident '(' expression_or_null ')'
 	| attribute_instance_recurse_or_null '.' '*'
 	;
 
@@ -5343,6 +5400,8 @@ named_port_connection_seq_list
 	: named_port_connection
 	| named_port_connection_seq_list ',' named_port_connection
 	;
+
+/* End of 'named_port_connection' grammer rules */
 
 /******************************************************
  * End of 'Module instantiation' Grammer Rules        *
