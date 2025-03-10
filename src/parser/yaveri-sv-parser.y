@@ -5427,6 +5427,23 @@ interface_instantiation
 
 
 /*******************************************************
+ * Start of 'Program instantiation' Grammer Rules      *
+ * Based off section: (A.4.1.3 Program instantiation). *
+ *******************************************************/
+
+program_instantiation
+	: identifier
+		parameter_value_assignment_or_null
+			hierarchical_instance_seq_list ';'
+	;
+
+/*******************************************************
+ * End of 'Program instantiation' Grammer Rules        *
+ * Based off section: (A.4.1.3 Program instantiation). *
+ *******************************************************/
+
+
+/*******************************************************
  * Start of 'Checker instantiation' Grammer Rules      *
  * Based off section: (A.4.1.4 Checker instantiation). *
  *******************************************************/
