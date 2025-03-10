@@ -2972,7 +2972,7 @@ list_of_port_identifiers
 
 list_of_udp_port_identifiers
 	: identifier
-	| list_of_udp_port_identifiers identifier
+	| list_of_udp_port_identifiers ',' identifier
 	;
 
 /* End of 'list_of_udp_port_identifiers' grammer rules */
@@ -5708,6 +5708,79 @@ udp_declaration
  ***********************************************/
 
 
+/*****************************************
+ * Start of 'UDP ports' Grammer Rules    *
+ * Based off section: (A.5.2 UDP ports). *
+ *****************************************/
+
+/* Start of 'udp_port_list' grammer rules */
+
+udp_port_list
+	: identifier ',' identifier_seq_list
+	;
+
+/* End of 'udp_port_list' grammer rules */
+
+
+/* Start of 'udp_declaration_port_list' grammer rules */
+
+udp_declaration_port_list
+	: udp_output_declaration ','
+		udp_input_declaration_seq_list
+	;
+
+/* End of 'udp_declaration_port_list' grammer rules */
+
+
+/* Start of 'udp_port_declaration' grammer rules */
+
+udp_port_declaration
+	: udp_output_declaration ';'
+	| udp_input_declaration ';'
+	| udp_reg_declaration ';'
+	;
+
+/* End of 'udp_port_declaration' grammer rules */
+
+
+/* Start of 'udp_output_declaration' grammer rules */
+
+udp_output_declaration
+	: attribute_instance_recurse_or_null
+		SVLOG_OUTPUT identifier
+	| attribute_instance_recurse_or_null
+		SVLOG_OUTPUT SVLOG_REG identifier
+			equal_constant_expression_or_null
+	;
+
+/* End of 'udp_output_declaration' grammer rules */
+
+
+/* Start of 'udp_input_declaration' grammer rules */
+
+udp_input_declaration
+	: attribute_instance_recurse_or_null
+		SVLOG_INPUT list_of_udp_port_identifiers
+	;
+
+/* End of 'udp_input_declaration' grammer rules */
+
+
+/* Start of 'udp_reg_declaration' grammer rules */
+
+udp_reg_declaration
+	: attribute_instance_recurse_or_null
+		SVLOG_REG identifier
+	;
+
+/* End of 'udp_reg_declaration' grammer rules */
+
+/*****************************************
+ * End of 'UDP Ports' Grammer Rules      *
+ * Based off section: (A.5.2 UDP ports). *
+ *****************************************/
+
+
 /******************************************************************************
  * Start of 'Continuous assignment and net alias statements' Grammer Rules    *
  * Based off section: (A.6.1 Continuous assignment and net alias statements). *
@@ -6812,32 +6885,22 @@ randomize_call_helper
 	| '(' ')'
 	| '(' ')' SVLOG_WITH constraint_block
 	| '(' ')' SVLOG_WITH '(' ')' constraint_block
-	| '(' ')' SVLOG_WITH '(' identifier_list ')' constraint_block
-	| '(' variable_identifier_list ')'
-	| '(' variable_identifier_list ')' SVLOG_WITH constraint_block
-	| '(' variable_identifier_list ')' SVLOG_WITH '(' ')' constraint_block
-	| '(' variable_identifier_list ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| '(' ')' SVLOG_WITH '(' identifier_seq_list ')' constraint_block
+	| '(' identifier_seq_list ')'
+	| '(' identifier_seq_list ')' SVLOG_WITH constraint_block
+	| '(' identifier_seq_list ')' SVLOG_WITH '(' ')' constraint_block
+	| '(' identifier_seq_list ')' SVLOG_WITH '(' identifier_seq_list ')' constraint_block
 	| '(' SVLOG_NULL ')'
 	| '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
 	| '(' SVLOG_NULL ')' SVLOG_WITH '(' ')' constraint_block
-	| '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_list ')' constraint_block
+	| '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_seq_list ')' constraint_block
 	| SVLOG_WITH constraint_block
 	| SVLOG_WITH '(' ')' constraint_block
-	| SVLOG_WITH '(' identifier_list ')' constraint_block
+	| SVLOG_WITH '(' identifier_seq_list ')' constraint_block
 	;
 
 randomize_call
 	: SVLOG_RANDOMIZE attribute_instance_recurse_or_null randomize_call_helper
-	;
-
-variable_identifier_list
-	: identifier
-	| variable_identifier_list ',' identifier
-	;
-
-identifier_list
-	: identifier
-	| identifier_list ',' identifier
 	;
 
 method_call_root
@@ -7556,6 +7619,11 @@ hierarchical_identifier_period_or_class_scope_or_null
 identifier
 	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
 	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
+	;
+
+identifier_seq_list
+	: identifier
+	| identifier_seq_list ',' identifier
 	;
 
 identifier_recurse
