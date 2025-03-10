@@ -1169,8 +1169,8 @@ config_declaration
 /* Start of 'design_statement' grammer rules */
 
 design_statement_ident_recurse
-	: period_ident_or_null identifier
-	| design_statement_ident_recurse period_ident_or_null identifier
+	: ident_period_or_null identifier
+	| design_statement_ident_recurse ident_period_or_null identifier
 	;
 
 design_statement_ident_recurse_or_null
@@ -1229,7 +1229,7 @@ inst_name
 /* Start of 'cell_clause' grammer rules */
 
 cell_clause
-	: SVLOG_CELL period_ident_or_null identifier
+	: SVLOG_CELL ident_period_or_null identifier
 	;
 
 /* End of 'cell_clause' grammer rules */
@@ -2133,7 +2133,7 @@ output_declaration
 
 interface_port_declaration
 	: identifier list_of_interface_identifiers
-	| period_ident identifier list_of_interface_identifiers
+	| ident_period identifier list_of_interface_identifiers
 	;
 
 /* End of 'interface_port_declaration' grammer rules */
@@ -4627,7 +4627,7 @@ repeat_range
 /* Start of 'cover_cross' grammer rules */
 
 cover_cross
-	: period_ident_or_null SVLOG_CROSS list_of_cross_items
+	: ident_colon_or_null SVLOG_CROSS list_of_cross_items
 		iff_expression_or_null cross_body
 	;
 
@@ -7646,14 +7646,39 @@ interface_or_null
 	| %empty
 	;
 
+/* Start of 'ident_period' grammer rules */
+
+ident_period
+	: identifier '.'
+	;
+
+ident_period_or_null
+	: %empty
+	| ident_period
+	;
+
+ident_period_recurse
+	: ident_period
+	| ident_period_recurse ident_period
+	;
+
+ident_period_recurse_or_null
+	: %empty
+	| ident_period_recurse
+	;
+
+/* End of 'ident_period' grammer rules */
+
+
+/* Start of 'period_ident' grammer rules */
+
 period_ident
 	: '.' identifier
-	| identifier '.'
 	;
 
 period_ident_or_null
-	: period_ident
-	| %empty
+	: %empty
+	| period_ident
 	;
 
 period_ident_recurse
@@ -7665,6 +7690,8 @@ period_ident_recurse_or_null
 	: %empty
 	| period_ident_recurse
 	;
+
+/* End of 'period_ident' grammer rules */
 
 class_or_package_scope_or_null
 	: class_scope
