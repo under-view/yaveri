@@ -5409,6 +5409,23 @@ named_port_connection_seq_list
  ******************************************************/
 
 
+/*********************************************************
+ * Start of 'Interface instantiation' Grammer Rules      *
+ * Based off section: (A.4.1.2 Interface instantiation). *
+ *********************************************************/
+
+interface_instantiation
+	: identifier
+		parameter_value_assignment_or_null
+			hierarchical_instance_seq_list ';'
+	;
+
+/*********************************************************
+ * End of 'Interface instantiation' Grammer Rules        *
+ * Based off section: (A.4.1.2 Interface instantiation). *
+ *********************************************************/
+
+
 /*******************************************************
  * Start of 'Checker instantiation' Grammer Rules      *
  * Based off section: (A.4.1.4 Checker instantiation). *
