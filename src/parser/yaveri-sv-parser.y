@@ -5414,11 +5414,15 @@ named_port_connection_seq_list
  * Based off section: (A.4.1.2 Interface instantiation). *
  *********************************************************/
 
+/* Start of 'interface_instantiation' grammer rules */
+
 interface_instantiation
 	: identifier
 		parameter_value_assignment_or_null
 			hierarchical_instance_seq_list ';'
 	;
+
+/* End of 'interface_instantiation' grammer rules */
 
 /*********************************************************
  * End of 'Interface instantiation' Grammer Rules        *
@@ -5431,15 +5435,88 @@ interface_instantiation
  * Based off section: (A.4.1.3 Program instantiation). *
  *******************************************************/
 
+/* Start of 'program_instantiation' grammer rules */
+
 program_instantiation
 	: identifier
 		parameter_value_assignment_or_null
 			hierarchical_instance_seq_list ';'
 	;
 
+/* End of 'program_instantiation' grammer rules */
+
 /*******************************************************
  * End of 'Program instantiation' Grammer Rules        *
  * Based off section: (A.4.1.3 Program instantiation). *
+ *******************************************************/
+
+
+/*******************************************************
+ * Start of 'Checker instantiation' Grammer Rules      *
+ * Based off section: (A.4.1.4 Checker instantiation). *
+ *******************************************************/
+
+/* Start of 'checker_instantiation' grammer rules */
+
+checker_instantiation
+	: ps_checker_identifier name_of_instance
+		'(' list_of_checker_port_connections_or_null ')' ';'
+	;
+
+/* End of 'checker_instantiation' grammer rules */
+
+
+/* Start of 'list_of_checker_port_connections' grammer rules */
+
+list_of_checker_port_connections
+	: ordered_checker_port_connection_seq_list
+	| named_checker_port_connection_seq_list
+	;
+
+list_of_checker_port_connections_or_null
+	: %empty
+	| list_of_checker_port_connections
+	;
+
+/* End of 'list_of_checker_port_connections' grammer rules */
+
+
+/* Start of 'ordered_checker_port_connection' grammer rules */
+
+ordered_checker_port_connection
+	: attribute_instance_recurse_or_null
+		property_actual_arg_or_null
+	;
+
+ordered_checker_port_connection_seq_list
+	: ordered_checker_port_connection
+	| ordered_checker_port_connection_seq_list ','
+		ordered_checker_port_connection
+	;
+
+/* End of 'ordered_checker_port_connection' grammer rules */
+
+
+/* Start of 'named_checker_port_connection' grammer rules */
+
+named_checker_port_connection
+	: attribute_instance_recurse_or_null period_ident 
+	| attribute_instance_recurse_or_null period_ident
+		'(' property_actual_arg_or_null ')'
+	| attribute_instance_recurse_or_null '.' '*'
+	;
+
+named_checker_port_connection_seq_list
+	: named_checker_port_connection
+	| named_checker_port_connection_seq_list ','
+		named_checker_port_connection
+	;
+
+/* End of 'named_checker_port_connection' grammer rules */
+
+/*******************************************************
+ * End of 'Checker instantiation' Grammer Rules        *
+ * Based off section: (A.4.1.4 Checker instantiation). *
  *******************************************************/
 
 
@@ -6691,6 +6768,11 @@ param_expression
 	| '$'
 	;
 
+param_expression_or_null
+	: %empty
+	| param_expression
+	;
+
 constant_part_select_range
 	: constant_range
 	| constant_indexed_range
@@ -7345,23 +7427,19 @@ package_scope_or_null
 	;
 
 ps_class_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	;
 
 ps_covergroup_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	;
 
 ps_checker_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	;
 
 ps_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	;
 
 ps_or_hierarchical_array_identifier
@@ -7370,26 +7448,22 @@ ps_or_hierarchical_array_identifier
 	;
 
 ps_or_hierarchical_net_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	| hierarchical_identifier
 	;
 
 ps_or_hierarchical_property_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	| hierarchical_property_identifier
 	;
 
 ps_or_hierarchical_sequence_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	| hierarchical_identifier
 	;
 
 ps_or_hierarchical_tf_identifier
-	: identifier
-	| package_scope identifier
+	: package_scope_or_null identifier
 	| hierarchical_identifier
 	;
 
