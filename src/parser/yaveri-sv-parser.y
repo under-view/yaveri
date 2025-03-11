@@ -5809,7 +5809,7 @@ udp_reg_declaration
 
 /****************************************
  * Start of 'UDP body' Grammer Rules    *
- * Based off section: (A.5.2 UDP body). *
+ * Based off section: (A.5.3 UDP body). *
  ****************************************/
 
 /* Start of 'udp_body' grammer rules */
@@ -5996,8 +5996,43 @@ edge_symbol
 
 /****************************************
  * End of 'UDP body' Grammer Rules      *
- * Based off section: (A.5.2 UDP body). *
+ * Based off section: (A.5.3 UDP body). *
  ****************************************/
+
+
+/*************************************************
+ * Start of 'UDP instantiation' Grammer Rules    *
+ * Based off section: (A.5.4 UDP instantiation). *
+ *************************************************/
+
+/* Start of 'udp_instantiation' grammer rules */
+
+udp_instantiation
+	: identifier drive_strength_or_null
+		delay2_or_null udp_instance_seq_list ';'
+	;
+
+/* End of 'udp_instantiation' grammer rules */
+
+
+/* Start of 'udp_instance' grammer rules */
+
+udp_instance
+	: name_of_instance_or_null
+		'(' output_terminal ',' input_terminal_seq_list ')'
+	;
+
+udp_instance_seq_list
+	: udp_instance
+	| udp_instance_seq_list ',' udp_instance
+	;
+
+/* End of 'udp_instance' grammer rules */
+
+/*************************************************
+ * End of 'UDP instantiation' Grammer Rules      *
+ * Based off section: (A.5.4 UDP instantiation). *
+ *************************************************/
 
 
 /******************************************************************************
