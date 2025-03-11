@@ -43,7 +43,6 @@
 %token <itoken> SVLOG_EVENTUALLY
 %token <itoken> SVLOG_IMPLEMENTS
 %token <itoken> SVLOG_LOCALPARAM
-%token <itoken> SVLOG_PATHPULSEDS
 %token <itoken> SVLOG_S_NEXTTIME
 %token <itoken> SVLOG_THROUGHOUT
 %token <itoken> SVLOG_UNTIL_WITH
@@ -68,6 +67,7 @@
 %token <itoken> SVLOG_DEFPARAM
 %token <itoken> SVLOG_ENDCLASS
 %token <itoken> SVLOG_ENDGROUP
+%token <itoken> SVLOG_ENDTABLE
 %token <itoken> SVLOG_EXTENDES
 %token <itoken> SVLOG_FORKJOIN
 %token <itoken> SVLOG_FUNCTION
@@ -91,7 +91,6 @@
 %token <itoken> SVLOG_UNSIGNED
 %token <itoken> SVLOG_VECTORED
 %token <itoken> SVLOG_WILDCARD
-%token <itoken> SVLOG_DSWARNING
 %token <itoken> SVLOG_CHANDLE
 %token <itoken> SVLOG_CHECKER
 %token <itoken> SVLOG_CONTEXT
@@ -127,7 +126,6 @@
 %token <itoken> SVLOG_UNIQUE0
 %token <itoken> SVLOG_UNTYPED
 %token <itoken> SVLOG_VIRTUAL
-%token <itoken> SVLOG_HINCDIR
 %token <itoken> SVLOG_ALWAYS
 %token <itoken> SVLOG_ASSERT
 %token <itoken> SVLOG_ASSIGN
@@ -169,8 +167,6 @@
 %token <itoken> SVLOG_UNIQUE
 %token <itoken> SVLOG_UNWIRE
 %token <itoken> SVLOG_WITHIN
-%token <itoken> SVLOG_DSERROR
-%token <itoken> SVLOG_DSFATAL
 %token <itoken> SVLOG_BEGIN
 %token <itoken> SVLOG_BREAK
 %token <itoken> SVLOG_CASEX
@@ -179,7 +175,6 @@
 %token <itoken> SVLOG_CONST
 %token <itoken> SVLOG_COVER
 %token <itoken> SVLOG_CROSS
-%token <itoken> SVLOG_DPI_C
 %token <itoken> SVLOG_EVENT
 %token <itoken> SVLOG_FORCE
 %token <itoken> SVLOG_FINAL
@@ -198,16 +193,13 @@
 %token <itoken> SVLOG_SOLVE
 %token <itoken> SVLOG_SMALL
 %token <itoken> SVLOG_SUPER
+%token <itoken> SVLOG_TABLE
 %token <itoken> SVLOG_TRIOR
 %token <itoken> SVLOG_UNION
 %token <itoken> SVLOG_UNTIL
 %token <itoken> SVLOG_WEAK0
 %token <itoken> SVLOG_WEAK1
 %token <itoken> SVLOG_WHILE
-%token <itoken> SVLOG_1STEP
-%token <itoken> SVLOG_DSINFO
-%token <itoken> SVLOG_DSROOT
-%token <itoken> SVLOG_DSUNIT
 %token <itoken> SVLOG_BIND
 %token <itoken> SVLOG_BINS
 %token <itoken> SVLOG_BYTE
@@ -271,7 +263,26 @@
 %token <itoken> SVLOG_OR
 %token <itoken> SVLOG_PICOSEC
 %token <itoken> SVLOG_MICROSEC
-%token <itoken> SVLOG_SEC
+
+
+%token <itoken> SVLOG_PATHPULSEDS
+%token <itoken> SVLOG_DSWARNING
+%token <itoken> SVLOG_HINCDIR
+%token <itoken> SVLOG_DSERROR
+%token <itoken> SVLOG_DSFATAL
+%token <itoken> SVLOG_DPI_C
+%token <itoken> SVLOG_1STEP
+%token <itoken> SVLOG_DSINFO
+%token <itoken> SVLOG_DSROOT
+%token <itoken> SVLOG_DSUNIT
+%token <itoken> SVLOG_INIT_VAL_APOST_LB0
+%token <itoken> SVLOG_INIT_VAL_APOST_LB1
+%token <itoken> SVLOG_INIT_VAL_APOST_LBLX
+%token <itoken> SVLOG_INIT_VAL_APOST_LBCX
+%token <itoken> SVLOG_INIT_VAL_APOST_CB0
+%token <itoken> SVLOG_INIT_VAL_APOST_CB1
+%token <itoken> SVLOG_INIT_VAL_APOST_CBLX
+%token <itoken> SVLOG_INIT_VAL_APOST_CBCX
 
 
 %token <itoken> CYCLE_DELAY_ZERO_OR_MORE
@@ -5740,6 +5751,16 @@ udp_port_declaration
 	| udp_reg_declaration ';'
 	;
 
+udp_port_declaration_recurse
+	: udp_port_declaration
+	| udp_port_declaration_recurse udp_port_declaration
+	;
+
+udp_port_declaration_recurse_or_null
+	: %empty
+	| udp_port_declaration_recurse
+	;
+
 /* End of 'udp_port_declaration' grammer rules */
 
 
@@ -5763,6 +5784,11 @@ udp_input_declaration
 		SVLOG_INPUT list_of_udp_port_identifiers
 	;
 
+udp_input_declaration_seq_list
+	: udp_input_declaration
+	| udp_input_declaration_seq_list ',' udp_input_declaration
+	;
+
 /* End of 'udp_input_declaration' grammer rules */
 
 
@@ -5779,6 +5805,199 @@ udp_reg_declaration
  * End of 'UDP Ports' Grammer Rules      *
  * Based off section: (A.5.2 UDP ports). *
  *****************************************/
+
+
+/****************************************
+ * Start of 'UDP body' Grammer Rules    *
+ * Based off section: (A.5.2 UDP body). *
+ ****************************************/
+
+/* Start of 'udp_body' grammer rules */
+
+udp_body
+	: combinational_body
+	| sequential_body
+	;
+
+/* End of 'udp_body' grammer rules */
+
+
+/* Start of 'combinational_body' grammer rules */
+
+combinational_body
+	: SVLOG_TABLE
+		combinational_entry_recurse
+			SVLOG_ENDTABLE
+	;
+
+/* End of 'combinational_body' grammer rules */
+
+
+/* Start of 'combinational_entry' grammer rules */
+
+combinational_entry
+	: level_symbol_recurse ':' output_symbol ';'
+	;
+
+combinational_entry_recurse
+	: combinational_entry
+	| combinational_entry_recurse combinational_entry
+	;
+
+/* End of 'combinational_entry' grammer rules */
+
+
+/* Start of 'sequential_body' grammer rules */
+
+sequential_body
+	: udp_initial_statement_or_null SVLOG_TABLE
+		sequential_entry_recurse SVLOG_ENDTABLE
+	;
+
+/* End of 'sequential_body' grammer rules */
+
+
+/* Start of 'udp_initial_statement' grammer rules */
+
+udp_initial_statement
+	: SVLOG_INITIAL identifier '=' init_val ';'
+	;
+
+udp_initial_statement_or_null
+	: %empty
+	| udp_initial_statement
+	;
+
+/* End of 'udp_initial_statement' grammer rules */
+
+
+/* Start of 'init_val' grammer rules */
+
+init_val
+	: SVLOG_INIT_VAL_APOST_LB0
+	| SVLOG_INIT_VAL_APOST_LB1
+	| SVLOG_INIT_VAL_APOST_LBLX
+	| SVLOG_INIT_VAL_APOST_LBCX
+	| SVLOG_INIT_VAL_APOST_CB0
+	| SVLOG_INIT_VAL_APOST_CB1
+	| SVLOG_INIT_VAL_APOST_CBLX
+	| SVLOG_INIT_VAL_APOST_CBCX
+	| SVLOG_DIGIT /* Must be either '1' or '0 */
+	;
+
+/* End of 'init_val' grammer rules */
+
+
+/* Start of 'sequential_entry' grammer rules */
+
+sequential_entry
+	: seq_input_list ':' level_symbol ':' next_state ';'
+	;
+
+sequential_entry_recurse
+	: sequential_entry
+	| sequential_entry_recurse sequential_entry
+	;
+
+/* End of 'sequential_entry' grammer rules */
+
+
+/* Start of 'seq_input_list' grammer rules */
+
+seq_input_list
+	: level_symbol_recurse
+	| edge_input_list
+	;
+
+/* End of 'seq_input_list' grammer rules */
+
+
+/* Start of 'edge_input_list' grammer rules */
+
+edge_input_list
+	: level_symbol_recurse_or_null
+		edge_indicator
+			level_symbol_recurse_or_null
+	;
+
+/* End of 'edge_input_list' grammer rules */
+
+
+/* Start of 'edge_indicator' grammer rules */
+
+edge_indicator
+	: '(' level_symbol level_symbol ')'
+	| edge_symbol
+	;
+
+/* End of 'edge_indicator' grammer rules */
+
+
+/* Start of 'next_state' grammer rules */
+
+next_state
+	: output_symbol
+	| '-'
+	;
+
+/* End of 'next_state' grammer rules */
+
+
+/* Start of 'output_symbol' grammer rules */
+
+output_symbol
+	: SVLOG_DIGIT /* Must be 0 or 1 */
+	| 'x'
+	| 'X'
+	;
+
+/* End of 'output_symbol' grammer rules */
+
+
+/* Start of 'level_symbol' grammer rules */
+
+level_symbol
+	: SVLOG_DIGIT /* Must be 0 or 1 */
+	| 'x'
+	| 'X'
+	| '?'
+	| 'b'
+	| 'B'
+	;
+
+level_symbol_recurse
+	: level_symbol
+	| level_symbol_recurse level_symbol
+	;
+
+level_symbol_recurse_or_null
+	: %empty
+	| level_symbol_recurse
+	;
+
+/* End of 'level_symbol' grammer rules */
+
+
+/* Start of 'edge_symbol' grammer rules */
+
+edge_symbol
+	: 'r'
+	| 'R'
+	| 'f'
+	| 'F'
+	| 'p'
+	| 'P'
+	| 'n'
+	| 'N'
+	| '*'
+	;
+
+/* End of 'edge_symbol' grammer rules */
+
+/****************************************
+ * End of 'UDP body' Grammer Rules      *
+ * Based off section: (A.5.2 UDP body). *
+ ****************************************/
 
 
 /******************************************************************************
@@ -7153,7 +7372,7 @@ time_literal
 	;
 
 time_unit
-	: SVLOG_SEC
+	: 's'
 	| SVLOG_MILLISEC
 	| SVLOG_MICROSEC
 	| SVLOG_NANOSEC

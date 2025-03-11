@@ -74,7 +74,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "eventually"     { return SVLOG_EVENTUALLY;     }
 "implements"     { return SVLOG_IMPLEMENTS;     }
 "localparam"     { return SVLOG_LOCALPARAM;     }
-"PATHPULSE$"     { return SVLOG_PATHPULSEDS;    }
 "s_nexttime"     { return SVLOG_S_NEXTTIME;     }
 "throughout"     { return SVLOG_THROUGHOUT;     }
 "until_with"     { return SVLOG_UNTIL_WITH;     }
@@ -99,6 +98,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "defparam"       { return SVLOG_DEFPARAM;       }
 "endclass"       { return SVLOG_ENDCLASS;       }
 "endgroup"       { return SVLOG_ENDGROUP;       }
+"endtable"       { return SVLOG_ENDTABLE;       }
 "extendes"       { return SVLOG_EXTENDES;       }
 "forkjoin"       { return SVLOG_FORKJOIN;       }
 "function"       { return SVLOG_FUNCTION;       }
@@ -122,7 +122,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unsigned"       { return SVLOG_UNSIGNED;       }
 "vectored"       { return SVLOG_VECTORED;       }
 "wildcard"       { return SVLOG_WILDCARD;       }
-"$warning"       { return SVLOG_DSWARNING;      }
 "chandle"        { return SVLOG_CHANDLE;        }
 "checker"        { return SVLOG_CHECKER;        }
 "context"        { return SVLOG_CONTEXT;        }
@@ -158,7 +157,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unique0"        { return SVLOG_UNIQUE0;        }
 "untyped"        { return SVLOG_UNTYPED;        }
 "virtual"        { return SVLOG_VIRTUAL;        }
-"-incdir"        { return SVLOG_HINCDIR;        }
 "always"         { return SVLOG_ALWAYS;         }
 "assert"         { return SVLOG_ASSERT;         }
 "assign"         { return SVLOG_ASSIGN;         }
@@ -200,8 +198,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unique"         { return SVLOG_UNIQUE;         }
 "unwire"         { return SVLOG_UNWIRE;         }
 "within"         { return SVLOG_WITHIN;         }
-"$error"         { return SVLOG_DSERROR;        }
-"$fatal"         { return SVLOG_DSFATAL;        }
 "begin"          { return SVLOG_BEGIN;          }
 "break"          { return SVLOG_BREAK;          }
 "casex"          { return SVLOG_CASEX;          }
@@ -210,7 +206,6 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "const"          { return SVLOG_CONST;          }
 "cover"          { return SVLOG_COVER;          }
 "cross"          { return SVLOG_CROSS;          }
-"DPI-C"          { return SVLOG_DPI_C;          }
 "event"          { return SVLOG_EVENT;          }
 "force"          { return SVLOG_FORCE;          }
 "final"          { return SVLOG_FINAL;          }
@@ -229,16 +224,13 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "solve"          { return SVLOG_SOLVE;          }
 "small"          { return SVLOG_SMALL;          }
 "super"          { return SVLOG_SUPER;          }
+"table"          { return SVLOG_TABLE;          }
 "trior"          { return SVLOG_TRIOR;          }
 "union"          { return SVLOG_UNION;          }
 "until"          { return SVLOG_UNTIL;          }
 "weak0"          { return SVLOG_WEAK0;          }
 "weak1"          { return SVLOG_WEAK1;          }
 "while"          { return SVLOG_WHILE;          }
-"1step"          { return SVLOG_1STEP;          }
-"$info"          { return SVLOG_DSINFO;         }
-"$root"          { return SVLOG_DSROOT;         }
-"$unit"          { return SVLOG_DSUNIT;         }
 "bind"           { return SVLOG_BIND;           }
 "bins"           { return SVLOG_BINS;           }
 "byte"           { return SVLOG_BYTE;           }
@@ -302,22 +294,26 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "or"             { return SVLOG_OR;             }
 "ps"             { return SVLOG_PICOSEC;        }
 "us"             { return SVLOG_MICROSEC;       }
-"B"              { return 'B';                  }
-"D"              { return 'D';                  }
-"E"              { return 'E';                  }
-"H"              { return 'H';                  }
-"S"              { return 'S';                  }
-"O"              { return 'O';                  }
-"X"              { return 'X';                  }
-"Z"              { return 'Z';                  }
-"b"              { return 'b';                  }
-"d"              { return 'd';                  }
-"e"              { return 'e';                  }
-"h"              { return 'h';                  }
-"s"              { return 's';                  }
-"o"              { return 'o';                  }
-"x"              { return 'x';                  }
-"z"              { return 'z';                  }
+
+
+"PATHPULSE$"   { return SVLOG_PATHPULSEDS;               }
+"$warning"     { return SVLOG_DSWARNING;                 }
+"-incdir"      { return SVLOG_HINCDIR;                   }
+"$error"       { return SVLOG_DSERROR;                   }
+"$fatal"       { return SVLOG_DSFATAL;                   }
+"DPI-C"        { return SVLOG_DPI_C;                     }
+"1step"        { return SVLOG_1STEP;                     }
+"$info"        { return SVLOG_DSINFO;                    }
+"$root"        { return SVLOG_DSROOT;                    }
+"$unit"        { return SVLOG_DSUNIT;                    }
+"1'b0"         { return SVLOG_INIT_VAL_APOST_LB0;        }
+"1'b1"         { return SVLOG_INIT_VAL_APOST_LB1;        }
+"1'bx"         { return SVLOG_INIT_VAL_APOST_LBLX;       }
+"1'bX"         { return SVLOG_INIT_VAL_APOST_LBCX;       }
+"1'B0"         { return SVLOG_INIT_VAL_APOST_CB0;        }
+"1'B1"         { return SVLOG_INIT_VAL_APOST_CB1;        }
+"1'Bx"         { return SVLOG_INIT_VAL_APOST_CBLX;       }
+"1'BX"         { return SVLOG_INIT_VAL_APOST_CBCX;       }
 
 
 "##[*]"        { return CYCLE_DELAY_ZERO_OR_MORE;           }
@@ -376,28 +372,54 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "~"            { return BIT_WISE_NOT;                       } 
 "&"            { return BIT_WISE_AND;                       }
 "'"            { return APOSTROPHE;                         }
-"<"            { return '<';                                }
-">"            { return '>';                                }
-"@"            { return '@';                                }
-"$"            { return '$';                                }
-"#"            { return '#';                                }
-"="            { return '=';                                }
-";"            { return ';';                                }
-":"            { return ':';                                }
-"+"            { return '+';                                }
-"-"            { return '-';                                }
-"*"            { return '*';                                }
-"/"            { return '/';                                }
-"%"            { return '%';                                }
-"_"            { return '_';                                }
-"."            { return '.';                                }
-","            { return ',';                                }
-"\""           { return '"';                                }
-"("            { return '(';                                }
-")"            { return ')';                                }
-"["            { return '[';                                }
-"]"            { return ']';                                }
-"?"            { return '?';                                }
+
+
+"B"  { return 'B'; }
+"D"  { return 'D'; }
+"E"  { return 'E'; }
+"F"  { return 'F'; }
+"H"  { return 'H'; }
+"N"  { return 'N'; }
+"O"  { return 'O'; }
+"P"  { return 'P'; }
+"R"  { return 'R'; }
+"S"  { return 'S'; }
+"X"  { return 'X'; }
+"Z"  { return 'Z'; }
+"b"  { return 'b'; }
+"d"  { return 'd'; }
+"e"  { return 'e'; }
+"f"  { return 'f'; }
+"h"  { return 'h'; }
+"n"  { return 'n'; }
+"o"  { return 'o'; }
+"p"  { return 'p'; }
+"r"  { return 'r'; }
+"s"  { return 's'; }
+"x"  { return 'x'; }
+"z"  { return 'z'; }
+"<"  { return '<'; }
+">"  { return '>'; }
+"@"  { return '@'; }
+"$"  { return '$'; }
+"#"  { return '#'; }
+"="  { return '='; }
+";"  { return ';'; }
+":"  { return ':'; }
+"+"  { return '+'; }
+"-"  { return '-'; }
+"*"  { return '*'; }
+"/"  { return '/'; }
+"%"  { return '%'; }
+"_"  { return '_'; }
+"."  { return '.'; }
+","  { return ','; }
+"\"" { return '"'; }
+"("  { return '('; }
+")"  { return ')'; }
+"["  { return '['; }
+"]"  { return ']'; }
+"?"  { return '?'; }
 
 	/* End of reserved words */
 
