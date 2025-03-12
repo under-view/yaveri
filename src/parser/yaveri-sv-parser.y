@@ -167,6 +167,7 @@
 %token <itoken> SVLOG_UNIQUE
 %token <itoken> SVLOG_UNWIRE
 %token <itoken> SVLOG_WITHIN
+%token <itoken> SVLOG_ALIAS
 %token <itoken> SVLOG_BEGIN
 %token <itoken> SVLOG_BREAK
 %token <itoken> SVLOG_CASEX
@@ -6040,14 +6041,59 @@ udp_instance_seq_list
  * Based off section: (A.6.1 Continuous assignment and net alias statements). *
  ******************************************************************************/
 
+/* Start of 'continuous_assign' grammer rules */
+
+continuous_assign
+	: SVLOG_ASSIGN drive_strength_or_null
+		delay3_or_null list_of_net_assignments ';'
+	| SVLOG_ASSIGN delay_control_or_null
+		list_of_variable_assignments ';'
+	;
+
+/* End of 'continuous_assign' grammer rules */
+
+
+/* Start of 'list_of_net_assignments' grammer rules */
+
+list_of_net_assignments
+	: net_assignment_seq_list
+	;
+
+/* End of 'list_of_net_assignments' grammer rules */
+
+
+/* Start of 'list_of_variable_assignments' grammer rules */
+
 list_of_variable_assignments
 	: variable_assignment
 	| list_of_variable_assignments ',' variable_assignment
 	;
 
+/* End of 'list_of_variable_assignments' grammer rules */
+
+
+/* Start of 'net_alias' grammer rules */
+
+net_alias
+	: SVLOG_ALIAS net_lvalue
+		equal_net_lvalue_recurse ';'
+	;
+
+/* End of 'net_alias' grammer rules */
+
+
+/* Start of 'net_assignment_seq_list' grammer rules */
+
 net_assignment
 	: net_lvalue equal_expression
 	;
+
+net_assignment_seq_list
+	: net_assignment
+	| net_assignment_seq_list ',' net_assignment
+	;
+
+/* End of 'net_assignment_seq_list' grammer rules */
 
 /******************************************************************************
  * End of 'Continuous assignment and net alias statements' Grammer Rules      *
@@ -7482,6 +7528,15 @@ net_lvalue
 net_lvalue_seq_list
 	: net_lvalue
 	| net_lvalue_seq_list ',' net_lvalue
+	;
+
+equal_net_lvalue
+	: '=' net_lvalue
+	;
+
+equal_net_lvalue_recurse
+	: equal_net_lvalue
+	| equal_net_lvalue_recurse equal_net_lvalue
 	;
 
 variable_lvalue

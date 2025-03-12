@@ -198,6 +198,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "unique"         { return SVLOG_UNIQUE;         }
 "unwire"         { return SVLOG_UNWIRE;         }
 "within"         { return SVLOG_WITHIN;         }
+"alias"          { return SVLOG_ALIAS;          }
 "begin"          { return SVLOG_BEGIN;          }
 "break"          { return SVLOG_BREAK;          }
 "casex"          { return SVLOG_CASEX;          }
