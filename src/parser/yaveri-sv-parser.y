@@ -321,6 +321,7 @@
 %token <itoken> BIT_WISE_NAND
 %token <itoken> BIT_WISE_NOR
 %token <itoken> POUND_ZERO
+%token <itoken> DELAY_EXEC_OPERATOR
 %token <itoken> BIT_WISE_XNOR
 %token <itoken> LOGICAL_EQUAL
 %token <itoken> LOGICAL_INEQUAL
@@ -7154,24 +7155,22 @@ deferred_immediate_cover_statement
  * Based off section: (A.6.11 Clocking block). *
  ***********************************************/
 
-default_or_null
-	: %empty
-	| SVLOG_DEFAULT
-	;
-
-clocking_identifier
-	: %empty
-	| identifier
-	| ':' identifier
-	;
+/* Start of 'clocking_declaration' grammer rules */
 
 clocking_declaration
-	: default_or_null SVLOG_CLOCKING clocking_identifier clocking_event ';'
-		clocking_item_recurse_or_null
-	  SVLOG_ENDCLOCKING clocking_identifier
-	| SVLOG_GLOBAL SVLOG_CLOCKING clocking_identifier clocking_event ';'
-	  SVLOG_ENDCLOCKING clocking_identifier
+	: default_or_null SVLOG_CLOCKING
+		identifier_or_null clocking_event ';'
+			clocking_item_recurse_or_null
+				SVLOG_ENDCLOCKING colon_ident_or_null
+	| SVLOG_GLOBAL SVLOG_CLOCKING
+		identifier_or_null clocking_event ';'
+			SVLOG_ENDCLOCKING colon_ident_or_null
 	;
+
+/* End of 'clocking_declaration' grammer rules */
+
+
+/* Start of 'clocking_item' grammer rules */
 
 clocking_item
 	: SVLOG_DEFAULT default_skew ';'
@@ -7189,26 +7188,57 @@ clocking_item_recurse_or_null
 	| clocking_item_recurse
 	;
 
+/* End of 'clocking_item' grammer rules */
+
+
+/* Start of 'default_skew' grammer rules */
+
 default_skew
 	: SVLOG_INPUT clocking_skew
 	| SVLOG_OUTPUT clocking_skew
 	| SVLOG_INPUT clocking_skew SVLOG_OUTPUT clocking_skew
 	;
 
+/* End of 'default_skew' grammer rules */
+
+
+/* Start of 'clocking_direction' grammer rules */
+
 clocking_direction
 	: SVLOG_INPUT clocking_skew_or_null
 	| SVLOG_OUTPUT clocking_skew_or_null
-	| SVLOG_INPUT clocking_skew_or_null SVLOG_OUTPUT clocking_skew_or_null
+	| SVLOG_INPUT clocking_skew_or_null
+		SVLOG_OUTPUT clocking_skew_or_null
 	| SVLOG_INOUT
 	;
+
+/* End of 'clocking_direction' grammer rules */
+
+
+/* Start of 'list_of_clocking_decl_assign' grammer rules */
 
 list_of_clocking_decl_assign
 	: clocking_decl_assign
 	| list_of_clocking_decl_assign ',' clocking_decl_assign
 	;
 
+/* End of 'list_of_clocking_decl_assign' grammer rules */
+
+
+/* Start of 'clocking_decl_assign' grammer rules */
+
 clocking_decl_assign
 	: identifier equal_expression_or_null
+	;
+
+/* End of 'clocking_decl_assign' grammer rules */
+
+
+/* Start of 'clocking_skew' grammer rules */
+
+clocking_skew
+	: edge_identifier delay_control_or_null
+	| delay_control
 	;
 
 clocking_skew_or_null
@@ -7216,19 +7246,25 @@ clocking_skew_or_null
 	| clocking_skew
 	;
 
-clocking_skew
-	: edge_identifier delay_control_or_null
-	| delay_control
-	;
+/* End of 'clocking_skew' grammer rules */
+
+
+/* Start of 'clocking_drive' grammer rules */
 
 clocking_drive
-	: clockvar_expression NON_BLOCK_ASSIGNMENT cycle_delay_or_null expression
+	: clockvar_expression NON_BLOCK_ASSIGNMENT
+		cycle_delay_or_null expression
 	;
 
+/* End of 'clocking_drive' grammer rules */
+
+
+/* Start of 'cycle_delay' grammer rules */
+
 cycle_delay
-	: '#' '#' integral_number
-	| '#' '#' identifier
-	| '#' '#' '(' expression ')'
+	: DELAY_EXEC_OPERATOR integral_number
+	| DELAY_EXEC_OPERATOR identifier
+	| DELAY_EXEC_OPERATOR '(' expression ')'
 	;
 
 cycle_delay_or_null
@@ -7236,13 +7272,25 @@ cycle_delay_or_null
 	| cycle_delay
 	;
 
+/* End of 'cycle_delay' grammer rules */
+
+
+/* Start of 'clockvar' grammer rules */
+
 clockvar
 	: hierarchical_identifier
 	;
 
+/* End of 'clockvar' grammer rules */
+
+
+/* Start of 'clockvar_expression' grammer rules */
+
 clockvar_expression
 	: clockvar select
 	;
+
+/* End of 'clockvar_expression' grammer rules */
 
 /***********************************************
  * End of 'Clocking block' Grammer Rules       *
@@ -8290,6 +8338,11 @@ identifier
 	| SVLOG_EIDENT { fprintf(stdout, "statement(SVLOG_EIDENT) -> %s\n", $1); }
 	;
 
+identifier_or_null
+	: %empty
+	| identifier
+	;
+
 identifier_seq_list
 	: identifier
 	| identifier_seq_list ',' identifier
@@ -8501,6 +8554,11 @@ ident_or_class_scope_or_null
 	: %empty
 	| period_ident
 	| class_scope
+	;
+
+default_or_null
+	: %empty
+	| SVLOG_DEFAULT
 	;
 
 var_or_null

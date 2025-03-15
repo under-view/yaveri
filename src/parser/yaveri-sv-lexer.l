@@ -353,6 +353,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "~&"           { return BIT_WISE_NAND;                      }
 "~|"           { return BIT_WISE_NOR;                       }
 "#0"           { return POUND_ZERO;                         }
+"##"           { return DELAY_EXEC_OPERATOR;                }
 "~^"           { return BIT_WISE_XNOR;                      }
 "^~"           { return BIT_WISE_XNOR;                      }
 "=="           { return LOGICAL_EQUAL;                      }
