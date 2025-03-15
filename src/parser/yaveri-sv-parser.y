@@ -6250,42 +6250,50 @@ variable_assignment
  * Based off section: (A.6.3 Parallel and sequential blocks). *
  **************************************************************/
 
+/* Start of 'action_block' grammer rules */
+
 action_block
 	: statement_or_null
 	| SVLOG_ELSE statement_or_null
 	| statement SVLOG_ELSE statement_or_null
 	;
 
-seq_par_bident
-	: %empty
-	| ':' identifier
-	;
+/* End of 'action_block' grammer rules */
 
-seq_par_bid
-	: %empty
-	| block_item_declaration
-	| seq_par_bid block_item_declaration
-	;
 
-seq_par_sonull
-	: %empty
-	| statement_or_null
-	| seq_par_sonull statement_or_null
-	;
+/* Start of 'seq_block' grammer rules */
 
 seq_block
-	: SVLOG_BEGIN seq_par_bident seq_par_bid seq_par_sonull SVLOG_END seq_par_bident
+	: SVLOG_BEGIN colon_ident_or_null
+		block_item_declaration_recurse_or_null
+			statement_or_null_recurse_or_null
+				SVLOG_END colon_ident_or_null
 	;
 
+/* End of 'seq_block' grammer rules */
+
+
+/* Start of 'par_block' grammer rules */
+
 par_block
-	: SVLOG_FORK seq_par_bident seq_par_bid seq_par_sonull join_keyword seq_par_bident
+	: SVLOG_FORK colon_ident_or_null
+		block_item_declaration_recurse_or_null
+			statement_or_null_recurse_or_null
+				join_keyword colon_ident_or_null
 	;
+
+/* End of 'par_block' grammer rules */
+
+
+/* Start of 'join_keyword' grammer rules */
 
 join_keyword
 	: SVLOG_JOIN
 	| SVLOG_JOIN_ANY
 	| SVLOG_JOIN_NONE
 	;
+
+/* End of 'join_keyword' grammer rules */
 
 /**************************************************************
  * End of 'Parallel and sequential blocks' Grammer Rules      *
