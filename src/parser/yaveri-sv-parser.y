@@ -7303,10 +7303,22 @@ clockvar_expression
  * Based off section: (A.6.12 Randsequence). *
  *********************************************/
 
+/* Start of 'randsequence_statement' grammer rules */
+
 randsequence_statement
-	: SVLOG_RANDSEQUENCE '(' rs_production_identifier_or_null ')'
-		rs_production_recurse
-	  SVLOG_ENDSEQUENCE
+	: SVLOG_RANDSEQUENCE '(' identifier_or_null ')'
+		rs_production_recurse SVLOG_ENDSEQUENCE
+	;
+
+/* End of 'randsequence_statement' grammer rules */
+
+
+/* Start of 'rs_production' grammer rules */
+
+rs_production
+	: data_type_or_void_or_null ident_colon or_rs_rule_seq_list ';'
+	| data_type_or_void_or_null identifier
+		'(' tf_port_list ')' ':' or_rs_rule_seq_list ';'
 	;
 
 rs_production_recurse
@@ -7314,27 +7326,41 @@ rs_production_recurse
 	| rs_production_recurse rs_production
 	;
 
-rs_production
-	: data_type_or_void_or_null identifier ':' rs_rule_seq_list ';'
-	| data_type_or_void_or_null identifier '(' tf_port_list ')' ':' rs_rule_seq_list ';'
-	;
+/* End of 'rs_production' grammer rules */
+
+
+/* Start of 'rs_rule' grammer rules */
 
 rs_rule
 	: rs_production_list
-	| rs_production_list EQUAL_WEIGHT_OPERATOR rs_weight_specification
-	| rs_production_list EQUAL_WEIGHT_OPERATOR rs_weight_specification rs_code_block
+	| rs_production_list EQUAL_WEIGHT_OPERATOR
+		rs_weight_specification
+	| rs_production_list EQUAL_WEIGHT_OPERATOR
+		rs_weight_specification rs_code_block
 	;
 
-rs_rule_seq_list
+or_rs_rule_seq_list
 	: rs_rule
-	| rs_rule_seq_list '|' rs_rule
+	| or_rs_rule_seq_list '|' rs_rule
 	;
+
+/* End of 'rs_rule' grammer rules */
+
+
+/* Start of 'rs_production_list' grammer rules */
 
 rs_production_list
 	: rs_prod_recurse
-	| SVLOG_RAND SVLOG_JOIN rs_production_item rs_production_item rs_production_item_recurse_or_null
-	| SVLOG_RAND SVLOG_JOIN '(' expression ')' rs_production_item rs_production_item rs_production_item_recurse_or_null
+	| SVLOG_RAND SVLOG_JOIN
+		rs_production_item rs_production_item_recurse_or_null
+	| SVLOG_RAND SVLOG_JOIN '(' expression ')'
+		rs_production_item rs_production_item_recurse_or_null
 	;
+
+/* End of 'rs_production_list' grammer rules */
+
+
+/* Start of 'rs_weight_specification' grammer rules */
 
 rs_weight_specification
 	: integral_number
@@ -7342,9 +7368,20 @@ rs_weight_specification
 	| '(' expression ')'
 	;
 
+/* End of 'rs_weight_specification' grammer rules */
+
+
+/* Start of 'rs_code_block' grammer rules */
+
 rs_code_block
-	: '{' data_declaration_recurse_or_null statement_or_null_recurse_or_null '}'
+	: '{' data_declaration_recurse_or_null
+		statement_or_null_recurse_or_null '}'
 	;
+
+/* End of 'rs_code_block' grammer rules */
+
+
+/* Start of 'rs_prod' grammer rules */
 
 rs_prod
 	: rs_production_item
@@ -7358,6 +7395,11 @@ rs_prod_recurse
 	: rs_prod
 	| rs_prod_recurse rs_prod
 	;
+
+/* End of 'rs_prod' grammer rules */
+
+
+/* Start of 'rs_production_item' grammer rules */
 
 rs_production_item
 	: identifier
@@ -7374,29 +7416,52 @@ rs_production_item_recurse_or_null
 	| rs_production_item_recurse
 	;
 
+/* End of 'rs_production_item' grammer rules */
+
+
+/* Start of 'rs_if_else' grammer rules */
+
 rs_if_else
 	: SVLOG_IF '(' expression ')' rs_production_item
-	| SVLOG_IF '(' expression ')' rs_production_item SVLOG_ELSE rs_production_item
+	| SVLOG_IF '(' expression ')' rs_production_item
+		SVLOG_ELSE rs_production_item
 	;
+
+/* End of 'rs_if_else' grammer rules */
+
+
+/* Start of 'rs_repeat' grammer rules */
 
 rs_repeat
 	: SVLOG_REPEAT '(' expression ')' rs_production_item
 	;
 
+/* End of 'rs_repeat' grammer rules */
+
+
+/* Start of 'rs_case' grammer rules */
+
 rs_case
-	: SVLOG_CASE '(' expression ')' rs_case_item_recurse SVLOG_ENDCASE
+	: SVLOG_CASE '(' expression ')'
+		rs_case_item_recurse SVLOG_ENDCASE
 	;
+
+/* End of 'rs_case' grammer rules */
+
+
+/* Start of 'rs_case_item' grammer rules */
 
 rs_case_item
 	: expression_seq_list ':' rs_production_item ';'
-	| SVLOG_DEFAULT rs_production_item ';'
-	| SVLOG_DEFAULT ':' rs_production_item ';'
+	| SVLOG_DEFAULT colon_or_null rs_production_item ';'
 	;
 
 rs_case_item_recurse
 	: rs_case_item
 	| rs_case_item_recurse rs_case_item
 	;
+
+/* End of 'rs_case_item' grammer rules */
 
 /*********************************************
  * End of 'Randsequence' Grammer Rules       *
