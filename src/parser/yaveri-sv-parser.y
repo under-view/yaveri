@@ -6999,34 +6999,19 @@ for_step_assignment
  **************************************************/
 
 
-/******************************************
- * End of 'Patterns' Grammer Rules        *
- * Based off section: (A.6.7.1 Patterns). *
- ******************************************/
-
-assignment_pattern_net_lvalue
-	: APOSTROPHE '{' net_lvalue_seq_list '}'
-	;
-
-assignment_pattern_variable_lvalue
-	:  APOSTROPHE '{' variable_lvalue_seq_list '}'
-	;
-
-/******************************************
- * End of 'Patterns' Grammer Rules        *
- * Based off section: (A.6.7.1 Patterns). *
- ******************************************/
-
-
 /**********************************************************
  * Start of 'Subroutine call statements' Grammer Rules    *
  * Based off section: (A.6.9 Subroutine call statements). *
  **********************************************************/
 
+/* Start of 'subroutine_call_statement' grammer rules */
+
 subroutine_call_statement
 	: subroutine_call ';'
 	| SVLOG_VOID APOSTROPHE '(' function_subroutine_call ')' ';'
 	;
+
+/* End of 'subroutine_call_statement' grammer rules */
 
 /**********************************************************
  * End of 'Subroutine call statements' Grammer Rules      *
