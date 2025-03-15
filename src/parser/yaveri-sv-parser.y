@@ -152,6 +152,7 @@
 %token <itoken> SVLOG_GLOBAL
 %token <itoken> SVLOG_HIGHZ0
 %token <itoken> SVLOG_HIGHZ1
+%token <itoken> SVLOG_IFNONE
 %token <itoken> SVLOG_IMPORT
 %token <itoken> SVLOG_INSIDE
 %token <itoken> SVLOG_MEDIUM
@@ -347,6 +348,7 @@
 %token <itoken> GT_OR_EQ
 %token <itoken> NON_BLOCK_ASSIGNMENT
 %token <itoken> PARALLEL_CONNECTION
+%token <itoken> FULL_CONNECTION
 %token <itoken> DOUBLE_AT_SIGN
 %token <itoken> BIT_WISE_AND_ASSIGN
 %token <itoken> BIT_WISE_OR_ASSIGN
@@ -7544,9 +7546,102 @@ showcancelled_declaration
  * Based off section: (A.7.2 Specify path declarations). *
  *********************************************************/
 
-data_source_expression
-	: expression
+/* Start of 'path_declaration' grammer rules */
+
+path_declaration
+	: simple_path_declaration ';'
+	| edge_sensitive_path_declaration ';'
+	| state_dependent_path_declaration ';'
 	;
+
+/* End of 'path_declaration' grammer rules */
+
+
+/* Start of 'simple_path_declaration' grammer rules */
+
+simple_path_declaration
+	: parallel_path_description '=' path_delay_value
+	| full_path_description '=' path_delay_value
+	;
+
+/* End of 'simple_path_declaration' grammer rules */
+
+
+/* Start of 'parallel_path_description' grammer rules */
+
+parallel_path_description
+	: '(' specify_input_terminal_descriptor polarity_operator_or_null
+		PARALLEL_CONNECTION specify_output_terminal_descriptor ')'
+	;
+
+/* End of 'parallel_path_description' grammer rules */
+
+
+/* Start of 'full_path_description' grammer rules */
+
+full_path_description
+	: '(' list_of_path_inputs polarity_operator_or_null
+		FULL_CONNECTION list_of_path_outputs ')'
+	;
+
+/* End of 'full_path_description' grammer rules */
+
+
+/* Start of 'edge_sensitive_path_declaration' grammer rules */
+
+edge_sensitive_path_declaration
+	: parallel_edge_sensitive_path_description
+		'=' path_delay_value
+	| full_edge_sensitive_path_description
+		'=' path_delay_value
+	;
+
+/* End of 'edge_sensitive_path_declaration' grammer rules */
+
+
+/* Start of 'parallel_edge_sensitive_path_description' grammer rules */
+
+parallel_edge_sensitive_path_description
+	: '(' edge_identifier_or_null specify_input_terminal_descriptor
+		polarity_operator_or_null PARALLEL_CONNECTION
+			'(' specify_output_terminal_descriptor
+				polarity_operator_or_null ':' expression ')' ')'
+	| '(' edge_identifier_or_null specify_input_terminal_descriptor
+		polarity_operator_or_null PARALLEL_CONNECTION
+			specify_output_terminal_descriptor ')'
+	;
+
+/* End of 'parallel_edge_sensitive_path_description' grammer rules */
+
+
+/* Start of 'full_edge_sensitive_path_description' grammer rules */
+
+full_edge_sensitive_path_description
+	: '(' edge_identifier_or_null list_of_path_inputs
+		polarity_operator_or_null FULL_CONNECTION '(' list_of_path_outputs
+			polarity_operator_or_null ':' expression ')' ')'
+	| '(' edge_identifier_or_null list_of_path_inputs
+		polarity_operator_or_null FULL_CONNECTION
+			list_of_path_outputs ')'
+	;
+
+/* End of 'full_edge_sensitive_path_description' grammer rules */
+
+
+/* Start of 'state_dependent_path_declaration' grammer rules */
+
+state_dependent_path_declaration
+	: SVLOG_IF '(' module_path_expression ')'
+		simple_path_declaration
+	| SVLOG_IF '(' module_path_expression ')'
+		edge_sensitive_path_declaration
+	| SVLOG_IFNONE simple_path_declaration
+	;
+
+/* End of 'state_dependent_path_declaration' grammer rules */
+
+
+/* Start of 'edge_identifier' grammer rules */
 
 edge_identifier
 	: SVLOG_POSEDGE
@@ -7559,10 +7654,22 @@ edge_identifier_or_null
 	| edge_identifier
 	;
 
+/* End of 'edge_identifier' grammer rules */
+
+
+/* Start of 'polarity_operator' grammer rules */
+
 polarity_operator
 	: '+'
 	| '-'
 	;
+
+polarity_operator_or_null
+	: %empty
+	| polarity_operator
+	;
+
+/* End of 'polarity_operator' grammer rules */
 
 /*********************************************************
  * End of 'Specify path declarations' Grammer Rules      *

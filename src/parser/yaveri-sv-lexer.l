@@ -183,6 +183,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "global"         { return SVLOG_GLOBAL;         }
 "highz0"         { return SVLOG_HIGHZ0;         }
 "highz1"         { return SVLOG_HIGHZ1;         }
+"ifnone"         { return SVLOG_IFNONE;         }
 "import"         { return SVLOG_IMPORT;         }
 "inside"         { return SVLOG_INSIDE;         }
 "medium"         { return SVLOG_MEDIUM;         }
@@ -380,6 +381,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 ">="           { return GT_OR_EQ;                           }
 "<="           { return NON_BLOCK_ASSIGNMENT;               }
 "=>"           { return PARALLEL_CONNECTION;                }
+"*>"           { return FULL_CONNECTION;                    }
 "@@"           { return DOUBLE_AT_SIGN;                     }
 "&="           { return BIT_WISE_AND_ASSIGN;                }
 "|="           { return BIT_WISE_OR_ASSIGN;                 }
