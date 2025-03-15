@@ -1867,7 +1867,7 @@ constraint_expression
 	| expression IMPLICATION_OPERATOR constraint_set
 	| SVLOG_IF '(' expression ')' constraint_set
 	| SVLOG_IF '(' expression ')' constraint_set SVLOG_ELSE constraint_set
-	| SVLOG_FOREACH '(' ps_or_hierarchical_array_identifier '[' loop_variables ']' ')' constraint_set
+	| SVLOG_FOREACH '(' ps_or_hierarchical_array_identifier '[' identifier_seq_list ']' ')' constraint_set
 	| SVLOG_DISABLE SVLOG_SOFT constraint_primary ';'
 	;
 
@@ -6919,24 +6919,45 @@ assignment_pattern_variable_lvalue
  * Based off section: (A.6.8 Looping statements). *
  **************************************************/
 
+/* Start of 'loop_statement' grammer rules */
+
 loop_statement
 	: SVLOG_FOREVER statement_or_null
-	| SVLOG_REPEAT '(' expression ')' statement_or_null
-	| SVLOG_WHILE '(' expression ')' statement_or_null
-	| SVLOG_FOR '(' for_initialization ';' expression ';' for_step ')' statement_or_null
-	| SVLOG_DO statement_or_null SVLOG_WHILE '(' expression ')' ';'
-	| SVLOG_FOREACH '(' ps_or_hierarchical_array_identifier '[' loop_variables ']' ')' statement
+	| SVLOG_REPEAT '(' expression ')'
+		statement_or_null
+	| SVLOG_WHILE '(' expression ')'
+		statement_or_null
+	| SVLOG_FOR '(' for_initialization_or_null ';'
+		expression_or_null ';' for_step_or_null ')'
+			statement_or_null
+	| SVLOG_DO statement_or_null
+		SVLOG_WHILE '(' expression ')' ';'
+	| SVLOG_FOREACH '(' ps_or_hierarchical_array_identifier
+		'[' identifier_seq_list ']' ')' statement
 	;
 
+/* End of 'loop_statement' grammer rules */
+
+
+/* Start of 'for_initialization' grammer rules */
+
 for_initialization
-	: %empty
-	| list_of_variable_assignments
+	: list_of_variable_assignments
 	| for_variable_declaration_seq_list
 	;
 
+for_initialization_or_null
+	: %empty
+	| for_initialization
+	;
+
+/* End of 'for_initialization' grammer rules */
+
+
+/* Start of 'for_variable_declaration' grammer rules */
+
 for_variable_declaration
-	: data_type identifier equal_expression variable_identifier_expression_seq_list
-	| SVLOG_VAR data_type identifier equal_expression variable_identifier_expression_seq_list
+	: var_or_null data_type identifier_equal_expression_seq_list
 	;
 
 for_variable_declaration_seq_list
@@ -6944,17 +6965,25 @@ for_variable_declaration_seq_list
 	| for_variable_declaration_seq_list ',' for_variable_declaration
 	;
 
-variable_identifier_expression_seq_list
-	: %empty
-	| ',' identifier equal_expression
-	| variable_identifier_expression_seq_list ',' identifier equal_expression
-	;
+/* End of 'for_variable_declaration' grammer rules */
+
+
+/* Start of 'for_step' grammer rules */
 
 for_step
-	: %empty
-	| for_step_assignment
+	: for_step_assignment
 	| for_step ',' for_step_assignment
 	;
+
+for_step_or_null
+	: %empty
+	| for_step
+	;
+
+/* End of 'for_step' grammer rules */
+
+
+/* Start of 'for_step_assignment' grammer rules */
 
 for_step_assignment
 	: operator_assignment
@@ -6962,10 +6991,7 @@ for_step_assignment
 	| function_subroutine_call
 	;
 
-loop_variables
-	: identifier
-	| loop_variables ',' identifier
-	;
+/* End of 'for_step_assignment' grammer rules */
 
 /**************************************************
  * End of 'Looping statements' Grammer Rules      *
@@ -8235,6 +8261,16 @@ identifier_recurse_or_null
 	| identifier_recurse
 	;
 
+identifier_equal_expression_seq_list
+	: identifier equal_expression
+	| identifier_equal_expression_seq_list ',' identifier equal_expression
+	;
+
+identifier_equal_expression_seq_list_or_null
+	: %empty
+	| identifier_equal_expression_seq_list
+	;
+
 package_scope
 	: identifier CLASS_SCOPE_OPERATOR
 	| SVLOG_DSUNIT CLASS_SCOPE_OPERATOR
@@ -8424,8 +8460,8 @@ ident_or_class_scope_or_null
 	;
 
 var_or_null
-	: SVLOG_VAR
-	| %empty
+	: %empty
+	| SVLOG_VAR
 	;
 
 equal_constant_expression
