@@ -7682,35 +7682,64 @@ polarity_operator_or_null
  * Based off section: (A.7.3 Specify block terminals). *
  *******************************************************/
 
+/* Start of 'list_of_path_inputs' grammer rules */
+
 list_of_path_inputs
 	: specify_input_terminal_descriptor
 	| list_of_path_inputs ',' specify_input_terminal_descriptor
 	;
+
+/* End of 'list_of_path_inputs' grammer rules */
+
+
+/* Start of 'list_of_path_outputs' grammer rules */
 
 list_of_path_outputs
 	: specify_output_terminal_descriptor
 	| list_of_path_outputs ',' specify_output_terminal_descriptor
 	;
 
+/* End of 'list_of_path_outputs' grammer rules */
+
+
+/* Start of 'specify_input_terminal_descriptor' grammer rules */
+
 specify_input_terminal_descriptor
 	: input_identifier
 	| input_identifier '[' constant_range_expression ']'
 	;
+
+/* End of 'specify_input_terminal_descriptor' grammer rules */
+
+
+/* Start of 'specify_output_terminal_descriptor' grammer rules */
 
 specify_output_terminal_descriptor
 	: output_identifier
 	| output_identifier '[' constant_range_expression ']'
 	;
 
+/* End of 'specify_output_terminal_descriptor' grammer rules */
+
+
+/* Start of 'input_identifier' grammer rules */
+
 input_identifier
 	: identifier
 	| identifier '.' identifier
 	;
 
+/* End of 'input_identifier' grammer rules */
+
+
+/* Start of 'output_identifier' grammer rules */
+
 output_identifier
 	: identifier
 	| identifier '.' identifier
 	;
+
+/* End of 'output_identifier' grammer rules */
 
 /*******************************************************
  * End of 'Specify block terminals' Grammer Rules      *
