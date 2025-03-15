@@ -46,8 +46,12 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 %%
 	/* Start of reserved words */
+"pulsestyle_ondetect" { return SVLOG_PULSESTYLE_ONDETECT; }
+"pulsestyle_onevent"  { return SVLOG_PULSESTYLE_ONEVENT;  }
+"noshowcancelled"     { return SVLOG_NOSHOWCANCELLED;     }
 "sync_accept_on" { return SVLOG_SYNC_ACCEPT_ON; }
 "sync_reject_on" { return SVLOG_SYNC_REJECT_ON; }
+"showcancelled"  { return SVLOG_SHOWCANCELLED;  }
 "timeprecision"  { return SVLOG_TIMEPRECISION;  }
 "always_latch"   { return SVLOG_ALWAYS_LATCH;   }
 "endinterface"   { return SVLOG_ENDINTERFACE;   }
@@ -73,6 +77,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "endchecker"     { return SVLOG_ENDCHECKER;     }
 "endpackage"     { return SVLOG_ENDPACKAGE;     }
 "endprogram"     { return SVLOG_ENDPROGRAM;     }
+"endspecify"     { return SVLOG_ENDSPECIFY;     }
 "eventually"     { return SVLOG_EVENTUALLY;     }
 "implements"     { return SVLOG_IMPLEMENTS;     }
 "localparam"     { return SVLOG_LOCALPARAM;     }
@@ -149,6 +154,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "posedge"        { return SVLOG_POSEDGE;        }
 "program"        { return SVLOG_PROGRAM;        }
 "release"        { return SVLOG_RELEASE;        }
+"specify"        { return SVLOG_SPECIFY;        }
 "typedef"        { return SVLOG_TYPEDEF;        }
 "strong0"        { return SVLOG_STRONG0;        }
 "strong1"        { return SVLOG_STRONG1;        }

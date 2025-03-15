@@ -15,8 +15,12 @@
 
 /* declare tokens */
 
+%token <itoken> SVLOG_PULSESTYLE_ONDETECT
+%token <itoken> SVLOG_PULSESTYLE_ONEVENT
+%token <itoken> SVLOG_NOSHOWCANCELLED
 %token <itoken> SVLOG_SYNC_ACCEPT_ON
 %token <itoken> SVLOG_SYNC_REJECT_ON
+%token <itoken> SVLOG_SHOWCANCELLED
 %token <itoken> SVLOG_TIMEPRECISION
 %token <itoken> SVLOG_ALWAYS_LATCH
 %token <itoken> SVLOG_ENDINTERFACE
@@ -42,6 +46,7 @@
 %token <itoken> SVLOG_ENDCHECKER
 %token <itoken> SVLOG_ENDPACKAGE
 %token <itoken> SVLOG_ENDPROGRAM
+%token <itoken> SVLOG_ENDSPECIFY
 %token <itoken> SVLOG_EVENTUALLY
 %token <itoken> SVLOG_IMPLEMENTS
 %token <itoken> SVLOG_LOCALPARAM
@@ -118,6 +123,7 @@
 %token <itoken> SVLOG_POSEDGE
 %token <itoken> SVLOG_PROGRAM
 %token <itoken> SVLOG_RELEASE
+%token <itoken> SVLOG_SPECIFY
 %token <itoken> SVLOG_TYPEDEF
 %token <itoken> SVLOG_STRONG0
 %token <itoken> SVLOG_STRONG1
@@ -7467,6 +7473,70 @@ rs_case_item_recurse
  * End of 'Randsequence' Grammer Rules       *
  * Based off section: (A.6.12 Randsequence). *
  *********************************************/
+
+
+/*********************************************************
+ * Start of 'Specify block declaration' Grammer Rules    *
+ * Based off section: (A.7.1 Specify block declaration). *
+ *********************************************************/
+
+/* Start of 'specify_block' grammer rules */
+
+specify_block
+	: SVLOG_SPECIFY
+		specify_item_recurse_or_null
+			SVLOG_ENDSPECIFY
+	;
+
+/* End of 'specify_block' grammer rules */
+
+
+/* Start of 'specify_item' grammer rules */
+
+specify_item
+	: specparam_declaration
+	| pulsestyle_declaration
+	| showcancelled_declaration
+	| path_declaration
+	| system_timing_check
+	;
+
+specify_item_recurse
+	: specify_item
+	| specify_item_recurse specify_item
+	;
+
+specify_item_recurse_or_null
+	: %empty
+	| specify_item_recurse
+	;
+
+/* End of 'specify_item' grammer rules */
+
+
+/* Start of 'pulsestyle_declaration' grammer rules */
+
+pulsestyle_declaration
+	: SVLOG_PULSESTYLE_ONEVENT list_of_path_outputs ';'
+	| SVLOG_PULSESTYLE_ONDETECT list_of_path_outputs ';'
+	;
+
+/* End of 'pulsestyle_declaration' grammer rules */
+
+
+/* Start of 'showcancelled_declaration' grammer rules */
+
+showcancelled_declaration
+	: SVLOG_SHOWCANCELLED list_of_path_outputs ';'
+	| SVLOG_NOSHOWCANCELLED list_of_path_outputs ';'
+	;
+
+/* End of 'showcancelled_declaration' grammer rules */
+
+/*********************************************************
+ * End of 'Specify block declaration' Grammer Rules      *
+ * Based off section: (A.7.1 Specify block declaration). *
+ *********************************************************/
 
 
 /*********************************************************
