@@ -6632,14 +6632,24 @@ cond_pattern
  * Based off section: (A.6.7 Case statements). *
  ***********************************************/
 
+/* Start of 'case_statement' grammer rules */
+
 case_statement
-	: case_keyword '(' expression ')' case_item_recurse SVLOG_ENDCASE
-	| unique_priority case_keyword '(' expression ')' case_item_recurse SVLOG_ENDCASE
-	| case_keyword '(' expression ')' SVLOG_MATCHES case_pattern_item_recurse SVLOG_ENDCASE
-	| unique_priority case_keyword '(' expression ')' SVLOG_MATCHES case_pattern_item_recurse SVLOG_ENDCASE
-	| SVLOG_CASE '(' expression ')' SVLOG_INSIDE case_inside_item_recurse SVLOG_ENDCASE
-	| unique_priority SVLOG_CASE '(' expression ')' SVLOG_INSIDE case_inside_item_recurse SVLOG_ENDCASE
+	: unique_priority_or_null
+		case_keyword '(' expression ')'
+			case_item_recurse SVLOG_ENDCASE
+	| unique_priority_or_null
+		case_keyword '(' expression ')' SVLOG_MATCHES
+			case_pattern_item_recurse SVLOG_ENDCASE
+	| unique_priority_or_null
+		SVLOG_CASE '(' expression ')' SVLOG_INSIDE
+			case_inside_item_recurse SVLOG_ENDCASE
 	;
+
+/* End of 'case_statement' grammer rules */
+
+
+/* Start of 'case_keyword' grammer rules */
 
 case_keyword
 	: SVLOG_CASE
@@ -6647,10 +6657,14 @@ case_keyword
 	| SVLOG_CASEX
 	;
 
+/* End of 'case_keyword' grammer rules */
+
+
+/* Start of 'case_item' grammer rules */
+
 case_item
 	: case_item_expression_seq_list ':' statement_or_null
-	| SVLOG_DEFAULT statement_or_null
-	| SVLOG_DEFAULT ':' statement_or_null
+	| SVLOG_DEFAULT colon_or_null statement_or_null
 	;
 
 case_item_recurse
@@ -6663,11 +6677,14 @@ case_item_expression_seq_list
 	| case_item_expression_seq_list ',' expression
 	;
 
+/* End of 'case_item' grammer rules */
+
+
+/* Start of 'case_pattern_item' grammer rules */
+
 case_pattern_item
-	: pattern ':' statement_or_null
-	| pattern SVLOG_IF_AND_ONLY_IF expression ':' statement_or_null
-	| SVLOG_DEFAULT statement_or_null
-	| SVLOG_DEFAULT ':' statement_or_null
+	: pattern iff_expression_or_null ':' statement_or_null
+	| SVLOG_DEFAULT colon_or_null statement_or_null
 	;
 
 case_pattern_item_recurse
@@ -6675,10 +6692,14 @@ case_pattern_item_recurse
 	| case_pattern_item_recurse case_pattern_item
 	;
 
+/* End of 'case_pattern_item' grammer rules */
+
+
+/* Start of 'case_inside_item' grammer rules */
+
 case_inside_item
 	: range_list ':' statement_or_null
-	| SVLOG_DEFAULT statement_or_null
-	| SVLOG_DEFAULT ':' statement_or_null
+	| SVLOG_DEFAULT colon_or_null statement_or_null
 	;
 
 case_inside_item_recurse
@@ -6686,9 +6707,19 @@ case_inside_item_recurse
 	| case_inside_item_recurse case_inside_item
 	;
 
+/* End of 'case_inside_item' grammer rules */
+
+
+/* Start of 'randcase_statement' grammer rules */
+
 randcase_statement
 	: SVLOG_RANDCASE randcase_item_recurse SVLOG_ENDCASE
 	;
+
+/* End of 'randcase_statement' grammer rules */
+
+
+/* Start of 'randcase_item' grammer rules */
 
 randcase_item
 	: expression ':' statement_or_null
@@ -6699,19 +6730,31 @@ randcase_item_recurse
 	| randcase_item_recurse randcase_item
 	;
 
+/* End of 'randcase_item' grammer rules */
+
+
+/* Start of 'range_list' grammer rules */
+
 range_list
 	: value_range
 	| range_list ',' value_range
 	;
 
+/* End of 'range_list' grammer rules */
+
+
+/* Start of 'value_range' grammer rules */
+
 value_range
 	: expression
 	| '[' expression ':' expression ']'
-	| '[' '$' ':' expression ']'
-	| '[' expression ':' '$' ']'
-	| '[' expression '+' '/' '-' expression ']'
-	| '[' expression '+' '%' '-' expression ']'
+	| BOUNDED_QUEUE_INITIALIZE expression ']'
+	| '[' expression BOUNDED_QUEUE_FINALIZE
+	| '[' expression ABSOLUTE_TOLERANCE_RANGE expression ']'
+	| '[' expression RELATIVE_TOLERANCE_RANGE expression ']'
 	;
+
+/* End of 'value_range' grammer rules */
 
 /***********************************************
  * End of 'Case statements' Grammer Rules      *
