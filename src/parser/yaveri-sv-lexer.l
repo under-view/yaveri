@@ -49,6 +49,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "sync_accept_on" { return SVLOG_SYNC_ACCEPT_ON; }
 "sync_reject_on" { return SVLOG_SYNC_REJECT_ON; }
 "timeprecision"  { return SVLOG_TIMEPRECISION;  }
+"always_latch"   { return SVLOG_ALWAYS_LATCH;   }
 "endinterface"   { return SVLOG_ENDINTERFACE;   }
 "endprimitive"   { return SVLOG_ENDPRIMITIVE;   }
 "illegal_bins"   { return SVLOG_ILLEGAL_BINS;   }
@@ -56,6 +57,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "randsequence"   { return SVLOG_RANDSEQUENCE;   }
 "s_eventually"   { return SVLOG_S_EVENTUALLY;   }
 "s_until_with"   { return SVLOG_S_UNTIL_WITH;   }
+"always_comb"    { return SVLOG_ALWAYS_COMB;    }
 "endclocking"    { return SVLOG_ENDCLOCKING;    }
 "endfunction"    { return SVLOG_ENDFUNCTION;    }
 "endgenerate"    { return SVLOG_ENDGENERATE;    }
@@ -78,6 +80,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "throughout"     { return SVLOG_THROUGHOUT;     }
 "until_with"     { return SVLOG_UNTIL_WITH;     }
 "wait_order"     { return SVLOG_WAIT_ORDER;     }
+"always_ff"      { return SVLOG_ALWAYS_FF;      }
 "accept_on"      { return SVLOG_ACCEPT_ON;      }
 "automatic"      { return SVLOG_AUTOMATIC;      }
 "endconfig"      { return SVLOG_ENDCONFIG;      }
@@ -317,6 +320,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "1'BX"         { return SVLOG_INIT_VAL_APOST_CBCX;       }
 
 
+"<<<="         { return LOGICAL_LEFT_SHIFT_ASSIGN;          }
+">>>="         { return LOGICAL_RIGHT_SHIFT_ASSIGN;         }
 "##[*]"        { return CYCLE_DELAY_ZERO_OR_MORE;           }
 "##[+]"        { return CYCLE_DELAY_ONE_OR_MORE;            }
 "*::*"         { return EXPORT_DECLARATION;                 }
@@ -325,6 +330,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "!=="          { return CASE_NOT_EQUAL;                     }
 "<<<"          { return LOGICAL_LEFT_SHIFT;                 }
 ">>>"          { return LOGICAL_RIGHT_SHIFT;                }
+"<<="          { return LEFT_SHIFT_ASSIGN;                  }
+">>="          { return RIGHT_SHIFT_ASSIGN;                 }
 "[->"          { return GOTO_REPETITION_OPERATOR;           }
 "|->"          { return OVERLAPPED_OPERATOR;                }
 "#-#"          { return OVERLAPPED_OPERATOR_FOLLOWED_BY;    }
@@ -367,6 +374,14 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "<="           { return NON_BLOCK_ASSIGNMENT;               }
 "=>"           { return PARALLEL_CONNECTION;                }
 "@@"           { return DOUBLE_AT_SIGN;                     }
+"&="           { return BIT_WISE_AND_ASSIGN;                }
+"|="           { return BIT_WISE_OR_ASSIGN;                 }
+"^="           { return BIT_WISE_XOR_ASSIGN;                }
+"%="           { return MODULUS_ASSIGN;                     }
+"/="           { return DIVIDE_ASSIGN;                      }
+"*="           { return MULTIPLY_ASSIGN;                    }
+"-="           { return REDUCTION_ASSIGN;                   }
+"+="           { return ADDITION_ASSIGN;                    }
 "!"            { return LOGICAL_NOT;                        }
 "^"            { return BIT_WISE_XOR;                       }
 "|"            { return BIT_WISE_OR;                        }

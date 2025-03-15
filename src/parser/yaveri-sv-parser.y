@@ -18,6 +18,7 @@
 %token <itoken> SVLOG_SYNC_ACCEPT_ON
 %token <itoken> SVLOG_SYNC_REJECT_ON
 %token <itoken> SVLOG_TIMEPRECISION
+%token <itoken> SVLOG_ALWAYS_LATCH
 %token <itoken> SVLOG_ENDINTERFACE
 %token <itoken> SVLOG_ENDPRIMITIVE
 %token <itoken> SVLOG_ILLEGAL_BINS
@@ -25,6 +26,7 @@
 %token <itoken> SVLOG_RANDSEQUENCE
 %token <itoken> SVLOG_S_EVENTUALLY
 %token <itoken> SVLOG_S_UNTIL_WITH
+%token <itoken> SVLOG_ALWAYS_COMB
 %token <itoken> SVLOG_ENDCLOCKING
 %token <itoken> SVLOG_ENDFUNCTION
 %token <itoken> SVLOG_ENDGENERATE
@@ -47,6 +49,7 @@
 %token <itoken> SVLOG_THROUGHOUT
 %token <itoken> SVLOG_UNTIL_WITH
 %token <itoken> SVLOG_WAIT_ORDER
+%token <itoken> SVLOG_ALWAYS_FF
 %token <itoken> SVLOG_ACCEPT_ON
 %token <itoken> SVLOG_AUTOMATIC
 %token <itoken> SVLOG_ENDCONFIG
@@ -286,6 +289,8 @@
 %token <itoken> SVLOG_INIT_VAL_APOST_CBCX
 
 
+%token <itoken> LOGICAL_LEFT_SHIFT_ASSIGN
+%token <itoken> LOGICAL_RIGHT_SHIFT_ASSIGN
 %token <itoken> CYCLE_DELAY_ZERO_OR_MORE
 %token <itoken> CYCLE_DELAY_ONE_OR_MORE
 %token <itoken> EXPORT_DECLARATION
@@ -293,6 +298,8 @@
 %token <itoken> CASE_NOT_EQUAL
 %token <itoken> LOGICAL_LEFT_SHIFT
 %token <itoken> LOGICAL_RIGHT_SHIFT
+%token <itoken> LEFT_SHIFT_ASSIGN
+%token <itoken> RIGHT_SHIFT_ASSIGN
 %token <itoken> GOTO_REPETITION_OPERATOR
 %token <itoken> OVERLAPPED_OPERATOR
 %token <itoken> OVERLAPPED_OPERATOR_FOLLOWED_BY
@@ -334,6 +341,14 @@
 %token <itoken> NON_BLOCK_ASSIGNMENT
 %token <itoken> PARALLEL_CONNECTION
 %token <itoken> DOUBLE_AT_SIGN
+%token <itoken> BIT_WISE_AND_ASSIGN
+%token <itoken> BIT_WISE_OR_ASSIGN
+%token <itoken> BIT_WISE_XOR_ASSIGN
+%token <itoken> MODULUS_ASSIGN
+%token <itoken> DIVIDE_ASSIGN
+%token <itoken> MULTIPLY_ASSIGN
+%token <itoken> REDUCTION_ASSIGN
+%token <itoken> ADDITION_ASSIGN
 %token <itoken> LOGICAL_NOT
 %token <itoken> BIT_WISE_XOR
 %token <itoken> BIT_WISE_OR
@@ -6106,6 +6121,47 @@ net_assignment_seq_list
  * Based off section: (A.6.2 Procedural blocks and assignments). *
  *****************************************************************/
 
+/* Start of 'initial_construct' grammer rules */
+
+initial_construct
+	: SVLOG_INITIAL statement_or_null
+	;
+
+/* End of 'initial_construct' grammer rules */
+
+
+/* Start of 'always_construct' grammer rules */
+
+always_construct
+	: always_keyword statement
+	;
+
+/* End of 'always_construct' grammer rules */
+
+
+/* Start of 'always_keyword' grammer rules */
+
+always_keyword
+	: SVLOG_ALWAYS
+	| SVLOG_ALWAYS_COMB
+	| SVLOG_ALWAYS_LATCH
+	| SVLOG_ALWAYS_FF
+	;
+
+/* End of 'always_keyword' grammer rules */
+
+
+/* Start of 'final_construct' grammer rules */
+
+final_construct
+	: SVLOG_FINAL function_statement
+	;
+
+/* End of 'final_construct' grammer rules */
+
+
+/* Start of 'blocking_assignment' grammer rules */
+
 blocking_assignment
 	: variable_lvalue '=' delay_or_event_control expression
 	| nonrange_variable_lvalue '=' dynamic_array_new
@@ -6117,30 +6173,51 @@ blocking_assignment
 	| inc_or_dec_expression
 	;
 
+/* End of 'blocking_assignment' grammer rules */
+
+
+/* Start of 'operator_assignment' grammer rules */
+
 operator_assignment
 	: variable_lvalue assignment_operator expression
 	;
 
+/* End of 'operator_assignment' grammer rules */
+
+
+/* Start of 'assignment_operator' grammer rules */
+
 assignment_operator
 	: '='
-	| '+' '='
-	| '-' '='
-	| '*' '='
-	| '/' '='
-	| '%' '='
-	| BIT_WISE_AND '='
-	| BIT_WISE_OR '='
-	| BIT_WISE_XOR '='
-	| LEFT_SHIFT '='
-	| RIGHT_SHIFT '='
-	| LOGICAL_LEFT_SHIFT '='
-	| LOGICAL_RIGHT_SHIFT '='
+	| ADDITION_ASSIGN
+	| REDUCTION_ASSIGN
+	| MULTIPLY_ASSIGN
+	| DIVIDE_ASSIGN
+	| MODULUS_ASSIGN
+	| BIT_WISE_AND_ASSIGN 
+	| BIT_WISE_OR_ASSIGN 
+	| BIT_WISE_XOR_ASSIGN 
+	| LEFT_SHIFT_ASSIGN
+	| RIGHT_SHIFT_ASSIGN
+	| LOGICAL_LEFT_SHIFT_ASSIGN
+	| LOGICAL_RIGHT_SHIFT_ASSIGN
 	;
+
+/* End of 'assignment_operator' grammer rules */
+
+
+/* Start of 'nonblocking_assignment' grammer rules */
 
 nonblocking_assignment
 	: variable_lvalue NON_BLOCK_ASSIGNMENT expression
-	| variable_lvalue NON_BLOCK_ASSIGNMENT delay_or_event_control expression
+	| variable_lvalue NON_BLOCK_ASSIGNMENT
+		delay_or_event_control expression
 	;
+
+/* End of 'nonblocking_assignment' grammer rules */
+
+
+/* Start of 'procedural_continuous_assignment' grammer rules */
 
 procedural_continuous_assignment
 	: SVLOG_ASSIGN variable_assignment
@@ -6151,8 +6228,16 @@ procedural_continuous_assignment
 	| SVLOG_RELEASE net_lvalue
 	;
 
+/* End of 'procedural_continuous_assignment' grammer rules */
+
+
+/* Start of 'variable_assignment' grammer rules */
+
 variable_assignment
 	: variable_lvalue equal_expression
+	;
+
+/* End of 'variable_assignment' grammer rules */
 
 /*****************************************************************
  * End of 'Procedural blocks and assignments' Grammer Rules      *
