@@ -6209,9 +6209,8 @@ assignment_operator
 /* Start of 'nonblocking_assignment' grammer rules */
 
 nonblocking_assignment
-	: variable_lvalue NON_BLOCK_ASSIGNMENT expression
-	| variable_lvalue NON_BLOCK_ASSIGNMENT
-		delay_or_event_control expression
+	: variable_lvalue NON_BLOCK_ASSIGNMENT
+		delay_or_event_control_or_null expression
 	;
 
 /* End of 'nonblocking_assignment' grammer rules */
@@ -6394,15 +6393,32 @@ function_statement_or_null_recurse_or_null
  * Based off section: (A.6.5 Timing control statements). *
  *********************************************************/
 
+/* Start of 'procedural_timing_control_statement' grammer rules */
+
 procedural_timing_control_statement
 	: procedural_timing_control statement_or_null
 	;
+
+/* End of 'procedural_timing_control_statement' grammer rules */
+
+
+/* Start of 'delay_or_event_control' grammer rules */
 
 delay_or_event_control
 	: delay_control
 	| event_control
 	| SVLOG_REPEAT '(' expression ')' event_control
 	;
+
+delay_or_event_control_or_null
+	: %empty
+	| delay_or_event_control
+	;
+
+/* End of 'delay_or_event_control' grammer rules */
+
+
+/* Start of 'delay_control' grammer rules */
 
 delay_control
 	: delay
@@ -6414,11 +6430,21 @@ delay_control_or_null
 	| delay_control
 	;
 
+/* End of 'delay_control' grammer rules */
+
+
+/* Start of 'event_control' grammer rules */
+
 event_control
 	: clocking_event
 	| '@' '*'
 	| '@' '(' '*' ')'
 	;
+
+/* End of 'event_control' grammer rules */
+
+
+/* Start of 'clocking_event' grammer rules */
 
 clocking_event
 	: '@' ps_identifier
@@ -6431,17 +6457,23 @@ clocking_event_or_null
 	| clocking_event
 	;
 
+/* End of 'clocking_event' grammer rules */
+
+
+/* Start of 'event_expression' grammer rules */
+
 event_expression
-	: expression
-	| edge_identifier expression
-	| expression SVLOG_IF_AND_ONLY_IF expression
-	| edge_identifier expression SVLOG_IF_AND_ONLY_IF expression
-	| sequence_instance
-	| sequence_instance SVLOG_IF_AND_ONLY_IF expression
+	: edge_identifier_or_null iff_expression_or_null
+	| sequence_instance iff_expression_or_null
 	| event_expression SVLOG_OR event_expression
 	| event_expression ',' event_expression
 	| '(' event_expression ')'
 	;
+
+/* End of 'event_expression' grammer rules */
+
+
+/* Start of 'procedural_timing_control' grammer rules */
 
 procedural_timing_control
 	: delay_control
@@ -6449,12 +6481,21 @@ procedural_timing_control
 	| cycle_delay
 	;
 
+/* End of 'procedural_timing_control' grammer rules */
+
+
+/* Start of 'jump_statement' grammer rules */
+
 jump_statement
-	: SVLOG_RETURN ';'
-	| SVLOG_RETURN expression ';'
+	: SVLOG_RETURN expression_or_null ';'
 	| SVLOG_BREAK ';'
 	| SVLOG_CONTINUE ';'
 	;
+
+/* End of 'jump_statement' grammer rules */
+
+
+/* Start of 'wait_statement' grammer rules */
 
 wait_statement
 	: SVLOG_WAIT '(' expression ')' statement_or_null
@@ -6462,16 +6503,32 @@ wait_statement
 	| SVLOG_WAIT_ORDER '(' hierarchical_identifier_seq_list ')' action_block
 	;
 
+/* End of 'wait_statement' grammer rules */
+
+
+/* Start of 'event_trigger' grammer rules */
+
 event_trigger
-	: IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
-	| NONBLOCK_IMPLICATION_OPERATOR hierarchical_identifier nonrange_select ';'
-	| NONBLOCK_IMPLICATION_OPERATOR delay_or_event_control hierarchical_identifier nonrange_select ';'
+	: IMPLICATION_OPERATOR
+		hierarchical_identifier
+			nonrange_select ';'
+	| NONBLOCK_IMPLICATION_OPERATOR
+		delay_or_event_control_or_null
+			hierarchical_identifier
+				nonrange_select ';'
 	;
 
+/* End of 'event_trigger' grammer rules */
+
+
+/* Start of 'disable_statement' grammer rules */
+
 disable_statement
-	: SVLOG_DISABLE  hierarchical_identifier ';'
+	: SVLOG_DISABLE hierarchical_identifier ';'
 	| SVLOG_DISABLE SVLOG_FORK ';'
 	;
+
+/* End of 'disable_statement' grammer rules */
 
 /*********************************************************
  * End of 'Timing control statements' Grammer Rules      *
@@ -7126,6 +7183,11 @@ edge_identifier
 	| SVLOG_EDGE
 	;
 
+edge_identifier_or_null
+	: %empty
+	| edge_identifier
+	;
+
 polarity_operator
 	: '+'
 	| '-'
@@ -7463,6 +7525,7 @@ paren_expression_or_null
 
 iff_expression
 	: SVLOG_IF_AND_ONLY_IF '(' expression ')'
+	| SVLOG_IF_AND_ONLY_IF expression
 	;
 
 iff_expression_or_null
