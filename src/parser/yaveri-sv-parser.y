@@ -6541,6 +6541,8 @@ disable_statement
  * Based off section: (A.6.6 Conditional statements). *
  ******************************************************/
 
+/* Start of 'conditional_statement' grammer rules */
+
 cs_else_if_seq_list
 	: SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
 	| cs_else_if_seq_list SVLOG_ELSE SVLOG_IF '(' cond_predicate ')' statement_or_null
@@ -6551,15 +6553,20 @@ cs_else_if_seq_list_or_null
 	| cs_else_if_seq_list
 	;
 
-cs_else
+cs_else_or_null
 	: %empty
 	| SVLOG_ELSE statement_or_null
 	;
 
 conditional_statement
 	: unique_priority_or_null SVLOG_IF '(' cond_predicate ')'
-	  statement_or_null cs_else_if_seq_list_or_null cs_else
+		statement_or_null cs_else_if_seq_list_or_null cs_else_or_null
 	;
+
+/* End of 'conditional_statement' grammer rules */
+
+
+/* Start of 'unique_priority' grammer rules */
 
 unique_priority
 	: SVLOG_UNIQUE
@@ -6572,28 +6579,47 @@ unique_priority_or_null
 	| unique_priority
 	;
 
+/* End of 'unique_priority' grammer rules */
+
+
+/* Start of 'cond_predicate' grammer rules */
+
 cond_predicate
-	: expression_or_cond_pattern expression_or_cond_pattern_seq_list_or_null
+	: expression_or_cond_pattern
+		iff_expression_or_cond_pattern_seq_list_or_null
 	;
+
+/* End of 'cond_predicate' grammer rules */
+
+
+/* Start of 'expression_or_cond_pattern' grammer rules */
 
 expression_or_cond_pattern
 	: expression
 	| cond_pattern
 	;
 
-expression_or_cond_pattern_seq_list
+iff_expression_or_cond_pattern_seq_list
 	: SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
-	| expression_or_cond_pattern_seq_list SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
+	| iff_expression_or_cond_pattern_seq_list
+		SVLOG_IF_AND_ONLY_IF expression_or_cond_pattern
 	;
 
-expression_or_cond_pattern_seq_list_or_null
+iff_expression_or_cond_pattern_seq_list_or_null
 	: %empty
-	| expression_or_cond_pattern_seq_list
+	| iff_expression_or_cond_pattern_seq_list
 	;
+
+/* End of 'expression_or_cond_pattern' grammer rules */
+
+
+/* Start of 'cond_pattern' grammer rules */
 
 cond_pattern
 	: expression SVLOG_MATCHES pattern
 	;
+
+/* End of 'cond_pattern' grammer rules */
 
 /******************************************************
  * End of 'Conditional statements' Grammer Rules      *
