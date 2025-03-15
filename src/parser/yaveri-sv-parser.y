@@ -7024,15 +7024,27 @@ subroutine_call_statement
  * Based off section: (A.6.10 Assertion statements). *
  *****************************************************/
 
+/* Start of 'assertion_item' grammer rules */
+
 assertion_item
 	: concurrent_assertion_item
 	| deferred_immediate_assertion_item
 	;
 
+/* End of 'assertion_item' grammer rules */
+
+
+/* Start of 'deferred_immediate_assertion_item' grammer rules */
+
 deferred_immediate_assertion_item
-	: deferred_immediate_assertion_statement
-	| identifier ':' deferred_immediate_assertion_statement
+	: ident_colon_or_null
+		deferred_immediate_assertion_statement
 	;
+
+/* End of 'deferred_immediate_assertion_item' grammer rules */
+
+
+/* Start of 'procedural_assertion_statement' grammer rules */
 
 procedural_assertion_statement
 	: concurrent_assertion_statement
@@ -7040,10 +7052,20 @@ procedural_assertion_statement
 	| checker_instantiation
 	;
 
+/* End of 'procedural_assertion_statement' grammer rules */
+
+
+/* Start of 'immediate_assertion_statement' grammer rules */
+
 immediate_assertion_statement
 	: simple_immediate_assertion_statement
 	| deferred_immediate_assertion_statement
 	;
+
+/* End of 'immediate_assertion_statement' grammer rules */
+
+
+/* Start of 'simple_immediate_assertion_statement' grammer rules */
 
 simple_immediate_assertion_statement
 	: simple_immediate_assert_statement
@@ -7051,38 +7073,75 @@ simple_immediate_assertion_statement
 	| simple_immediate_cover_statement
 	;
 
+/* End of 'simple_immediate_assertion_statement' grammer rules */
+
+
+/* Start of 'deferred_immediate_assertion_statement' grammer rules */
+
 deferred_immediate_assertion_statement
 	: deferred_immediate_assert_statement
 	| deferred_immediate_assume_statement
 	| deferred_immediate_cover_statement
 	;
 
+/* End of 'deferred_immediate_assertion_statement' grammer rules */
+
+
+/* Start of 'simple_immediate_assert_statement' grammer rules */
+
 simple_immediate_assert_statement
 	: SVLOG_ASSERT '(' expression ')' action_block
 	;
+
+/* End of 'simple_immediate_assert_statement' grammer rules */
+
+
+/* Start of 'simple_immediate_assume_statement' grammer rules */
 
 simple_immediate_assume_statement
 	: SVLOG_ASSUME '(' expression ')' action_block
 	;
 
+/* End of 'simple_immediate_assume_statement' grammer rules */
+
+
+/* Start of 'simple_immediate_cover_statement' grammer rules */
+
 simple_immediate_cover_statement
 	: SVLOG_COVER '(' expression ')' statement_or_null
 	;
+
+/* End of 'simple_immediate_cover_statement' grammer rules */
+
+
+/* Start of 'deferred_immediate_assert_statement' grammer rules */
 
 deferred_immediate_assert_statement
 	: SVLOG_ASSERT POUND_ZERO '(' expression ')' action_block
 	| SVLOG_ASSERT SVLOG_FINAL '(' expression ')' action_block
 	;
 
+/* End of 'deferred_immediate_assert_statement' grammer rules */
+
+
+/* Start of 'deferred_immediate_assume_statement' grammer rules */
+
 deferred_immediate_assume_statement
 	: SVLOG_ASSUME POUND_ZERO '(' expression ')' action_block
 	| SVLOG_ASSUME SVLOG_FINAL '(' expression ')' action_block
 	;
 
+/* End of 'deferred_immediate_assume_statement' grammer rules */
+
+
+/* Start of 'deferred_immediate_cover_statement' grammer rules */
+
 deferred_immediate_cover_statement
 	: SVLOG_COVER POUND_ZERO '(' expression ')' statement_or_null
 	| SVLOG_COVER SVLOG_FINAL '(' expression ')' statement_or_null
 	;
+
+/* End of 'deferred_immediate_cover_statement' grammer rules */
 
 /*****************************************************
  * End of 'Assertion statements' Grammer Rules       *
