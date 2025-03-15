@@ -6154,7 +6154,7 @@ always_keyword
 /* Start of 'final_construct' grammer rules */
 
 final_construct
-	: SVLOG_FINAL function_statement
+	: SVLOG_FINAL statement
 	;
 
 /* End of 'final_construct' grammer rules */
@@ -6306,6 +6306,8 @@ join_keyword
  * Based off section: (A.6.4 Statements). *
  ******************************************/
 
+/* Start of 'statement_or_null' grammer rules */
+
 statement_or_null
 	: statement
 	| attribute_instance_recurse_or_null ';'
@@ -6321,10 +6323,21 @@ statement_or_null_recurse_or_null
 	| statement_or_null
 	;
 
+/* End of 'statement_or_null' grammer rules */
+
+
+/* Start of 'statement' grammer rules */
+
 statement
-	: attribute_instance_recurse_or_null statement_item
-	| identifier ':' attribute_instance_recurse_or_null statement_item
+	: ident_colon_or_null
+		attribute_instance_recurse_or_null
+			statement_item
 	;
+
+/* End of 'statement' grammer rules */
+
+
+/* Start of 'statement_item' grammer rules */
 
 statement_item
 	: blocking_assignment ';'
@@ -6348,12 +6361,13 @@ statement_item
 	| expect_property_statement
 	;
 
-function_statement
-	: statement
-	;
+/* End of 'statement_item' grammer rules */
+
+
+/* Start of 'function_statement_or_null' grammer rules */
 
 function_statement_or_null
-	: function_statement
+	: statement
 	| attribute_instance_recurse_or_null ';'
 	;
 
@@ -6366,6 +6380,8 @@ function_statement_or_null_recurse_or_null
 	: %empty
 	| function_statement_or_null_recurse
 	;
+
+/* End of 'function_statement_or_null' grammer rules */
 
 /******************************************
  * End of 'Statements' Grammer Rules      *
