@@ -8763,6 +8763,20 @@ square_brackets_or_null
 	| '[' ']'
 	;
 
+// TODO: Define lexical
+file_path_spec
+	: '?'
+	| '*'
+	| '.'
+	| '.' '.'
+	| '.' '.' '.'
+	;
+
+file_path_spec_seq_list
+	: file_path_spec
+	| file_path_spec_seq_list ',' file_path_spec
+	;
+
 /*********************************
  * End of 'helper' grammer rules *
  *********************************/
