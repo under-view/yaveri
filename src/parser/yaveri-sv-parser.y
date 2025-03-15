@@ -6767,15 +6767,21 @@ value_range
  * Based off section: (A.6.7.1 Patterns). *
  ******************************************/
 
+/* Start of 'pattern' grammer rules */
+
 pattern
 	: '(' pattern ')'
 	| period_ident
 	| '.' '*'
 	| constant_expression
-	| SVLOG_TAGGED identifier
-	| SVLOG_TAGGED identifier pattern
+	| SVLOG_TAGGED identifier pattern_or_null
 	| APOSTROPHE '{' pattern_seq_list '}'
 	| APOSTROPHE '{' pattern_ident_seq_list '}'
+	;
+
+pattern_or_null
+	: %empty
+	| pattern
 	;
 
 pattern_recurse
@@ -6793,12 +6799,22 @@ pattern_ident_seq_list
 	| pattern_ident_seq_list ',' identifier ':' pattern
 	;
 
+/* End of 'pattern' grammer rules */
+
+
+/* Start of 'assignment_pattern' grammer rules */
+
 assignment_pattern
 	: APOSTROPHE '{' expression_seq_list '}'
 	| APOSTROPHE '{' structure_pattern_key_expression_seq_list '}'
 	| APOSTROPHE '{' array_pattern_key_expression_seq_list '}'
 	| APOSTROPHE '{' constant_expression '{' expression_seq_list '}' '}'
 	;
+
+/* End of 'assignment_pattern' grammer rules */
+
+
+/* Start of 'structure_pattern_key' grammer rules */
 
 structure_pattern_key
 	: identifier
@@ -6815,6 +6831,11 @@ structure_pattern_key_expression_seq_list
 	| structure_pattern_key_expression_seq_list ',' structure_pattern_key ':' expression
 	;
 
+/* End of 'structure_pattern_key' grammer rules */
+
+
+/* Start of 'array_pattern_key' grammer rules */
+
 array_pattern_key
 	: constant_expression
 	| assignment_pattern_key
@@ -6830,15 +6851,30 @@ array_pattern_key_expression_seq_list
 	| array_pattern_key_expression_seq_list ',' array_pattern_key ':' expression
 	;
 
+/* End of 'array_pattern_key' grammer rules */
+
+
+/* Start of 'assignment_pattern_key' grammer rules */
+
 assignment_pattern_key
 	: simple_type
 	| SVLOG_DEFAULT
 	;
 
+/* End of 'assignment_pattern_key' grammer rules */
+
+
+/* Start of 'assignment_pattern_expression' grammer rules */
+
 assignment_pattern_expression
-	: assignment_pattern
-	| assignment_pattern_expression_type assignment_pattern
+	: assignment_pattern_expression_type_or_null
+		assignment_pattern
 	;
+
+/* End of 'assignment_pattern_expression' grammer rules */
+
+
+/* Start of 'assignment_pattern_expression_type' grammer rules */
 
 assignment_pattern_expression_type
 	: ps_type_identifier
@@ -6847,17 +6883,30 @@ assignment_pattern_expression_type
 	| type_reference
 	;
 
-constant_assignment_pattern_expression
-	: assignment_pattern_expression
+assignment_pattern_expression_type_or_null
+	: %empty
+	| assignment_pattern_expression_type
 	;
+
+/* End of 'assignment_pattern_expression_type' grammer rules */
+
+
+/* Start of 'assignment_pattern_net_lvalue' grammer rules */
 
 assignment_pattern_net_lvalue
 	: APOSTROPHE '{' net_lvalue_seq_list '}'
 	;
 
+/* End of 'assignment_pattern_net_lvalue' grammer rules */
+
+
+/* Start of 'assignment_pattern_variable_lvalue' grammer rules */
+
 assignment_pattern_variable_lvalue
 	: APOSTROPHE '{' variable_lvalue_seq_list '}'
 	;
+
+/* End of 'assignment_pattern_variable_lvalue' grammer rules */
 
 /******************************************
  * End of 'Patterns' Grammer Rules        *
@@ -7649,7 +7698,7 @@ constant_primary
 	| constant_let_expression
 	| '(' constant_mintypmax_expression ')'
 	| constant_cast
-	| constant_assignment_pattern_expression
+	| assignment_pattern_expression
 	| type_reference
 	;
 
