@@ -7747,6 +7747,47 @@ output_identifier
  *******************************************************/
 
 
+/***************************************************
+ * Start of 'Specify path delays' Grammer Rules    *
+ * Based off section: (A.7.4 Specify path delays). *
+ ***************************************************/
+
+/* Start of 'path_delay_value' grammer rules */
+
+path_delay_value
+	: list_of_path_delay_expressions
+	| '(' list_of_path_delay_expressions ')'
+	;
+
+/* End of 'path_delay_value' grammer rules */
+
+
+/* Start of 'list_of_path_delay_expressions' grammer rules */
+
+list_of_path_delay_expressions
+	: constant_mintypmax_expression
+	| constant_mintypmax_expression ',' constant_mintypmax_expression
+	| constant_mintypmax_expression ',' constant_mintypmax_expression ','
+	  constant_mintypmax_expression
+	| constant_mintypmax_expression ',' constant_mintypmax_expression ',' 
+	  constant_mintypmax_expression ',' constant_mintypmax_expression ','
+	  constant_mintypmax_expression ',' constant_mintypmax_expression
+	| constant_mintypmax_expression ',' constant_mintypmax_expression ',' 
+	  constant_mintypmax_expression ',' constant_mintypmax_expression ','
+	  constant_mintypmax_expression ',' constant_mintypmax_expression ','
+	  constant_mintypmax_expression ',' constant_mintypmax_expression ','
+	  constant_mintypmax_expression ',' constant_mintypmax_expression ','
+	  constant_mintypmax_expression ',' constant_mintypmax_expression
+	;
+
+/* End of 'list_of_path_delay_expressions' grammer rules */
+
+/***************************************************
+ * End of 'Specify path delays' Grammer Rules      *
+ * Based off section: (A.7.4 Specify path delays). *
+ ***************************************************/
+
+
 /**********************************************
  * Start of 'Concatenations' Grammer Rules    *
  * Based off section: (A.8.1 Concatenations). *
