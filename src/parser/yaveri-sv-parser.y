@@ -8251,31 +8251,149 @@ scalar_constant
  * Based off section: (A.8.1 Concatenations). *
  **********************************************/
 
+/* Start of 'concatenation' grammer rules */
+
 concatenation
-	: %empty
-	| expression
-	| concatenation expression
-	| concatenation ',' expression
+	: '{' expression_seq_list '}'
 	;
 
-constant_concatenation
+concatenation_or_null
 	: %empty
-	| constant_expression
-	| constant_concatenation constant_expression
-	| constant_concatenation ',' constant_expression
+	| concatenation
 	;
+
+/* End of 'concatenation' grammer rules */
+
+
+/* Start of 'constant_concatenation' grammer rules */
+
+constant_concatenation
+	: '{' constant_expression_seq_list '}'
+	;
+
+constant_concatenation_or_null
+	: %empty
+	| constant_concatenation
+	;
+
+/* End of 'constant_concatenation' grammer rules */
+
+
+/* Start of 'constant_multiple_concatenation' grammer rules */
 
 constant_multiple_concatenation
 	: '{' constant_expression constant_concatenation '}'
 	;
 
+/* End of 'constant_multiple_concatenation' grammer rules */
+
+
+/* Start of 'module_path_concatenation' grammer rules */
+
+module_path_concatenation
+	: '{' module_path_expression_seq_list '}'
+	;
+
+/* End of 'module_path_concatenation' grammer rules */
+
+
+/* Start of 'module_path_multiple_concatenation' grammer rules */
+
+module_path_multiple_concatenation
+	: '{' constant_expression module_path_concatenation '}'
+	;
+
+/* End of 'module_path_multiple_concatenation' grammer rules */
+
+
+/* Start of 'multiple_concatenation' grammer rules */
+
 multiple_concatenation
 	: '{' expression concatenation '}'
 	;
 
+/* End of 'multiple_concatenation' grammer rules */
+
+
+/* Start of 'streaming_concatenation' grammer rules */
+
+streaming_concatenation
+	: '{' stream_operator
+		slice_size_or_null
+			stream_concatenation '}'
+	;
+
+/* End of 'streaming_concatenation' grammer rules */
+
+
+/* Start of 'stream_operator' grammer rules */
+
+stream_operator
+	: RIGHT_SHIFT
+	| LEFT_SHIFT
+	;
+
+/* End of 'stream_operator' grammer rules */
+
+
+/* Start of 'slice_size' grammer rules */
+
+slice_size
+	: simple_type
+	| constant_expression
+	;
+
+slice_size_or_null
+	: %empty
+	| slice_size
+	;
+
+/* End of 'slice_size' grammer rules */
+
+
+/* Start of 'stream_concatenation' grammer rules */
+
+stream_concatenation
+	: '{' stream_expression_seq_list '}'
+	;
+
+/* End of 'stream_concatenation' grammer rules */
+
+
+/* Start of 'stream_expression' grammer rules */
+
+stream_expression
+	: expression
+	| expression SVLOG_WITH '[' array_range_expression ']'
+	;
+
+stream_expression_seq_list
+	: stream_expression
+	| stream_expression_seq_list ',' stream_expression
+	;
+
+/* End of 'stream_expression' grammer rules */
+
+
+/* Start of 'array_range_expression' grammer rules */
+
+array_range_expression
+	: expression
+	| expression ':' expression
+	| expression ADDITION_OPERATOR expression
+	| expression REDUCTION_OPERATOR expression
+	;
+
+/* End of 'array_range_expression' grammer rules */
+
+
+/* Start of 'empty_unpacked_array_concatenation' grammer rules */
+
 empty_unpacked_array_concatenation
 	: '{' '}'
 	;
+
+/* End of 'empty_unpacked_array_concatenation' grammer rules */
 
 /**********************************************
  * End of 'Concatenations' Grammer Rules      *
