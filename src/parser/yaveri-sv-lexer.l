@@ -308,14 +308,26 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 
 "PATHPULSE$"   { return SVLOG_PATHPULSEDS;               }
+"$setuphold"   { return SVLOG_DSSETUPHOLD;               }
+"$fullskew"    { return SVLOG_DSFULLSKEW;                }
+"$nochange"    { return SVLOG_DSNOCHANGE;                }
+"$recovery"    { return SVLOG_DSRECOVERY;                }
+"$timeskew"    { return SVLOG_DSTIMESKEW;                }
+"$removal"     { return SVLOG_DSREMOVAL;                 }
 "$warning"     { return SVLOG_DSWARNING;                 }
 "-incdir"      { return SVLOG_HINCDIR;                   }
+"$period"      { return SVLOG_DSPERIOD;                  }
+"$recrem"      { return SVLOG_DSRECREM;                  }
 "$error"       { return SVLOG_DSERROR;                   }
 "$fatal"       { return SVLOG_DSFATAL;                   }
+"$setup"       { return SVLOG_DSSETUP;                   }
+"$width"       { return SVLOG_DSWIDTH;                   }
 "DPI-C"        { return SVLOG_DPI_C;                     }
 "1step"        { return SVLOG_1STEP;                     }
+"$hold"        { return SVLOG_DSHOLD;                    }
 "$info"        { return SVLOG_DSINFO;                    }
 "$root"        { return SVLOG_DSROOT;                    }
+"$skew"        { return SVLOG_DSSKEW;                    }
 "$unit"        { return SVLOG_DSUNIT;                    }
 "1'b0"         { return SVLOG_INIT_VAL_APOST_LB0;        }
 "1'b1"         { return SVLOG_INIT_VAL_APOST_LB1;        }
