@@ -7824,11 +7824,11 @@ sys_timing_checks_gchain
 
 sys_timing_checks_gchain_or_null
 	: %empty
-	| sys_timing_checks_gchain_block
+	| sys_timing_checks_gchain
 	;
 
 sys_timing_checks_gchain_two
-	: ',' timestamp_condition_or_null
+	: ',' mintypmax_expression_or_null
 		sys_timing_checks_gchain_three_or_null
 	;
 
@@ -7838,7 +7838,7 @@ sys_timing_checks_gchain_two_or_null
 	;
 
 sys_timing_checks_gchain_three
-	: ',' timecheck_condition_or_null
+	: ',' mintypmax_expression_or_null
 		sys_timing_checks_gchain_four_or_null
 	;
 
@@ -7868,7 +7868,7 @@ skew_timing_check_gchain_or_null
 	;
 
 skew_timing_check_gchain_two
-	: ',' event_based_flag_or_null
+	: ',' constant_expression_or_null
 		skew_timing_check_gchain_three_or_null
 	;
 
@@ -7878,7 +7878,7 @@ skew_timing_check_gchain_two_or_null
 	;
 
 skew_timing_check_gchain_three
-	: ',' remain_active_flag_or_null
+	: ',' constant_mintypmax_expression_or_null
 	;
 
 skew_timing_check_gchain_three_or_null
@@ -7912,8 +7912,8 @@ system_timing_check
 /* Start of 'ds_setup_timing_check' grammer rules */
 
 ds_setup_timing_check
-	: SVLOG_DSSETUP '(' data_event ',' reference_event ','
-		timing_check_limit comma_ident_or_null ')' ';'
+	: SVLOG_DSSETUP '(' timing_check_event ',' timing_check_event ','
+		expression comma_ident_or_null ')' ';'
 	;
 
 /* End of 'ds_setup_timing_check' grammer rules */
@@ -7922,8 +7922,8 @@ ds_setup_timing_check
 /* Start of 'ds_hold_timing_check' grammer rules */
 
 ds_hold_timing_check
-	: SVLOG_DSHOLD '(' reference_event ',' data_event ','
-		timing_check_limit comma_ident_or_null ')' ';'
+	: SVLOG_DSHOLD '(' timing_check_event ',' timing_check_event ','
+		expression comma_ident_or_null ')' ';'
 	;
 
 /* End of 'ds_hold_timing_check' grammer rules */
@@ -7932,9 +7932,9 @@ ds_hold_timing_check
 /* Start of 'ds_setuphold_timing_check' grammer rules */
 
 ds_setuphold_timing_check
-	: SVLOG_DSSETUPHOLD '(' reference_event ','
-		data_event ',' timing_check_limit ',' timing_check_limit
-			sys_timing_checks_gchain_block_or_null ')' ';'
+	: SVLOG_DSSETUPHOLD '(' timing_check_event ','
+		timing_check_event ',' expression ',' expression
+			sys_timing_checks_gchain_or_null ')' ';'
 	;
 
 /* End of 'ds_setuphold_timing_check' grammer rules */
@@ -7943,8 +7943,8 @@ ds_setuphold_timing_check
 /* Start of 'ds_recovery_timing_check' grammer rules */
 
 ds_recovery_timing_check
-	: SVLOG_DSRECOVERY '(' reference_event ',' data_event ','
-		timing_check_limit comma_identifier_or_null ')' ';'
+	: SVLOG_DSRECOVERY '(' timing_check_event ',' timing_check_event ','
+		expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_recovery_timing_check' grammer rules */
@@ -7953,8 +7953,8 @@ ds_recovery_timing_check
 /* Start of 'ds_removal_timing_check' grammer rules */
 
 ds_removal_timing_check
-	: SVLOG_DSREMOVAL '(' reference_event ',' data_event ','
-		timing_check_limit comma_identifier_or_null ')' ';'
+	: SVLOG_DSREMOVAL '(' timing_check_event ',' timing_check_event ','
+		expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_removal_timing_check' grammer rules */
@@ -7963,9 +7963,9 @@ ds_removal_timing_check
 /* Start of 'ds_recrem_timing_check' grammer rules */
 
 ds_recrem_timing_check
-	: SVLOG_DSRECREM '(' reference_event ','
-		data_event ',' timing_check_limit ',' timing_check_limit
-			sys_timing_checks_gchain_block_or_null ')' ';'
+	: SVLOG_DSRECREM '(' timing_check_event ','
+		timing_check_event ',' expression ',' expression
+			sys_timing_checks_gchain_or_null ')' ';'
 	;
 
 /* End of 'ds_recrem_timing_check' grammer rules */
@@ -7974,8 +7974,8 @@ ds_recrem_timing_check
 /* Start of 'ds_skew_timing_check' grammer rules */
 
 ds_skew_timing_check
-	: SVLOG_DSSKEW '(' reference_event ',' data_event ','
-		timing_check_limit comma_identifier_or_null ')' ';'
+	: SVLOG_DSSKEW '(' timing_check_event ',' timing_check_event ','
+		expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_skew_timing_check' grammer rules */
@@ -7984,8 +7984,8 @@ ds_skew_timing_check
 /* Start of 'ds_timeskew_timing_check' grammer rules */
 
 ds_timeskew_timing_check
-	: SVLOG_DSTIMESKEW '(' reference_event ',' data_event ','
-		timing_check_limit skew_timing_check_gchain_or_null ')' ';'
+	: SVLOG_DSTIMESKEW '(' timing_check_event ',' timing_check_event ','
+		expression skew_timing_check_gchain_or_null ')' ';'
 	;
 
 /* End of 'ds_timeskew_timing_check' grammer rules */
@@ -7994,8 +7994,8 @@ ds_timeskew_timing_check
 /* Start of 'ds_fullskew_timing_check' grammer rules */
 
 ds_fullskew_timing_check
-	: SVLOG_DSFULLSKEW '(' reference_event ',' data_event ','
-		timing_check_limit ',' timing_check_limit
+	: SVLOG_DSFULLSKEW '(' timing_check_event ',' timing_check_event ','
+		expression ',' expression
 			skew_timing_check_gchain_or_null ')' ';'
 	;
 
@@ -8005,8 +8005,8 @@ ds_fullskew_timing_check
 /* Start of 'ds_period_timing_check' grammer rules */
 
 ds_period_timing_check
-	: SVLOG_DSPERIOD '(' controlled_reference_event ','
-		timing_check_limit comma_identifer_or_null ')' ';'
+	: SVLOG_DSPERIOD '(' controlled_timing_check_event ','
+		expression comma_identifer_or_null ')' ';'
 	;
 
 /* End of 'ds_period_timing_check' grammer rules */
@@ -8015,8 +8015,9 @@ ds_period_timing_check
 /* Start of 'ds_width_timing_check' grammer rules */
 
 ds_width_timing_check
-	: SVLOG_DSWIDTH '(' controlled_reference_event ','
-		timing_check_limit ',' threshold comma_identifer_or_null ')' ';'
+	: SVLOG_DSWIDTH '(' controlled_timing_check_event ','
+		expression ',' constant_expression
+			comma_identifer_or_null ')' ';'
 	;
 
 /* End of 'ds_width_timing_check' grammer rules */
@@ -8025,9 +8026,9 @@ ds_width_timing_check
 /* Start of 'ds_nochange_timing_check' grammer rules */
 
 ds_nochange_timing_check
-	: SVLOG_DSNOCHANGE '(' reference_event ','
-		data_event ',' start_edge_offset ','
-			end_edge_offset comma_identifer_or_null ')' ';'
+	: SVLOG_DSNOCHANGE '(' timing_check_event ','
+		timing_check_event ',' mintypmax_expression ','
+			mintypmax_expression comma_identifer_or_null ')' ';'
 	;
 
 /* End of 'ds_nochange_timing_check' grammer rules */
@@ -8036,6 +8037,46 @@ ds_nochange_timing_check
  * End of 'System timing check commands' Grammer Rules        *
  * Based off section: (A.7.5.1 System timing check commands). *
  **************************************************************/
+
+
+/***********************************************************************
+ * Start of 'System timing check command arguments' Grammer Rules      *
+ * Based off section: (A.7.5.2 System timing check command arguments). *
+ ***********************************************************************/
+
+/* Start of 'delayed_data' grammer rules */
+
+delayed_data
+	: identifier
+	| identifier '[' constant_mintypmax_expression ']'
+	;
+
+delayed_data_or_null
+	: %empty
+	| delayed_data
+	;
+
+/* End of 'delayed_data' grammer rules */
+
+
+/* Start of 'delayed_reference' grammer rules */
+
+delayed_reference
+	: identifier
+	| identifier '[' constant_mintypmax_expression ']'
+	;
+
+delayed_reference_or_null
+	: %empty
+	| delayed_reference
+	;
+
+/* End of 'delayed_reference' grammer rules */
+
+/***********************************************************************
+ * End of 'System timing check command arguments' Grammer Rules        *
+ * Based off section: (A.7.5.2 System timing check command arguments). *
+ ***********************************************************************/
 
 
 /**********************************************
