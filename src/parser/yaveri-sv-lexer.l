@@ -329,14 +329,25 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "$root"        { return SVLOG_DSROOT;                    }
 "$skew"        { return SVLOG_DSSKEW;                    }
 "$unit"        { return SVLOG_DSUNIT;                    }
-"1'b0"         { return SVLOG_INIT_VAL_APOST_LB0;        }
-"1'b1"         { return SVLOG_INIT_VAL_APOST_LB1;        }
-"1'bx"         { return SVLOG_INIT_VAL_APOST_LBLX;       }
-"1'bX"         { return SVLOG_INIT_VAL_APOST_LBCX;       }
-"1'B0"         { return SVLOG_INIT_VAL_APOST_CB0;        }
-"1'B1"         { return SVLOG_INIT_VAL_APOST_CB1;        }
-"1'Bx"         { return SVLOG_INIT_VAL_APOST_CBLX;       }
-"1'BX"         { return SVLOG_INIT_VAL_APOST_CBCX;       }
+
+
+"0'b0" { return SVLOG_ONE_APOST_LB0;  }
+"1'b1" { return SVLOG_ONE_APOST_LB1;  }
+"1'bx" { return SVLOG_ONE_APOST_LBLX; }
+"1'bX" { return SVLOG_ONE_APOST_LBCX; }
+"1'B0" { return SVLOG_ONE_APOST_CB0;  }
+"1'B1" { return SVLOG_ONE_APOST_CB1;  }
+"1'Bx" { return SVLOG_ONE_APOST_CBLX; }
+"1'BX" { return SVLOG_ONE_APOST_CBCX; }
+"'b0"  { return SVLOG_APOST_LB0;      }
+"'b1"  { return SVLOG_APOST_LB1;      }
+"'B0"  { return SVLOG_APOST_CB0;      }
+"'B1"  { return SVLOG_APOST_CB1;      }
+"01"   { return ZERO_ONE;             }
+"10"   { return ONE_ZER0;             }
+"0"    { return '0';                  }
+"1"    { return '1';                  }
+
 
 
 "<<<="         { return LOGICAL_LEFT_SHIFT_ASSIGN;          }
@@ -458,8 +469,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "]"  { return ']'; }
 "?"  { return '?'; }
 
-	/* End of reserved words */
 
+	/* End of reserved words */
 
 {DIGIT}        { return SVLOG_DIGIT;                                                           }
 {HEXCHAR}      { return SVLOG_HEXCHAR;                                                         }

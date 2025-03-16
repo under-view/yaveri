@@ -298,14 +298,22 @@
 %token <itoken> SVLOG_DSROOT
 %token <itoken> SVLOG_DSSKEW
 %token <itoken> SVLOG_DSUNIT
-%token <itoken> SVLOG_INIT_VAL_APOST_LB0
-%token <itoken> SVLOG_INIT_VAL_APOST_LB1
-%token <itoken> SVLOG_INIT_VAL_APOST_LBLX
-%token <itoken> SVLOG_INIT_VAL_APOST_LBCX
-%token <itoken> SVLOG_INIT_VAL_APOST_CB0
-%token <itoken> SVLOG_INIT_VAL_APOST_CB1
-%token <itoken> SVLOG_INIT_VAL_APOST_CBLX
-%token <itoken> SVLOG_INIT_VAL_APOST_CBCX
+
+
+%token <itoken> SVLOG_ONE_APOST_LB0
+%token <itoken> SVLOG_ONE_APOST_LB1
+%token <itoken> SVLOG_ONE_APOST_LBLX
+%token <itoken> SVLOG_ONE_APOST_LBCX
+%token <itoken> SVLOG_ONE_APOST_CB0
+%token <itoken> SVLOG_ONE_APOST_CB1
+%token <itoken> SVLOG_ONE_APOST_CBLX
+%token <itoken> SVLOG_ONE_APOST_CBCX
+%token <itoken> SVLOG_APOST_LB0
+%token <itoken> SVLOG_APOST_LB1
+%token <itoken> SVLOG_APOST_CB0
+%token <itoken> SVLOG_APOST_CB1
+%token <itoken> ZERO_ONE
+%token <itoken> ONE_ZER0
 
 
 %token <itoken> LOGICAL_LEFT_SHIFT_ASSIGN
@@ -5911,15 +5919,16 @@ udp_initial_statement_or_null
 /* Start of 'init_val' grammer rules */
 
 init_val
-	: SVLOG_INIT_VAL_APOST_LB0
-	| SVLOG_INIT_VAL_APOST_LB1
-	| SVLOG_INIT_VAL_APOST_LBLX
-	| SVLOG_INIT_VAL_APOST_LBCX
-	| SVLOG_INIT_VAL_APOST_CB0
-	| SVLOG_INIT_VAL_APOST_CB1
-	| SVLOG_INIT_VAL_APOST_CBLX
-	| SVLOG_INIT_VAL_APOST_CBCX
-	| SVLOG_DIGIT /* Must be either '1' or '0 */
+	: SVLOG_ONE_APOST_LB0
+	| SVLOG_ONE_APOST_LB1
+	| SVLOG_ONE_APOST_LBLX
+	| SVLOG_ONE_APOST_LBCX
+	| SVLOG_ONE_APOST_CB0
+	| SVLOG_ONE_APOST_CB1
+	| SVLOG_ONE_APOST_CBLX
+	| SVLOG_ONE_APOST_CBCX
+	| '0'
+	| '1'
 	;
 
 /* End of 'init_val' grammer rules */
@@ -8076,6 +8085,164 @@ delayed_reference_or_null
 /***********************************************************************
  * End of 'System timing check command arguments' Grammer Rules        *
  * Based off section: (A.7.5.2 System timing check command arguments). *
+ ***********************************************************************/
+
+
+/***********************************************************************
+ * Start of 'System timing check event definitions' Grammer Rules      *
+ * Based off section: (A.7.5.3 System timing check event definitions). *
+ ***********************************************************************/
+
+/* Start of 'timing_check_event' grammer rules */
+
+timing_check_event
+	: timing_check_event_control_or_null
+		specify_terminal_descriptor
+			iff_timing_check_condition_or_null
+	;
+
+/* End of 'timing_check_event' grammer rules */
+
+
+/* Start of 'controlled_timing_check_event' grammer rules */
+
+controlled_timing_check_event
+	: timing_check_event_control
+		specify_terminal_descriptor
+			iff_timing_check_condition_or_null
+	;
+
+/* End of 'controlled_timing_check_event' grammer rules */
+
+
+/* Start of 'timing_check_event_control' grammer rules */
+
+timing_check_event_control
+	: SVLOG_POSEDGE
+	| SVLOG_NEGEDGE
+	| SVLOG_EDGE
+	| edge_control_specifier
+	;
+
+timing_check_event_control_or_null
+	: %empty
+	| timing_check_event_control
+	;
+
+/* End of 'timing_check_event_control' grammer rules */
+
+
+/* Start of 'specify_terminal_descriptor' grammer rules */
+
+specify_terminal_descriptor
+	: specify_input_terminal_descriptor
+	| specify_output_terminal_descriptor
+	;
+
+/* End of 'specify_terminal_descriptor' grammer rules */
+
+
+/* Start of 'edge_control_specifier' grammer rules */
+
+edge_control_specifier
+	: SVLOG_EDGE '[' edge_descriptor_seq_list ']'
+	;
+
+/* End of 'edge_control_specifier' grammer rules */
+
+
+/* Start of 'edge_descriptor' grammer rules */
+
+edge_descriptor
+	: ZERO_ONE
+	| ONE_ZER0
+	| z_or_x zero_or_one
+	| zero_or_one z_or_x
+	;
+
+edge_descriptor_seq_list
+	: edge_descriptor
+	| edge_descriptor_seq_list ',' edge_descriptor
+	;
+
+/* End of 'edge_descriptor' grammer rules */
+
+
+/* Start of 'zero_or_one' grammer rules */
+
+zero_or_one
+	: '0'
+	| '1'
+	;
+
+/* End of 'zero_or_one' grammer rules */
+
+
+/* Start of 'z_or_x' grammer rules */
+
+z_or_x
+	: 'x'
+	| 'X'
+	| 'z'
+	| 'Z'
+	;
+
+/* End of 'z_or_x' grammer rules */
+
+
+/* Start of 'timing_check_condition' grammer rules */
+
+timing_check_condition
+	: scalar_timing_check_condition
+	| '(' scalar_timing_check_condition ')'
+	;
+
+iff_timing_check_condition
+	: SVLOG_IF_AND_ONLY_IF timing_check_condition
+	;
+
+iff_timing_check_condition_or_null
+	: %empty
+	| iff_timing_check_condition
+	;
+
+/* End of 'timing_check_condition' grammer rules */
+
+
+/* Start of 'scalar_timing_check_condition' grammer rules */
+
+scalar_timing_check_condition
+	: expression
+	| '~' expression
+	| expression LOGICAL_EQUAL scalar_constant
+	| expression CASE_EQUAL scalar_constant
+	| expression LOGICAL_INEQUAL scalar_constant
+	| expression CASE_NOT_EQUAL scalar_constant
+	;
+
+/* End of 'scalar_timing_check_condition' grammer rules */
+
+
+/* Start of 'scalar_constant' grammer rules */
+
+scalar_constant
+	: SVLOG_ONE_APOST_LB0
+	| SVLOG_ONE_APOST_LB1
+	| SVLOG_ONE_APOST_CB0
+	| SVLOG_ONE_APOST_CB1
+	| SVLOG_APOST_LB0
+	| SVLOG_APOST_LB1
+	| SVLOG_APOST_CB0
+	| SVLOG_APOST_CB1
+	| '0'
+	| '1'
+	;
+
+/* End of 'scalar_constant' grammer rules */
+
+/***********************************************************************
+ * End of 'System timing check event definitions' Grammer Rules        *
+ * Based off section: (A.7.5.3 System timing check event definitions). *
  ***********************************************************************/
 
 
