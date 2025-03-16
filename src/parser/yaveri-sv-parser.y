@@ -7807,7 +7807,7 @@ list_of_path_delay_expressions
 
 /* Start of helper grammer rules */
 
-comma_ident_or_null
+comma_identifier_or_null
 	: %empty
 	| ',' identifier_or_null
 	;
@@ -7913,7 +7913,7 @@ system_timing_check
 
 ds_setup_timing_check
 	: SVLOG_DSSETUP '(' timing_check_event ',' timing_check_event ','
-		expression comma_ident_or_null ')' ';'
+		expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_setup_timing_check' grammer rules */
@@ -7923,7 +7923,7 @@ ds_setup_timing_check
 
 ds_hold_timing_check
 	: SVLOG_DSHOLD '(' timing_check_event ',' timing_check_event ','
-		expression comma_ident_or_null ')' ';'
+		expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_hold_timing_check' grammer rules */
@@ -8006,7 +8006,7 @@ ds_fullskew_timing_check
 
 ds_period_timing_check
 	: SVLOG_DSPERIOD '(' controlled_timing_check_event ','
-		expression comma_identifer_or_null ')' ';'
+		expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_period_timing_check' grammer rules */
@@ -8017,7 +8017,7 @@ ds_period_timing_check
 ds_width_timing_check
 	: SVLOG_DSWIDTH '(' controlled_timing_check_event ','
 		expression ',' constant_expression
-			comma_identifer_or_null ')' ';'
+			comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_width_timing_check' grammer rules */
@@ -8028,7 +8028,7 @@ ds_width_timing_check
 ds_nochange_timing_check
 	: SVLOG_DSNOCHANGE '(' timing_check_event ','
 		timing_check_event ',' mintypmax_expression ','
-			mintypmax_expression comma_identifer_or_null ')' ';'
+			mintypmax_expression comma_identifier_or_null ')' ';'
 	;
 
 /* End of 'ds_nochange_timing_check' grammer rules */
@@ -8253,6 +8253,11 @@ constant_expression
 	| constant_expression '?' attribute_instance_recurse_or_null constant_expression ':' constant_expression
 	;
 
+constant_expression_or_null
+	: %empty
+	| constant_expression
+	;
+
 constant_expression_seq_list
 	: constant_expression
 	| constant_expression_seq_list ',' constant_expression
@@ -8261,6 +8266,11 @@ constant_expression_seq_list
 constant_mintypmax_expression
 	: constant_expression
 	| constant_expression ':' constant_expression ':' constant_expression
+	;
+
+constant_mintypmax_expression_or_null
+	: %empty
+	| constant_mintypmax_expression
 	;
 
 equal_constant_mintypmax_expression
@@ -8377,6 +8387,11 @@ iff_expression_or_null
 mintypmax_expression
 	: expression
 	| expression ':' expression ':' expression
+	;
+
+mintypmax_expression_or_null
+	: %empty
+	| mintypmax_expression
 	;
 
 part_select_range 
