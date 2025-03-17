@@ -7018,7 +7018,7 @@ for_step_or_null
 for_step_assignment
 	: operator_assignment
 	| inc_or_dec_expression
-	| function_subroutine_call
+	| subroutine_call
 	;
 
 /* End of 'for_step_assignment' grammer rules */
@@ -7038,7 +7038,7 @@ for_step_assignment
 
 subroutine_call_statement
 	: subroutine_call ';'
-	| SVLOG_VOID APOSTROPHE '(' function_subroutine_call ')' ';'
+	| SVLOG_VOID APOSTROPHE '(' subroutine_call ')' ';'
 	;
 
 /* End of 'subroutine_call_statement' grammer rules */
@@ -8406,22 +8406,30 @@ empty_unpacked_array_concatenation
  * Based off section: (A.8.2 Subroutine calls). *
  ************************************************/
 
-constant_function_call
-	: function_subroutine_call
-	;
+/* Start of 'tf_call' grammer rules */
 
 tf_call
-	: ps_or_hierarchical_tf_identifier attribute_instance_recurse_or_null
-	| ps_or_hierarchical_tf_identifier attribute_instance_recurse_or_null '(' list_of_arguments ')'
+	: ps_or_hierarchical_tf_identifier
+		attribute_instance_recurse_or_null
+			paren_list_of_arguments_or_null
 	;
 
+/* End of 'tf_call' grammer rules */
+
+
+/* Start of 'system_tf_call' grammer rules */
+
 system_tf_call
-	: system_tf_identifier ';'
-	| system_tf_identifier '(' list_of_arguments ')' ';'
-	| system_tf_identifier '(' data_type ')' ';'
-	| system_tf_identifier '(' data_type ',' expression ')' ';'
-	| system_tf_identifier '(' expression ',' clocking_event ')' ';'
+	: system_tf_identifier paren_list_of_arguments_or_null
+	| system_tf_identifier '(' data_type comma_expression_or_null ')'
+	| system_tf_identifier '(' expression_seq_list ')'
+	| system_tf_identifier '(' expression_seq_list ',' clocking_event ')'
 	;
+
+/* End of 'system_tf_call' grammer rules */
+
+
+/* Start of 'subroutine_call' grammer rules */
 
 subroutine_call
 	: tf_call
@@ -8431,17 +8439,32 @@ subroutine_call
 	| SVLOG_STD CLASS_SCOPE_OPERATOR randomize_call
 	;
 
-function_subroutine_call
-	: subroutine_call
+/* End of 'subroutine_call' grammer rules */
+
+
+/* Start of 'list_of_arguments' grammer rules */
+
+comma_period_ident_expression
+	: ',' '.' identifier paren_expression
+	;
+
+comma_period_ident_expression_recurse
+	: comma_period_ident_expression
+	| comma_period_ident_expression_recurse
+		comma_period_ident_expression
+	;
+
+comma_period_ident_expression_recurse_or_null
+	: %empty
+	| comma_period_ident_expression_recurse
 	;
 
 list_of_arguments
-	: expression
-	| '.' identifier '(' ')'
-	| '.' identifier '(' expression ')'
-	| list_of_arguments ',' expression
-	| list_of_arguments ',' '.' identifier '(' ')'
-	| list_of_arguments ',' '.' identifier '(' expression ')'
+	: expression_or_null
+		expression_seq_list_or_null
+			comma_period_ident_expression_recurse_or_null
+	| '.' identifier paren_expression
+		comma_period_ident_expression_recurse_or_null
 	;
 
 list_of_arguments_or_null
@@ -8449,59 +8472,95 @@ list_of_arguments_or_null
 	| list_of_arguments
 	;
 
+paren_list_of_arguments
+	: '(' list_of_arguments ')'
+	;
+
+paren_list_of_arguments_or_null
+	: %empty
+	| paren_list_of_arguments
+	;
+
+/* End of 'subroutine_call' grammer rules */
+
+
+/* Start of 'method_call' grammer rules */
+
 method_call
 	: method_call_root '.' method_call_body
 	;
 
+/* End of 'method_call' grammer rules */
+
+
+/* Start of 'method_call_body' grammer rules */
+
 method_call_body
 	: identifier
-	| identifier attribute_instance_recurse_or_null '(' list_of_arguments ')'
+		attribute_instance_recurse_or_null
+			paren_list_of_arguments_or_null
 	| built_in_method_call
 	;
+
+/* End of 'method_call_body' grammer rules */
+
+
+/* Start of 'built_in_method_call' grammer rules */
 
 built_in_method_call
 	: array_manipulation_call
 	| randomize_call
 	;
 
-am_call_helper
-	: %empty
-	| '(' list_of_arguments ')'
-	| SVLOG_WITH '(' expression ')'
-	| '(' list_of_arguments ')' SVLOG_WITH '(' expression ')'
-	;
+/* End of 'built_in_method_call' grammer rules */
+
+
+/* Start of 'array_manipulation_call' grammer rules */
 
 array_manipulation_call
-	: array_method_name attribute_instance_recurse_or_null am_call_helper
+	: array_method_name attribute_instance_recurse_or_null
+		paren_list_of_arguments_or_null with_paren_expression_or_null
 	;
 
-randomize_call_helper
+/* End of 'array_manipulation_call' grammer rules */
+
+
+/* Start of 'array_manipulation_call' grammer rules */
+
+paren_ident_list_or_paren_null
+	: '(' SVLOG_NULL ')'
+	| '(' identifier_seq_list_or_null ')'
+	;
+
+paren_ident_list_or_paren_null_or_null
 	: %empty
-	| '(' ')'
-	| '(' ')' SVLOG_WITH constraint_block
-	| '(' ')' SVLOG_WITH '(' ')' constraint_block
-	| '(' ')' SVLOG_WITH '(' identifier_seq_list ')' constraint_block
-	| '(' identifier_seq_list ')'
-	| '(' identifier_seq_list ')' SVLOG_WITH constraint_block
-	| '(' identifier_seq_list ')' SVLOG_WITH '(' ')' constraint_block
-	| '(' identifier_seq_list ')' SVLOG_WITH '(' identifier_seq_list ')' constraint_block
-	| '(' SVLOG_NULL ')'
-	| '(' SVLOG_NULL ')' SVLOG_WITH constraint_block
-	| '(' SVLOG_NULL ')' SVLOG_WITH '(' ')' constraint_block
-	| '(' SVLOG_NULL ')' SVLOG_WITH '(' identifier_seq_list ')' constraint_block
-	| SVLOG_WITH constraint_block
-	| SVLOG_WITH '(' ')' constraint_block
-	| SVLOG_WITH '(' identifier_seq_list ')' constraint_block
+	| paren_ident_list_or_paren_null
+	;
+
+with_paren_ident
+	: SVLOG_WITH constraint_block
+	| SVLOG_WITH '(' identifier_seq_list_or_null ')' constraint_block
 	;
 
 randomize_call
-	: SVLOG_RANDOMIZE attribute_instance_recurse_or_null randomize_call_helper
+	: SVLOG_RANDOMIZE attribute_instance_recurse_or_null
+		paren_ident_list_or_paren_null_or_null
 	;
+
+/* End of 'array_manipulation_call' grammer rules */
+
+
+/* Start of 'method_call_root' grammer rules */
 
 method_call_root
 	: primary
 	| implicit_class_handle
 	;
+
+/* End of 'method_call_root' grammer rules */
+
+
+/* Start of 'array_method_name' grammer rules */
 
 array_method_name
 	: identifier
@@ -8510,6 +8569,8 @@ array_method_name
 	| SVLOG_OR
 	| SVLOG_XOR
 	;
+
+/* End of 'array_method_name' grammer rules */
 
 /************************************************
  * End of 'Subroutine Calls' Grammer Rules      *
@@ -8630,6 +8691,11 @@ expression_seq_list
 	| expression_seq_list ',' expression
 	;
 
+expression_seq_list_or_null
+	: %empty
+	| expression_seq_list
+	;
+
 equal_expression
 	: '=' expression
 	;
@@ -8649,7 +8715,7 @@ square_brackets_expression_or_null
 	;
 
 paren_expression
-	: '(' expression ')'
+	: '(' expression_or_null ')'
 	;
 
 paren_expression_or_null
@@ -8665,6 +8731,15 @@ iff_expression
 iff_expression_or_null
 	: %empty
 	| iff_expression
+	;
+
+comma_expression
+	: ',' expression
+	;
+
+comma_expression_or_null
+	: %empty
+	| comma_expression
 	;
 
 /* End of 'expression' grammer rules */
@@ -8714,8 +8789,8 @@ constant_primary
 	| constant_concatenation '[' constant_range_expression ']'
 	| constant_multiple_concatenation
 	| constant_multiple_concatenation '[' constant_range_expression ']'
-	| constant_function_call
-	| constant_function_call '[' constant_range_expression ']'
+	| subroutine_call
+	| subroutine_call '[' constant_range_expression ']'
 	| constant_let_expression
 	| '(' constant_mintypmax_expression ')'
 	| constant_cast
@@ -8736,8 +8811,8 @@ primary
 	| concatenation '[' range_expression ']'
 	| multiple_concatenation
 	| multiple_concatenation '[' range_expression ']'
-	| function_subroutine_call
-	| function_subroutine_call '[' range_expression ']'
+	| subroutine_call
+	| subroutine_call '[' range_expression ']'
 	| let_expression
 	| '(' mintypmax_expression ')'
 	| cast
@@ -9246,11 +9321,6 @@ identifier_or_null
 	| identifier
 	;
 
-identifier_seq_list
-	: identifier
-	| identifier_seq_list ',' identifier
-	;
-
 identifier_recurse
 	: identifier
 	| identifier_recurse identifier
@@ -9259,6 +9329,16 @@ identifier_recurse
 identifier_recurse_or_null
 	: %empty
 	| identifier_recurse
+	;
+
+identifier_seq_list
+	: identifier
+	| identifier_seq_list ',' identifier
+	;
+
+identifier_seq_list_or_null
+	: %empty
+	| identifier_seq_list
 	;
 
 identifier_equal_expression_seq_list
