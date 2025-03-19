@@ -8583,20 +8583,44 @@ array_method_name
  * Based off section: (A.8.3 Expressions). *
  *******************************************/
 
+/* Start of 'inc_or_dec_expression' grammer rules */
+
 inc_or_dec_expression
-	: inc_or_dec_operator attribute_instance_recurse_or_null variable_lvalue
-	| variable_lvalue attribute_instance_recurse_or_null inc_or_dec_operator
+	: inc_or_dec_operator
+		attribute_instance_recurse_or_null
+			variable_lvalue
+	| variable_lvalue
+		attribute_instance_recurse_or_null
+			inc_or_dec_operator
 	;
 
+/* End of 'inc_or_dec_expression' grammer rules */
+
+
+/* Start of 'conditional_expression' grammer rules */
+
 conditional_expression
-	: cond_predicate '?' attribute_instance_recurse_or_null expression ':' expression
+	: cond_predicate '?'
+		attribute_instance_recurse_or_null
+			expression ':' expression
 	;
+
+/* End of 'conditional_expression' grammer rules */
+
+
+/* Start of 'constant_expression' grammer rules */
 
 constant_expression
 	: constant_primary
-	| unary_operator attribute_instance_recurse_or_null constant_primary
-	| constant_expression binary_operator attribute_instance_recurse_or_null constant_expression
-	| constant_expression '?' attribute_instance_recurse_or_null constant_expression ':' constant_expression
+	| unary_operator
+		attribute_instance_recurse_or_null
+			constant_primary
+	| constant_expression binary_operator
+		attribute_instance_recurse_or_null
+			constant_expression
+	| constant_expression '?'
+		attribute_instance_recurse_or_null
+			constant_expression ':' constant_expression
 	;
 
 constant_expression_or_null
@@ -8608,6 +8632,11 @@ constant_expression_seq_list
 	: constant_expression
 	| constant_expression_seq_list ',' constant_expression
 	;
+
+/* End of 'constant_expression' grammer rules */
+
+
+/* Start of 'constant_mintypmax_expression' grammer rules */
 
 constant_mintypmax_expression
 	: constant_expression
@@ -8628,6 +8657,11 @@ equal_constant_mintypmax_expression_or_null
 	| equal_constant_mintypmax_expression
 	;
 
+/* End of 'constant_mintypmax_expression' grammer rules */
+
+
+/* Start of 'constant_param_expression' grammer rules */
+
 constant_param_expression
 	: constant_mintypmax_expression
 	| data_type
@@ -8643,6 +8677,11 @@ equal_constant_param_expression_or_null
 	| equal_constant_param_expression
 	;
 
+/* End of 'constant_param_expression' grammer rules */
+
+
+/* Start of 'param_expression' grammer rules */
+
 param_expression
 	: mintypmax_expression
 	| data_type
@@ -8654,28 +8693,58 @@ param_expression_or_null
 	| param_expression
 	;
 
+/* End of 'param_expression' grammer rules */
+
+
+/* Start of 'constant_range_expression' grammer rules */
+
+constant_range_expression
+	: constant_expression
+	| constant_part_select_range
+	;
+
+/* End of 'constant_range_expression' grammer rules */
+
+
+/* Start of 'constant_part_select_range' grammer rules */
+
 constant_part_select_range
 	: constant_range
 	| constant_indexed_range
 	;
 
+/* End of 'constant_part_select_range' grammer rules */
+
+
+/* Start of 'constant_range' grammer rules */
+
 constant_range
 	: constant_expression ':' constant_expression
 	;
+
+/* End of 'constant_range' grammer rules */
+
+
+/* Start of 'constant_indexed_range' grammer rules */
 
 constant_indexed_range
 	: constant_expression ADDITION_OPERATOR constant_expression
 	| constant_expression REDUCTION_OPERATOR constant_expression
 	;
 
+/* End of 'constant_indexed_range' grammer rules */
+
+
 /* Start of 'expression' grammer rules */
 
 expression
 	: primary
-	| unary_operator attribute_instance_recurse_or_null primary
+	| unary_operator
+		attribute_instance_recurse_or_null primary
 	| inc_or_dec_expression
 	| '(' operator_assignment ')'
-	| expression binary_operator attribute_instance_recurse_or_null expression
+	| expression binary_operator
+		attribute_instance_recurse_or_null expression
 	| conditional_expression
 	| inside_expression
 	| tagged_union_expression
@@ -8744,6 +8813,28 @@ comma_expression_or_null
 
 /* End of 'expression' grammer rules */
 
+
+/* Start of 'tagged_union_expression' grammer rules */
+
+tagged_union_expression
+	: SVLOG_TAGGED identifier
+	| SVLOG_TAGGED identifier primary
+	;
+
+/* End of 'tagged_union_expression' grammer rules */
+
+
+/* Start of 'inside_expression' grammer rules */
+
+inside_expression
+	: expression SVLOG_INSIDE '{' range_list '}'
+	;
+
+/* End of 'inside_expression' grammer rules */
+
+
+/* Start of 'mintypmax_expression' grammer rules */
+
 mintypmax_expression
 	: expression
 	| expression ':' expression ':' expression
@@ -8754,15 +8845,75 @@ mintypmax_expression_or_null
 	| mintypmax_expression
 	;
 
+/* End of 'mintypmax_expression' grammer rules */
+
+
+/* Start of 'module_path_conditional_expression' grammer rules */
+
+module_path_conditional_expression
+	: module_path_expression '?'
+		attribute_instance_recurse_or_null
+			module_path_expression ':' module_path_expression
+	;
+
+/* End of 'module_path_conditional_expression' grammer rules */
+
+
+/* Start of 'module_path_expression' grammer rules */
+
+module_path_expression
+	: module_path_primary
+	| unary_module_path_operator
+		attribute_instance_recurse_or_null
+			module_path_primary
+	| module_path_expression binary_module_path_operator
+		attribute_instance_recurse_or_null module_path_expression
+	| module_path_conditional_expression
+	;
+
+module_path_expression_seq_list
+	: module_path_expression
+	| module_path_expression_seq_list ',' module_path_expression
+	;
+
+module_path_expression_seq_list_or_null
+	: %empty
+	| module_path_expression_seq_list
+	;
+
+/* End of 'module_path_expression' grammer rules */
+
+
+/* Start of 'module_path_mintypmax_expression' grammer rules */
+
+module_path_mintypmax_expression
+	: module_path_expression
+	| module_path_expression ':'
+		module_path_expression ':'
+			module_path_expression
+	;
+
+/* End of 'module_path_mintypmax_expression' grammer rules */
+
+
+/* Start of 'part_select_range' grammer rules */
+
 part_select_range 
 	: constant_range
 	| indexed_range
 	;
 
+/* End of 'part_select_range' grammer rules */
+
+
+/* Start of 'indexed_range' grammer rules */
+
 indexed_range
 	: expression ADDITION_OPERATOR constant_expression
 	| expression REDUCTION_OPERATOR constant_expression
 	;
+
+/* End of 'indexed_range' grammer rules */
 
 /*******************************************
  * End of 'Expressions' Grammer Rules      *
