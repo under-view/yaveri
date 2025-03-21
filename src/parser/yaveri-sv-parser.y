@@ -2502,11 +2502,10 @@ enum_base_type_or_null
 /* Start of 'enum_name_declaration' grammer rules */
 
 enum_name_declaration
-	: identifier
+	: identifier equal_constant_expression_or_null
 	| identifier '[' integral_number ']'
 	| identifier '[' integral_number ':' integral_number ']'
-	| identifier '[' integral_number ':' integral_number ']' '=' constant_expression
-	| identifier '=' constant_expression
+		equal_constant_expression_or_null
 	;
 
 enum_name_declaration_seq_list
@@ -3240,7 +3239,7 @@ equal_dynamic_array_new_or_null
 
 unpacked_dimension
 	: '[' constant_range ']'
-	| '[' constant_expression ']'
+	| square_brackets_constant_expression
 	;
 
 unpacked_dimension_recurse
@@ -4071,10 +4070,8 @@ property_expr
 	| SVLOG_CASE '(' expression_or_dist ')' property_case_item_recurse SVLOG_ENDCASE
 	| sequence_expr OVERLAPPED_OPERATOR_FOLLOWED_BY property_expr
 	| sequence_expr NONOVERLAPPED_OPERATOR_FOLLOWED_BY property_expr
-	| SVLOG_NEXTTIME property_expr
-	| SVLOG_NEXTTIME '[' constant_expression ']' property_expr
-	| SVLOG_S_NEXTTIME property_expr
-	| SVLOG_S_NEXTTIME '[' constant_expression ']' property_expr
+	| SVLOG_NEXTTIME square_brackets_constant_expression_or_null property_expr
+	| SVLOG_S_NEXTTIME square_brackets_constant_expression_or_null property_expr
 	| SVLOG_ALWAYS property_expr
 	| SVLOG_ALWAYS '[' cycle_delay_const_range_expression ']' property_expr
 	| SVLOG_S_ALWAYS '[' constant_range ']' property_expr
@@ -5608,7 +5605,7 @@ loop_generate_construct
 /* Start of 'genvar_initialization' grammer rules */
 
 genvar_initialization
-	: genvar_or_null identifier '=' constant_expression
+	: genvar_or_null identifier equal_constant_expression
 	;
 
 /* End of 'genvar_initialization' grammer rules */
@@ -5643,7 +5640,7 @@ else_generate_block_or_null
 	;
 
 if_generate_construct
-	: SVLOG_IF '(' constant_expression ')'
+	: SVLOG_IF paren_constant_expression
 		generate_block else_generate_block_or_null
 	;
 
@@ -5653,7 +5650,7 @@ if_generate_construct
 /* Start of 'case_generate_construct' grammer rules */
 
 case_generate_construct
-	: SVLOG_CASE '(' constant_expression ')'
+	: SVLOG_CASE paren_constant_expression
 		case_generate_item_recurse SVLOG_ENDCASE
 	;
 
@@ -8633,6 +8630,39 @@ constant_expression_seq_list
 	| constant_expression_seq_list ',' constant_expression
 	;
 
+equal_constant_expression
+	: '=' constant_expression
+	;
+
+equal_constant_expression_or_null
+	: %empty
+	| equal_constant_expression
+	;
+
+paren_constant_expression
+	: '(' constant_expression ')'
+	;
+
+paren_constant_expression_or_null
+	: %empty
+	| paren_constant_expression
+	;
+
+square_brackets_constant_expression
+	: '[' constant_expression ']'
+	;
+
+square_brackets_constant_expression_or_null
+	: %empty
+	| square_brackets_constant_expression
+	;
+
+square_brackets_constant_expression_recurse
+	: square_brackets_constant_expression
+	| square_brackets_constant_expression_recurse
+		square_brackets_constant_expression
+	;
+
 /* End of 'constant_expression' grammer rules */
 
 
@@ -8703,6 +8733,15 @@ constant_range_expression
 	| constant_part_select_range
 	;
 
+square_brackets_constant_range_expression
+	: '[' constant_range_expression ']'
+	;
+
+square_brackets_constant_range_expression_or_null
+	: %empty
+	| square_brackets_constant_range_expression
+	;
+
 /* End of 'constant_range_expression' grammer rules */
 
 
@@ -8711,6 +8750,15 @@ constant_range_expression
 constant_part_select_range
 	: constant_range
 	| constant_indexed_range
+	;
+
+square_brackets_constant_part_select_range
+	: '[' constant_part_select_range ']'
+	;
+
+square_brackets_constant_part_select_range_or_null
+	: %empty
+	| square_brackets_constant_part_select_range
 	;
 
 /* End of 'constant_part_select_range' grammer rules */
@@ -8781,6 +8829,11 @@ square_brackets_expression
 square_brackets_expression_or_null
 	: %empty
 	| square_brackets_expression
+	;
+
+square_brackets_expression_recurse
+	: square_brackets_expression
+	| square_brackets_expression_recurse square_brackets_expression
 	;
 
 paren_expression
@@ -8903,6 +8956,15 @@ part_select_range
 	| indexed_range
 	;
 
+square_brackets_part_select_range
+	: '[' part_select_range ']'
+	;
+
+square_brackets_part_select_range_or_null
+	: %empty
+	| square_brackets_part_select_range
+	;
+
 /* End of 'part_select_range' grammer rules */
 
 
@@ -8926,56 +8988,115 @@ indexed_range
  * Based off section: (A.8.4 Primaries). *
  *****************************************/
 
+
+/* Start of 'constant_primary' grammer rules */
+
 constant_primary
-	: SVLOG_NULL
-	| identifier
-	| identifier '[' constant_range_expression ']'
-	| primary_literal
+	: primary_literal
 	| ps_parameter_identifier constant_select
+	| identifier
+		square_brackets_constant_range_expression_or_null
 	| identifier constant_select
-	| package_scope identifier
-	| class_scope identifier
+	| class_or_package_scope_or_null identifier
 	| empty_unpacked_array_concatenation
 	| constant_concatenation
-	| constant_concatenation '[' constant_range_expression ']'
+		square_brackets_constant_range_expression_or_null
 	| constant_multiple_concatenation
-	| constant_multiple_concatenation '[' constant_range_expression ']'
+		square_brackets_constant_range_expression_or_null
 	| subroutine_call
-	| subroutine_call '[' constant_range_expression ']'
-	| constant_let_expression
+		square_brackets_constant_range_expression_or_null
+	| let_expression
 	| '(' constant_mintypmax_expression ')'
 	| constant_cast
 	| assignment_pattern_expression
 	| type_reference
+	| SVLOG_NULL
 	;
 
+/* End of 'constant_primary' grammer rules */
+
+
+/* Start of 'module_path_primary' grammer rules */
+
+module_path_primary
+	: number
+	| identifier
+	| module_path_concatenation
+	| module_path_multiple_concatenation
+	| subroutine_call
+	| '(' module_path_mintypmax_expression ')'
+	;
+
+/* End of 'module_path_primary' grammer rules */
+
+
+/* Start of 'primary' grammer rules */
+
 primary
-	: '$'
-	| SVLOG_THIS
-	| SVLOG_NULL
-	| primary_literal
-	| hierarchical_identifier select
-	| class_qualifier hierarchical_identifier select
-	| package_scope hierarchical_identifier select
+	: primary_literal
+	| class_qualifier_or_package_scope_or_null
+		hierarchical_identifier select
 	| empty_unpacked_array_concatenation
 	| concatenation
-	| concatenation '[' range_expression ']'
+		square_brackets_range_expression_or_null
 	| multiple_concatenation
-	| multiple_concatenation '[' range_expression ']'
+		square_brackets_range_expression_or_null
 	| subroutine_call
-	| subroutine_call '[' range_expression ']'
+		square_brackets_range_expression_or_null
 	| let_expression
 	| '(' mintypmax_expression ')'
 	| cast
 	| assignment_pattern_expression
 	| streaming_concatenation
 	| sequence_method_call
+	| SVLOG_THIS
+	| '$'
+	| SVLOG_NULL
 	;
+
+/* End of 'primary' grammer rules */
+
+
+/* Start of 'class_qualifier' grammer rules */
+
+class_qualifier
+	: local_class_scope_op_or_null
+		implicit_class_handle_period_or_class_scope_or_null
+	;
+
+class_qualifier_or_package_scope
+	: class_qualifier
+	| package_scope
+	;
+
+class_qualifier_or_package_scope_or_null
+	: %empty
+	| class_qualifier_or_package_scope
+	;
+
+/* End of 'class_qualifier' grammer rules */
+
+
+/* Start of 'range_expression' grammer rules */
 
 range_expression 
 	: expression
 	| part_select_range
 	;
+
+square_brackets_range_expression
+	: '[' range_expression ']'
+	;
+
+square_brackets_range_expression_or_null
+	: %empty
+	| square_brackets_range_expression
+	;
+
+/* End of 'range_expression' grammer rules */
+
+
+/* Start of 'primary_literal' grammer rules */
 
 primary_literal
 	: number
@@ -8984,10 +9105,20 @@ primary_literal
 	| string_literal
 	;
 
+/* End of 'primary_literal' grammer rules */
+
+
+/* Start of 'time_literal' grammer rules */
+
 time_literal
 	: unsigned_number time_unit
 	| fixed_point_number time_unit
 	;
+
+/* End of 'time_literal' grammer rules */
+
+
+/* Start of 'time_unit' grammer rules */
 
 time_unit
 	: 's'
@@ -8998,51 +9129,163 @@ time_unit
 	| SVLOG_fEMTOSEC
 	;
 
+/* End of 'time_unit' grammer rules */
+
+
+/* Start of 'implicit_class_handle' grammer rules */
+
 implicit_class_handle
 	: SVLOG_THIS
 	| SVLOG_SUPER
 	| SVLOG_THIS '.' SVLOG_SUPER
 	;
 
+implicit_class_handle_period
+	: implicit_class_handle '.'
+	;
+
+implicit_class_handle_period_or_null
+	: %empty
+	| implicit_class_handle_period
+	;
+
+implicit_class_handle_period_or_class_scope
+	: implicit_class_handle_period
+	| class_scope
+	;
+
+implicit_class_handle_period_or_class_scope_or_null
+	: %empty
+	| implicit_class_handle_period_or_class_scope
+	;
+
+implicit_class_handle_period_or_package_scope
+	: implicit_class_handle_period
+	| package_scope
+	;
+
+implicit_class_handle_period_or_package_scope_or_null
+	: %empty
+	| implicit_class_handle_period_or_package_scope
+	;
+
+/* End of 'implicit_class_handle' grammer rules */
+
+
+/* Start of 'bit_select' grammer rules */
+
 bit_select
 	: %empty
-	| '[' expression ']'
-	| bit_select '[' expression ']'
+	| square_brackets_expression_recurse
 	;
 
-mident_bit_select_seq_list
+period_ident_bit_select
+	: period_ident bit_select
+	;
+
+period_ident_bit_select_recurse
+	: period_ident_bit_select
+	| period_ident_bit_select_recurse period_ident_bit_select
+	;
+
+period_ident_bit_select_recurse_or_null
 	: %empty
-	| '.' identifier bit_select
-	| mident_bit_select_seq_list '.' identifier bit_select
+	| period_ident_bit_select_recurse
+	;
+
+/* End of 'bit_select' grammer rules */
+
+
+/* Start of 'select' grammer rules */
+
+select_period_ident_bit_select
+	: period_ident_bit_select_recurse_or_null
+		period_ident
+	;
+
+select_period_ident_bit_select_or_null
+	: %empty
+	| select_period_ident_bit_select
+	;
 
 select
-	: bit_select
-	| bit_select '[' part_select_range ']'
-	| mident_bit_select_seq_list '.' identifier bit_select
-	| mident_bit_select_seq_list '.' identifier bit_select '[' part_select_range ']'
+	: select_period_ident_bit_select_or_null
+		bit_select square_brackets_part_select_range_or_null
 	;
+
+/* End of 'select' grammer rules */
+
+
+/* Start of 'nonrange_select' grammer rules */
 
 nonrange_select
-	: bit_select
-	| mident_bit_select_seq_list '.' identifier bit_select
+	: select_period_ident_bit_select_or_null bit_select
 	;
+
+/* End of 'nonrange_select' grammer rules */
+
+
+/* Start of 'constant_bit_select' grammer rules */
 
 constant_bit_select
-	: '[' constant_expression ']'
-	| constant_bit_select '[' constant_expression ']'
+	: %empty
+	| square_brackets_constant_expression_recurse
 	;
 
-constant_select_seq_list
-	: '.' identifier constant_bit_select
-	| constant_select_seq_list '.' identifier constant_bit_select
+period_ident_constant_bit_select
+	: period_ident constant_bit_select
+	;
+
+period_ident_constant_bit_select_recurse
+	: period_ident_constant_bit_select
+	| period_ident_constant_bit_select_recurse
+		period_ident_constant_bit_select
+	;
+
+period_ident_constant_bit_select_recurse_or_null
+	: %empty
+	| period_ident_constant_bit_select_recurse
+	;
+
+/* End of 'constant_bit_select' grammer rules */
+
+
+/* Start of 'constant_select' grammer rules */
+
+constant_select_period_ident_bit_select
+	: period_ident_constant_bit_select_recurse_or_null
+		period_ident
+	;
+
+constant_select_period_ident_bit_select_or_null
+	: %empty
+	| constant_select_period_ident_bit_select
 	;
 
 constant_select
-	: constant_bit_select
-	| constant_bit_select '[' constant_part_select_range ']'
-	| constant_select_seq_list
-	| constant_select_seq_list '[' constant_part_select_range ']'
+	: constant_select_period_ident_bit_select_or_null constant_bit_select
+		square_brackets_constant_part_select_range_or_null
 	;
+
+/* End of 'constant_select' grammer rules */
+
+
+/* Start of 'cast' grammer rules */
+
+cast
+	: casting_type APOSTROPHE paren_expression
+	;
+
+/* End of 'cast' grammer rules */
+
+
+/* Start of 'constant_cast' grammer rules */
+
+constant_cast
+	: casting_type APOSTROPHE paren_constant_expression
+	;
+
+/* End of 'constant_cast' grammer rules */
 
 /*****************************************
  * End of 'Primaries' Grammer Rules      *
@@ -9078,8 +9321,8 @@ equal_net_lvalue_recurse
 
 variable_lvalue
 	: hierarchical_identifier select
-	| implicit_class_handle '.' hierarchical_identifier select
-	| package_scope hierarchical_identifier select
+	| implicit_class_handle_period_or_package_scope_or_null
+		hierarchical_identifier select
 	| streaming_concatenation
 	| assignment_pattern_variable_lvalue
 	| assignment_pattern_expression_type assignment_pattern_variable_lvalue
@@ -9417,8 +9660,7 @@ attribute_instance_recurse_or_null
 	;
 
 attr_spec
-	: attr_name
-	| attr_name  '=' constant_expression
+	: attr_name equal_constant_expression_or_null
 	;
 
 attribute_spec_seq_list
@@ -9564,15 +9806,15 @@ ps_parameter_identifier
 	;
 
 ps_param_ident_seq_list
-	: generate_block_identifier '.'
-	| generate_block_identifier  '[' constant_expression ']' '.'
-	| ps_param_ident_seq_list generate_block_identifier '.'
-	| ps_param_ident_seq_list generate_block_identifier  '[' constant_expression ']' '.'
+	: generate_block_identifier
+		square_brackets_constant_expression_or_null '.'
+	| ps_param_ident_seq_list generate_block_identifier
+		square_brackets_constant_expression_or_null '.'
 	;
 
 ps_type_identifier
 	: class_or_package_scope_or_null identifier
-	| SVLOG_LOCAL CLASS_SCOPE_OPERATOR identifier
+	| local_class_scope_op_or_null identifier
 	;
 
 system_tf_identifier
@@ -9690,6 +9932,15 @@ ident_or_class_scope_or_null
 	| class_scope
 	;
 
+local_class_scope_op
+	: SVLOG_LOCAL CLASS_SCOPE_OPERATOR
+	;
+
+local_class_scope_op_or_null
+	: %empty
+	| local_class_scope_op
+	;
+
 default_or_null
 	: %empty
 	| SVLOG_DEFAULT
@@ -9698,15 +9949,6 @@ default_or_null
 var_or_null
 	: %empty
 	| SVLOG_VAR
-	;
-
-equal_constant_expression
-	: '=' constant_expression
-	;
-
-equal_constant_expression_or_null
-	: equal_constant_expression
-	| %empty
 	;
 
 const_or_null
