@@ -9298,11 +9298,13 @@ constant_cast
  * Based off section: (A.8.5 Expression left-side values). *
  ***********************************************************/
 
+/* Start of 'net_lvalue' grammer rules */
+
 net_lvalue
 	: ps_or_hierarchical_net_identifier constant_select
 	| '{' net_lvalue_seq_list '}'
-	| assignment_pattern_net_lvalue
-	| assignment_pattern_expression_type assignment_pattern_net_lvalue
+	| assignment_pattern_expression_type_or_null
+		assignment_pattern_net_lvalue
 	;
 
 net_lvalue_seq_list
@@ -9319,14 +9321,18 @@ equal_net_lvalue_recurse
 	| equal_net_lvalue_recurse equal_net_lvalue
 	;
 
+/* End of 'constant_cast' grammer rules */
+
+
+/* Start of 'variable_lvalue' grammer rules */
+
 variable_lvalue
-	: hierarchical_identifier select
-	| implicit_class_handle_period_or_package_scope_or_null
+	: implicit_class_handle_period_or_package_scope_or_null
 		hierarchical_identifier select
+	| '{' variable_lvalue_seq_list '}'
+	| assignment_pattern_expression_type_or_null
+		assignment_pattern_variable_lvalue
 	| streaming_concatenation
-	| assignment_pattern_variable_lvalue
-	| assignment_pattern_expression_type assignment_pattern_variable_lvalue
-	| variable_lvalue ',' variable_lvalue
 	;
 
 variable_lvalue_seq_list
@@ -9334,11 +9340,17 @@ variable_lvalue_seq_list
 	| variable_lvalue_seq_list ',' variable_lvalue
 	;
 
+/* End of 'variable_lvalue' grammer rules */
+
+
+/* Start of 'nonrange_variable_lvalue' grammer rules */
+
 nonrange_variable_lvalue
-	: hierarchical_identifier nonrange_select
-	| implicit_class_handle '.' hierarchical_identifier nonrange_select
-	| package_scope hierarchical_identifier nonrange_select
+	: implicit_class_handle_period_or_package_scope_or_null
+		hierarchical_identifier nonrange_select
 	;
+
+/* End of 'nonrange_variable_lvalue' grammer rules */
 
 /***********************************************************
  * End of 'Expression left-side values' Grammer Rules      *
