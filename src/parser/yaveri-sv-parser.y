@@ -9363,6 +9363,8 @@ nonrange_variable_lvalue
  * Based off section: (A.8.6 Operators). *
  *****************************************/
 
+/* Start of 'unary_operator' grammer rules */
+
 unary_operator
 	: sign
 	| LOGICAL_NOT
@@ -9375,9 +9377,13 @@ unary_operator
 	| BIT_WISE_XNOR
 	;
 
+/* End of 'unary_operator' grammer rules */
+
+
+/* Start of 'binary_operator' grammer rules */
+
 binary_operator
-	: '+'
-	| '-'
+	: sign
 	| '*'
 	| '/'
 	| '%'
@@ -9406,10 +9412,49 @@ binary_operator
 	| EQUIVALANCE_OPERATOR
 	;
 
+/* End of 'binary_operator' grammer rules */
+
+
+/* Start of 'inc_or_dec_operator' grammer rules */
+
 inc_or_dec_operator
 	: INCREMENT_OPERATOR
 	| DECREMENT_OPERATOR
 	;
+
+/* End of 'inc_or_dec_operator' grammer rules */
+
+
+/* Start of 'unary_module_path_operator' grammer rules */
+
+unary_module_path_operator
+	: LOGICAL_NOT
+	| BIT_WISE_NOT
+	| BIT_WISE_AND
+	| BIT_WISE_NAND
+	| BIT_WISE_OR
+	| BIT_WISE_NOR
+	| BIT_WISE_XOR
+	| BIT_WISE_XNOR
+	;
+
+/* End of 'unary_module_path_operator' grammer rules */
+
+
+/* Start of 'binary_module_path_operator' grammer rules */
+
+binary_module_path_operator
+	: LOGICAL_EQUAL
+	| LOGICAL_INEQUAL
+	| LOGICAL_AND
+	| LOGICAL_OR
+	| BIT_WISE_AND
+	| BIT_WISE_OR
+	| BIT_WISE_XOR
+	| BIT_WISE_XNOR
+	;
+
+/* End of 'binary_module_path_operator' grammer rules */
 
 /*****************************************
  * End of 'Operators' Grammer Rules      *
