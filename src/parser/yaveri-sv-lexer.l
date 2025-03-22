@@ -405,6 +405,8 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "[+]"          { return REPEAT_ONE_OR_MORE; /* [*1:$] */    }
 "[*"           { return CONSECUTIVE_REPEAT_OPERATOR;        }
 "[="           { return NON_CONSECUTIVE_REPEAT_OPERATOR;    }
+"(*"           { return PAREN_ASTERISK;                     }
+"*)"           { return ASTERISK_PAREN;                     }
 "~&"           { return BIT_WISE_NAND;                      }
 "~|"           { return BIT_WISE_NOR;                       }
 "#0"           { return POUND_ZERO;                         }

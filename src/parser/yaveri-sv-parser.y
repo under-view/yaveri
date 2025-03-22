@@ -371,6 +371,8 @@
 %token <itoken> REPEAT_ONE_OR_MORE  /* [+] is an abbreviation for [*1:$] */
 %token <itoken> CONSECUTIVE_REPEAT_OPERATOR
 %token <itoken> NON_CONSECUTIVE_REPEAT_OPERATOR
+%token <itoken> PAREN_ASTERISK
+%token <itoken> ASTERISK_PAREN
 %token <itoken> BIT_WISE_NAND
 %token <itoken> BIT_WISE_NOR
 %token <itoken> POUND_ZERO
@@ -9969,8 +9971,10 @@ triple_qstring_item_string_eseq_recurse_or_null
  * Based off section: (A.9.1 Attributes). *
  ******************************************/
 
+/* Start of 'attribute_instance' grammer rules */
+
 attribute_instance
-	: '(' '*' attribute_spec_seq_list '*' ')'
+	: PAREN_ASTERISK attr_spec_seq_list ASTERISK_PAREN
 	;
 
 attribute_instance_recurse
@@ -9983,18 +9987,21 @@ attribute_instance_recurse_or_null
 	| attribute_instance_recurse
 	;
 
+/* End of 'attribute_instance' grammer rules */
+
+
+/* Start of 'attr_spec' grammer rules */
+
 attr_spec
-	: attr_name equal_constant_expression_or_null
+	: identifier equal_constant_expression_or_null
 	;
 
-attribute_spec_seq_list
+attr_spec_seq_list
 	: attr_spec
-	| attribute_instance_recurse ',' attr_spec
+	| attr_spec_seq_list ',' attr_spec
 	;
 
-attr_name
-	: identifier
-	;
+/* End of 'attr_spec' grammer rules */
 
 /******************************************
  * Start of 'Attributes' grammer rules.   *
