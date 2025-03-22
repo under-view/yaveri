@@ -343,11 +343,36 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "'b1"  { return SVLOG_APOST_LB1;      }
 "'B0"  { return SVLOG_APOST_CB0;      }
 "'B1"  { return SVLOG_APOST_CB1;      }
+"'sb"  { return SVLOG_APOST_LSLB;     }
+"'sB"  { return SVLOG_APOST_LSCB;     }
+"'Sb"  { return SVLOG_APOST_CSLB;     }
+"'SB"  { return SVLOG_APOST_CSCB;     }
+"'sd"  { return SVLOG_APOST_LSLD;     }
+"'sD"  { return SVLOG_APOST_LSCD;     }
+"'Sd"  { return SVLOG_APOST_CSLD;     }
+"'SD"  { return SVLOG_APOST_CSCD;     }
+"'sh"  { return SVLOG_APOST_LSLH;     }
+"'sH"  { return SVLOG_APOST_LSCH;     }
+"'Sh"  { return SVLOG_APOST_CSLH;     }
+"'SH"  { return SVLOG_APOST_CSCH;     }
+"'so"  { return SVLOG_APOST_LSLO;     }
+"'sO"  { return SVLOG_APOST_LSCO;     }
+"'So"  { return SVLOG_APOST_CSLO;     }
+"'SO"  { return SVLOG_APOST_CSCO;     }
+"'b"   { return SVLOG_APOST_LB;       }
+"'B"   { return SVLOG_APOST_CB;       }
+"'d"   { return SVLOG_APOST_LD;       }
+"'D"   { return SVLOG_APOST_CD;       }
+"'h"   { return SVLOG_APOST_LH;       }
+"'H"   { return SVLOG_APOST_CH;       }
+"'o"   { return SVLOG_APOST_LO;       }
+"'O"   { return SVLOG_APOST_CO;       }
+"'0"   { return SVLOG_APOST_ZERO;     }
+"'1"   { return SVLOG_APOST_ONE;      }
 "01"   { return ZERO_ONE;             }
 "10"   { return ONE_ZER0;             }
 "0"    { return '0';                  }
 "1"    { return '1';                  }
-
 
 
 "<<<="         { return LOGICAL_LEFT_SHIFT_ASSIGN;          }
@@ -423,24 +448,17 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 
 
 "B"  { return 'B'; }
-"D"  { return 'D'; }
 "E"  { return 'E'; }
 "F"  { return 'F'; }
-"H"  { return 'H'; }
 "N"  { return 'N'; }
-"O"  { return 'O'; }
 "P"  { return 'P'; }
 "R"  { return 'R'; }
-"S"  { return 'S'; }
 "X"  { return 'X'; }
 "Z"  { return 'Z'; }
 "b"  { return 'b'; }
-"d"  { return 'd'; }
 "e"  { return 'e'; }
 "f"  { return 'f'; }
-"h"  { return 'h'; }
 "n"  { return 'n'; }
-"o"  { return 'o'; }
 "p"  { return 'p'; }
 "r"  { return 'r'; }
 "s"  { return 's'; }

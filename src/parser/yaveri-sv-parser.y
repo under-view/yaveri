@@ -312,6 +312,32 @@
 %token <itoken> SVLOG_APOST_LB1
 %token <itoken> SVLOG_APOST_CB0
 %token <itoken> SVLOG_APOST_CB1
+%token <itoken> SVLOG_APOST_LSLB
+%token <itoken> SVLOG_APOST_LSCB
+%token <itoken> SVLOG_APOST_CSLB
+%token <itoken> SVLOG_APOST_CSCB
+%token <itoken> SVLOG_APOST_LSLD
+%token <itoken> SVLOG_APOST_LSCD
+%token <itoken> SVLOG_APOST_CSLD
+%token <itoken> SVLOG_APOST_CSCD
+%token <itoken> SVLOG_APOST_LSLH
+%token <itoken> SVLOG_APOST_LSCH
+%token <itoken> SVLOG_APOST_CSLH
+%token <itoken> SVLOG_APOST_CSCH
+%token <itoken> SVLOG_APOST_LSLO
+%token <itoken> SVLOG_APOST_LSCO
+%token <itoken> SVLOG_APOST_CSLO
+%token <itoken> SVLOG_APOST_CSCO
+%token <itoken> SVLOG_APOST_LB
+%token <itoken> SVLOG_APOST_CB
+%token <itoken> SVLOG_APOST_LD
+%token <itoken> SVLOG_APOST_CD
+%token <itoken> SVLOG_APOST_LH
+%token <itoken> SVLOG_APOST_CH
+%token <itoken> SVLOG_APOST_LO
+%token <itoken> SVLOG_APOST_CO
+%token <itoken> SVLOG_APOST_ZERO
+%token <itoken> SVLOG_APOST_ONE
 %token <itoken> ZERO_ONE
 %token <itoken> ONE_ZER0
 
@@ -9467,10 +9493,17 @@ binary_module_path_operator
  * Based off section: (A.8.7 Numbers). *
  ***************************************/
 
+/* Start of 'number' grammer rules */
+
 number
 	: integral_number
 	| real_number
 	;
+
+/* End of 'number' grammer rules */
+
+
+/* Start of 'integral_number' grammer rules */
 
 integral_number
 	: decimal_number
@@ -9479,144 +9512,261 @@ integral_number
 	| hex_number
 	;
 
+/* End of 'integral_number' grammer rules */
+
+
+/* Start of 'decimal_number' grammer rules */
+
 decimal_number
 	: unsigned_number
-	| decimal_base_unsigned_number
-	| decimal_base_x_digit
-	| decimal_base_z_digit
+	| unsigned_number_or_null
+		decimal_base unsigned_number
+	| unsigned_number_or_null
+		decimal_base x_digit
+			underscore_recurse_or_null
+	| unsigned_number_or_null
+		decimal_base z_digit
+			underscore_recurse_or_null
 	;
 
-decimal_base_unsigned_number
-	: decimal_base unsigned_number
-	| size decimal_base unsigned_number
-	;
+/* End of 'decimal_number' grammer rules */
 
-decimal_base_x_digit
-	: decimal_base x_digit
-	| decimal_base_x_digit decimal_base x_digit '_'
-	| size decimal_base x_digit
-	| decimal_base_x_digit size decimal_base x_digit '_'
-	;
 
-decimal_base_z_digit
-	: decimal_base z_digit
-	| decimal_base_z_digit decimal_base z_digit '_'
-	| size decimal_base z_digit
-	| decimal_base_z_digit size decimal_base z_digit '_'
-	;
+/* Start of 'binary_number' grammer rules */
 
 binary_number
-	: binary_base binary_value
-	| size binary_base binary_value
+	: unsigned_number_or_null
+		binary_base binary_value
 	;
+
+/* End of 'binary_number' grammer rules */
+
+
+/* Start of 'octal_number' grammer rules */
 
 octal_number
-	: octal_base octal_value
-	| size octal_base octal_value
+	: unsigned_number_or_null
+		octal_base octal_value
 	;
 
+/* End of 'octal_number' grammer rules */
+
+
+/* Start of 'hex_number' grammer rules */
+
 hex_number
-	: hex_base hex_value
-	| size hex_base hex_value
+	: unsigned_number_or_null
+		hex_base hex_value
 	;
+
+/* End of 'hex_number' grammer rules */
+
+
+/* Start of 'sign' grammer rules */
 
 sign
 	: '+'
 	| '-'
 	;
 
-size
-	: unsigned_number
+sign_or_null
+	: %empty
+	| sign
 	;
+
+/* End of 'sign' grammer rules */
+
+
+/* Start of 'real_number' grammer rules */
 
 real_number
 	: fixed_point_number
-	| unsigned_number exp unsigned_number
-	| unsigned_number exp sign unsigned_number
-	| unsigned_number '.' unsigned_number exp unsigned_number
-	| unsigned_number '.' unsigned_number exp sign unsigned_number
+	| unsigned_number period_unsigned_number_or_null
+		exp sign_or_null unsigned_number
 	;
 
+/* End of 'real_number' grammer rules */
+
+
+/* Start of 'fixed_point_number' grammer rules */
+
 fixed_point_number
-	: unsigned_number '.' unsigned_number
+	: unsigned_number period_unsigned_number
 	;
+
+/* End of 'fixed_point_number' grammer rules */
+
+
+/* Start of 'exp' grammer rules */
 
 exp
 	: 'e'
 	| 'E'
 	;
 
+/* End of 'exp' grammer rules */
+
+
+/* Start of 'unsigned_number' grammer rules */
+
 unsigned_number
-	: decimal_digit
-	| unsigned_number decimal_digit
-	| unsigned_number decimal_digit '_'
+	: decimal_digit decimal_digit_or_underscore_recurse_or_null
 	;
+
+unsigned_number_or_null
+	: %empty
+	| unsigned_number
+	;
+
+period_unsigned_number
+	: '.' unsigned_number
+	;
+
+period_unsigned_number_or_null
+	: %empty
+	| period_unsigned_number
+	;
+
+/* End of 'unsigned_number' grammer rules */
+
+
+/* Start of 'binary_value' grammer rules */
 
 binary_value
-	: binary_digit
-	| binary_value binary_digit
-	| binary_value binary_digit '_'
+	: binary_digit binary_digit_or_underscore_recurse_or_null
 	;
+
+/* End of 'binary_value' grammer rules */
+
+
+/* Start of 'octal_value' grammer rules */
 
 octal_value
-	: octal_digit
-	| octal_value octal_digit
-	| octal_value octal_digit '_'
+	: octal_digit octal_digit_or_underscore_recurse_or_null
 	;
+
+/* End of 'octal_value' grammer rules */
+
+
+/* Start of 'hex_value' grammer rules */
 
 hex_value
-	: hex_digit
-	| hex_value hex_digit
-	| hex_value hex_digit '_'
+	: hex_digit hex_digit_or_underscore_recurse_or_null
 	;
+
+/* End of 'hex_value' grammer rules */
+
+
+/* Start of 'decimal_base' grammer rules */
 
 decimal_base
-	: APOSTROPHE 'd'
-	| APOSTROPHE 'D'
-	| APOSTROPHE 's' 'd'
-	| APOSTROPHE 'S' 'd'
-	| APOSTROPHE 's' 'D'
-	| APOSTROPHE 'S' 'D'
+	: SVLOG_APOST_LD
+	| SVLOG_APOST_CD
+	| SVLOG_APOST_LSLD
+	| SVLOG_APOST_LSCD
+	| SVLOG_APOST_CSLD
+	| SVLOG_APOST_CSCD
 	;
+
+/* End of 'decimal_base' grammer rules */
+
+
+/* Start of 'binary_base' grammer rules */
 
 binary_base
-	: APOSTROPHE 'b'
-	| APOSTROPHE 'B'
-	| APOSTROPHE 's' 'b'
-	| APOSTROPHE 's' 'B'
-	| APOSTROPHE 'S' 'b'
-	| APOSTROPHE 'S' 'B'
+	: SVLOG_APOST_LB
+	| SVLOG_APOST_CB
+	| SVLOG_APOST_LSLB
+	| SVLOG_APOST_LSCB
+	| SVLOG_APOST_CSLB
+	| SVLOG_APOST_CSCB
 	;
+
+/* End of 'binary_base' grammer rules */
+
+
+/* Start of 'octal_base' grammer rules */
 
 octal_base
-	: APOSTROPHE 'o'
-	| APOSTROPHE 'O'
-	| APOSTROPHE 's' 'o'
-	| APOSTROPHE 's' 'O'
-	| APOSTROPHE 'S' 'o'
-	| APOSTROPHE 'S' 'O'
+	: SVLOG_APOST_LO
+	| SVLOG_APOST_CO
+	| SVLOG_APOST_LSLO
+	| SVLOG_APOST_LSCO
+	| SVLOG_APOST_CSLO
+	| SVLOG_APOST_CSCO
 	;
+
+/* End of 'octal_base' grammer rules */
+
+
+/* Start of 'hex_base' grammer rules */
 
 hex_base
-	: APOSTROPHE 'h'
-	| APOSTROPHE 'H'
-	| APOSTROPHE 's' 'h'
-	| APOSTROPHE 's' 'H'
-	| APOSTROPHE 'S' 'h'
-	| APOSTROPHE 'S' 'H'
+	: SVLOG_APOST_LH
+	| SVLOG_APOST_CH
+	| SVLOG_APOST_LSLH
+	| SVLOG_APOST_LSCH
+	| SVLOG_APOST_CSLH
+	| SVLOG_APOST_CSCH
 	;
 
-// make sure it's between 0-9
+/* End of 'hex_base' grammer rules */
+
+
+/* Start of 'decimal_digit' grammer rules */
+
 decimal_digit
 	: SVLOG_DIGIT { fprintf(stdout, "decimal_digit %d\n", $1); }
 	;
 
-// make sure it's between 0-1
+decimal_digit_or_underscore
+	: '_'
+	| decimal_digit
+	;
+
+decimal_digit_or_underscore_recurse
+	: decimal_digit_or_underscore
+	| decimal_digit_or_underscore_recurse
+		decimal_digit_or_underscore
+	;
+
+decimal_digit_or_underscore_recurse_or_null
+	: %empty
+	| decimal_digit_or_underscore_recurse
+	;
+
+/* End of 'decimal_digit' grammer rules */
+
+
+/* Start of 'binary_digit' grammer rules */
+
 binary_digit
 	: x_digit
 	| z_digit
-	| SVLOG_DIGIT
+	| '0'
+	| '1'
 	;
+
+binary_digit_or_underscore
+	: '_'
+	| binary_digit
+	;
+
+binary_digit_or_underscore_recurse
+	: binary_digit_or_underscore
+	| binary_digit_or_underscore_recurse
+		binary_digit_or_underscore
+	;
+
+binary_digit_or_underscore_recurse_or_null
+	: %empty
+	| binary_digit_or_underscore_recurse
+	;
+
+/* End of 'binary_digit' grammer rules */
+
+
+/* Start of 'octal_digit' grammer rules */
 
 // make sure it's between 0-7
 octal_digit
@@ -9624,6 +9774,27 @@ octal_digit
 	| z_digit
 	| SVLOG_DIGIT
 	;
+
+octal_digit_or_underscore
+	: '_'
+	| octal_digit
+	;
+
+octal_digit_or_underscore_recurse
+	: octal_digit_or_underscore
+	| octal_digit_or_underscore_recurse
+		octal_digit_or_underscore
+	;
+
+octal_digit_or_underscore_recurse_or_null
+	: %empty
+	| octal_digit_or_underscore_recurse
+	;
+
+/* End of 'octal_digit' grammer rules */
+
+
+/* Start of 'hex_digit' grammer rules */
 
 // make sure it's between 0-9a-fA-F
 hex_digit
@@ -9633,10 +9804,36 @@ hex_digit
 	| SVLOG_HEXCHAR
 	;
 
+hex_digit_or_underscore
+	: '_'
+	| hex_digit
+	;
+
+hex_digit_or_underscore_recurse
+	: hex_digit_or_underscore
+	| hex_digit_or_underscore_recurse
+		hex_digit_or_underscore
+	;
+
+hex_digit_or_underscore_recurse_or_null
+	: %empty
+	| hex_digit_or_underscore_recurse
+	;
+
+/* End of 'hex_digit' grammer rules */
+
+
+/* Start of 'x_digit' grammer rules */
+
 x_digit
 	: 'x'
 	| 'X'
 	;
+
+/* End of 'x_digit' grammer rules */
+
+
+/* Start of 'z_digit' grammer rules */
 
 z_digit
 	: 'z'
@@ -9644,10 +9841,18 @@ z_digit
 	| '?'
 	;
 
-// make sure digit between 0 and 1
+/* End of 'z_digit' grammer rules */
+
+
+/* Start of 'unbased_unsized_literal' grammer rules */
+
 unbased_unsized_literal
-	: APOSTROPHE SVLOG_DIGIT
+	: SVLOG_APOST_ZERO
+	| SVLOG_APOST_ONE
+	| APOSTROPHE z_or_x 
 	;
+
+/* End of 'unbased_unsized_literal' grammer rules */
 
 /***************************************
  * End of 'Numbers' Grammer Rules      *
@@ -10073,6 +10278,16 @@ file_path_spec
 file_path_spec_seq_list
 	: file_path_spec
 	| file_path_spec_seq_list ',' file_path_spec
+	;
+
+underscore_recurse
+	: '_'
+	| underscore_recurse '_'
+	;
+
+underscore_recurse_or_null
+	: %empty
+	| underscore_recurse
 	;
 
 /*********************************
