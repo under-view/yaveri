@@ -9865,36 +9865,98 @@ unbased_unsized_literal
  * Based off section: (A.8.8 Strings). *
  ***************************************/
 
+/* Start of 'string_literal' grammer rules */
+
 string_literal
 	: quoted_string
 	| triple_quoted_string
 	;
 
+/* End of 'string_literal' grammer rules */
+
+
+/* Start of 'quoted_string' grammer rules */
+
 quoted_string
-	: '"' quoted_string_item '"'
-	| '"' string_escape_seq '"'
+	: '"' qstring_item_or_string_eseq_recurse_or_null '"'
 	;
 
+/* End of 'quoted_string' grammer rules */
+
+
+/* Start of 'triple_quoted_string' grammer rules */
+
 triple_quoted_string 
-	:
-	| '"' '"' '"' triple_quoted_string_item '"' '"' '"'
-	| '"' '"' '"' string_escape_seq '"' '"' '"'
+	: '"' '"' '"'
+		triple_qstring_item_string_eseq_recurse_or_null
+	  '"' '"' '"'
 	;
+
+/* End of 'triple_quoted_string' grammer rules */
+
+
+/* Start of 'quoted_string_item' grammer rules */
 
 quoted_string_item
 	: SVLOG_QUOTED_STRING
-	| %empty
 	;
+
+/* End of 'quoted_string_item' grammer rules */
+
+
+/* Start of 'triple_quoted_string_item' grammer rules */
 
 triple_quoted_string_item
 	: SVLOG_TRIPLE_QUOTED_STRING
-	| %empty
 	;
+
+/* End of 'triple_quoted_string_item' grammer rules */
+
+
+/* Start of 'string_escape_seq' grammer rules */
 
 string_escape_seq
 	: SVLOG_ESCAPE_SEQ
-	| %empty
 	;
+
+/* End of 'string_escape_seq' grammer rules */
+
+
+/* Start of 'strings helper' grammer rules */
+
+qstring_item_or_string_eseq
+	: quoted_string_item
+	| string_escape_seq
+	;
+
+qstring_item_or_string_eseq_recurse
+	: qstring_item_or_string_eseq
+	| qstring_item_or_string_eseq_recurse
+		qstring_item_or_string_eseq
+	;
+
+qstring_item_or_string_eseq_recurse_or_null
+	: %empty
+	| qstring_item_or_string_eseq_recurse
+	;
+
+triple_qstring_item_string_eseq
+	: triple_quoted_string_item
+	| string_escape_seq
+	;
+
+triple_qstring_item_string_eseq_recurse
+	: triple_qstring_item_string_eseq
+	| triple_qstring_item_string_eseq_recurse
+		triple_qstring_item_string_eseq
+	;
+
+triple_qstring_item_string_eseq_recurse_or_null
+	: %empty
+	| triple_qstring_item_string_eseq_recurse
+	;
+
+/* End of 'strings helper' grammer rules */
 
 /***************************************
  * End of 'Strings' Grammer Rules      *
