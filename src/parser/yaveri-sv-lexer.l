@@ -380,7 +380,7 @@ MCOMMENT \/\*(.*\n)*.*\*\/
 "##[*]"        { return CYCLE_DELAY_ZERO_OR_MORE;           }
 "##[+]"        { return CYCLE_DELAY_ONE_OR_MORE;            }
 "*::*"         { return EXPORT_DECLARATION;                 }
-"&&&"          { return IF_AND_ONLY_IF;                     }
+"&&&"          { return SVLOG_IF_AND_ONLY_IF;               }
 "==="          { return CASE_EQUAL;                         }
 "!=="          { return CASE_NOT_EQUAL;                     }
 "<<<"          { return LOGICAL_LEFT_SHIFT;                 }
