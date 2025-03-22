@@ -2479,7 +2479,7 @@ data_type
 		packed_dimension_recurse_or_null
 	| class_type
 	| SVLOG_EVENT
-	| ps_covergroup_identifier
+	| package_scope_identifer
 	| type_reference
 	;
 
@@ -2578,7 +2578,7 @@ class_type_ident_seq_list_or_null
 	;
 
 class_type
-	: ps_class_identifier
+	: package_scope_identifer
 		parameter_value_assignment_or_null
 			class_type_ident_seq_list_or_null
 	;
@@ -2589,7 +2589,8 @@ class_type
 /* Start of 'interface_class_type' grammer rules */
 
 interface_class_type
-	: ps_class_identifier parameter_value_assignment_or_null
+	: package_scope_identifer
+		parameter_value_assignment_or_null
 	;
 
 interface_class_type_or_null
@@ -2966,7 +2967,7 @@ delay3_or_null
 delay_value
 	: unsigned_number
 	| real_number
-	| ps_identifier
+	| package_scope_identifer
 	| time_literal
 	| SVLOG_1STEP
 	;
@@ -3925,8 +3926,8 @@ restrict_property_statement
 /* Start of 'property_instance' grammer rules */
 
 property_instance
-	: ps_or_hierarchical_property_identifier
-	| ps_or_hierarchical_property_identifier
+	: ps_identifer_or_hierarchical_identifier
+	| ps_identifer_or_hierarchical_identifier
 		'(' property_list_of_arguments_or_null ')'
 	;
 
@@ -4296,9 +4297,9 @@ sequence_match_item_seq_list_or_null
 /* Start of 'sequence_instance' grammer rules */
 
 sequence_instance
-	: ps_or_hierarchical_sequence_identifier
-	| ps_or_hierarchical_sequence_identifier '(' ')'
-	| ps_or_hierarchical_sequence_identifier '(' sequence_list_of_arguments ')'
+	: ps_identifer_or_hierarchical_identifier
+	| ps_identifer_or_hierarchical_identifier '(' ')'
+	| ps_identifer_or_hierarchical_identifier '(' sequence_list_of_arguments ')'
 	;
 
 /* End of 'sequence_instance' grammer rules */
@@ -4567,8 +4568,7 @@ block_event_expression
 /* Start of 'hierarchical_btf_identifier' grammer rules */
 
 hierarchical_btf_identifier
-	: hierarchical_tf_identifier
-	| hierarchical_block_identifier
+	: hierarchical_identifier
 	| hierarchical_identifier_period_or_class_scope_or_null identifier
 	;
 
@@ -5542,7 +5542,7 @@ program_instantiation
 /* Start of 'checker_instantiation' grammer rules */
 
 checker_instantiation
-	: ps_checker_identifier name_of_instance
+	: package_scope_identifer name_of_instance
 		'(' list_of_checker_port_connections_or_null ')' ';'
 	;
 
@@ -6502,7 +6502,7 @@ event_control
 /* Start of 'clocking_event' grammer rules */
 
 clocking_event
-	: '@' ps_identifier
+	: '@' package_scope_identifer
 	| '@' hierarchical_identifier
 	| '@' '(' event_expression ')'
 	;
@@ -7418,7 +7418,7 @@ rs_production_list
 
 rs_weight_specification
 	: integral_number
-	| ps_identifier
+	| package_scope_identifer
 	| '(' expression ')'
 	;
 
@@ -8434,7 +8434,7 @@ empty_unpacked_array_concatenation
 /* Start of 'tf_call' grammer rules */
 
 tf_call
-	: ps_or_hierarchical_tf_identifier
+	: ps_identifer_or_hierarchical_identifier
 		attribute_instance_recurse_or_null
 			paren_list_of_arguments_or_null
 	;
@@ -9329,7 +9329,8 @@ constant_cast
 /* Start of 'net_lvalue' grammer rules */
 
 net_lvalue
-	: ps_or_hierarchical_net_identifier constant_select
+	: ps_identifer_or_hierarchical_identifier
+		constant_select
 	| '{' net_lvalue_seq_list '}'
 	| assignment_pattern_expression_type_or_null
 		assignment_pattern_net_lvalue
@@ -10014,6 +10015,8 @@ attr_spec_seq_list
  * Based off section: (A.9.3 Identifiers). *
  *******************************************/
 
+/* Start of 'hierarchical_identifier' grammer rules */
+
 hierarchical_identifier
 	: identifier
 	| SVLOG_DSROOT '.' identifier
@@ -10034,6 +10037,11 @@ hierarchical_identifier_period_or_class_scope_or_null
 	: %empty
 	| hierarchical_identifier_period_or_class_scope
 	;
+
+/* End of 'hierarchical_identifier' grammer rules */
+
+
+/* Start of 'identifier' grammer rules */
 
 identifier
 	: SVLOG_SIDENT { fprintf(stdout, "statement(SVLOG_SIDENT) -> %s\n", $1); }
@@ -10075,6 +10083,67 @@ identifier_equal_expression_seq_list_or_null
 	| identifier_equal_expression_seq_list
 	;
 
+ident_colon
+	: identifier ':'
+	;
+
+ident_colon_or_null
+	: %empty
+	| ident_colon
+	;
+
+colon_ident
+	: ':' identifier
+	;
+
+colon_ident_or_null
+	: %empty
+	| colon_ident
+	;
+
+ident_period
+	: identifier '.'
+	;
+
+ident_period_or_null
+	: %empty
+	| ident_period
+	;
+
+ident_period_recurse
+	: ident_period
+	| ident_period_recurse ident_period
+	;
+
+ident_period_recurse_or_null
+	: %empty
+	| ident_period_recurse
+	;
+
+period_ident
+	: '.' identifier
+	;
+
+period_ident_or_null
+	: %empty
+	| period_ident
+	;
+
+period_ident_recurse
+	: period_ident
+	| period_ident_recurse period_ident
+	;
+
+period_ident_recurse_or_null
+	: %empty
+	| period_ident_recurse
+	;
+
+/* End of 'identifier' grammer rules */
+
+
+/* Start of 'package_scope' grammer rules */
+
 package_scope
 	: identifier CLASS_SCOPE_OPERATOR
 	| SVLOG_DSUNIT CLASS_SCOPE_OPERATOR
@@ -10085,51 +10154,49 @@ package_scope_or_null
 	| package_scope
 	;
 
-ps_class_identifier
+package_scope_identifer
 	: package_scope_or_null identifier
 	;
 
-ps_covergroup_identifier
+ps_identifer_or_hierarchical_identifier
 	: package_scope_or_null identifier
+	| hierarchical_identifier
 	;
 
-ps_checker_identifier
-	: package_scope_or_null identifier
-	;
+/* End of 'package_scope' grammer rules */
 
-ps_identifier
-	: package_scope_or_null identifier
-	;
+
+/* Start of 'ps_or_hierarchical_array_identifier' grammer rules */
 
 ps_or_hierarchical_array_identifier
 	: class_or_package_scope_or_null identifier
 	| implicit_class_handle '.' identifier
 	;
 
-ps_or_hierarchical_net_identifier
-	: package_scope_or_null identifier
-	| hierarchical_identifier
+/* End of 'ps_or_hierarchical_array_identifier' grammer rules */
+
+
+/* Start of 'ps_type_identifier' grammer rules */
+
+ps_type_identifier
+	: class_or_package_scope_or_null identifier
+	| local_class_scope_op_or_null identifier
 	;
 
-ps_or_hierarchical_property_identifier
-	: package_scope_or_null identifier
-	| hierarchical_property_identifier
-	;
+/* End of 'ps_type_identifier' grammer rules */
 
-ps_or_hierarchical_sequence_identifier
-	: package_scope_or_null identifier
-	| hierarchical_identifier
-	;
 
-ps_or_hierarchical_tf_identifier
-	: package_scope_or_null identifier
-	| hierarchical_identifier
-	;
+/* Start of 'rs_production_identifier' grammer rules */
 
 rs_production_identifier_or_null
 	: %empty
 	| identifier
 	;
+
+/* End of 'rs_production_identifier' grammer rules */
+
+
+/* Start of 'ps_parameter_identifier' grammer rules */
 
 ps_parameter_identifier
 	: class_or_package_scope_or_null identifier
@@ -10137,20 +10204,21 @@ ps_parameter_identifier
 	;
 
 ps_param_ident_seq_list
-	: generate_block_identifier
-		square_brackets_constant_expression_or_null '.'
-	| ps_param_ident_seq_list generate_block_identifier
+	: identifier square_brackets_constant_expression_or_null '.'
+	| ps_param_ident_seq_list identifier
 		square_brackets_constant_expression_or_null '.'
 	;
 
-ps_type_identifier
-	: class_or_package_scope_or_null identifier
-	| local_class_scope_op_or_null identifier
-	;
+/* End of 'ps_parameter_identifier' grammer rules */
+
+
+/* Start of 'system_tf_identifier' grammer rules */
 
 system_tf_identifier
 	: SVLOG_STFIDENT { fprintf(stdout, "%s\n", $1); }
 	;
+
+/* End of 'system_tf_identifier' grammer rules */
 
 /*******************************************
  * End of 'Identifiers' grammer rules.     *
@@ -10172,26 +10240,9 @@ semicolon_or_null
 	| ';'
 	;
 
-ident_colon
-	: identifier ':'
-	;
-
-ident_colon_or_null
-	: %empty
-	| ident_colon
-	;
-
-colon_ident
-	: ':' identifier
-	;
-
-colon_ident_or_null
-	: %empty
-	| colon_ident
-	;
-
 disable_iff_expr_or_dist
-	: SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF '(' expression_or_dist ')'
+	: SVLOG_DISABLE SVLOG_IF_AND_ONLY_IF
+		'(' expression_or_dist ')'
 	;
 
 disable_iff_expr_or_dist_or_null
@@ -10200,56 +10251,9 @@ disable_iff_expr_or_dist_or_null
 	;
 
 interface_or_null
-	: SVLOG_INTERFACE
-	| %empty
-	;
-
-/* Start of 'ident_period' grammer rules */
-
-ident_period
-	: identifier '.'
-	;
-
-ident_period_or_null
 	: %empty
-	| ident_period
+	| SVLOG_INTERFACE
 	;
-
-ident_period_recurse
-	: ident_period
-	| ident_period_recurse ident_period
-	;
-
-ident_period_recurse_or_null
-	: %empty
-	| ident_period_recurse
-	;
-
-/* End of 'ident_period' grammer rules */
-
-
-/* Start of 'period_ident' grammer rules */
-
-period_ident
-	: '.' identifier
-	;
-
-period_ident_or_null
-	: %empty
-	| period_ident
-	;
-
-period_ident_recurse
-	: period_ident
-	| period_ident_recurse period_ident
-	;
-
-period_ident_recurse_or_null
-	: %empty
-	| period_ident_recurse
-	;
-
-/* End of 'period_ident' grammer rules */
 
 class_or_package_scope_or_null
 	: class_scope
