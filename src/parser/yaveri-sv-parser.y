@@ -439,9 +439,8 @@
 %%
 
 svlog
-	: primary_literal
-	| system_tf_call
-	| %empty
+	: library_text
+	| source_text
 	;
 
 /***************************************************
