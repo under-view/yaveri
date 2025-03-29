@@ -784,7 +784,7 @@ package_decl_aipi_recurse
 
 package_decl_aipi_recurse_or_null
 	: %empty
-	| package_decl_aipi
+	| package_decl_aipi_recurse
 	;
 
 package_declaration
@@ -993,11 +993,6 @@ variable_port_header_or_null
 interface_port_header
 	: identifier period_ident_or_null
 	| SVLOG_INTERFACE period_ident_or_null
-	;
-
-interface_port_header_or_null
-	: %empty
-	| interface_port_header
 	;
 
 /* End of 'interface_port_header' grammer rules */
@@ -1635,6 +1630,7 @@ class_method
 	| SVLOG_EXTERN method_qualifier_recurse_or_null method_prototype ';'
 	| method_qualifier_recurse_or_null class_constructor_declaration
 	| SVLOG_EXTERN method_qualifier_recurse_or_null class_constructor_declaration
+	| SVLOG_EXTERN method_qualifier_recurse_or_null class_constructor_prototype
 	;
 
 /* End of 'class_method' grammer rules */
@@ -2290,16 +2286,6 @@ package_export_declaration
 	| SVLOG_EXPORT package_import_item_seq_list ';'
 	;
 
-package_export_declaration_recurse
-	: package_export_declaration
-	| package_export_declaration_recurse package_export_declaration
-	;
-
-package_export_declaration_recurse_or_null
-	: %empty
-	| package_export_declaration_recurse
-	;
-
 /* End of 'package_export_declaration' grammer rules */
 
 
@@ -2540,11 +2526,6 @@ enum_name_declaration_seq_list
 	| enum_name_declaration_seq_list ',' enum_name_declaration
 	;
 
-enum_name_declaration_seq_list_or_null
-	: %empty
-	| enum_name_declaration_seq_list
-	;
-
 /* End of 'enum_name_declaration' grammer rules */
 
 
@@ -2592,19 +2573,9 @@ interface_class_type
 		parameter_value_assignment_or_null
 	;
 
-interface_class_type_or_null
-	: %empty
-	| interface_class_type
-	;
-
 interface_class_type_seq_list
 	: interface_class_type
 	| interface_class_type_seq_list ',' interface_class_type
-	;
-
-interface_class_type_seq_list_or_null
-	: %empty
-	| interface_class_type_seq_list
 	;
 
 /* End of 'interface_class_type' grammer rules */
@@ -2759,11 +2730,6 @@ struct_union_member
 struct_union_member_recurse
 	: struct_union_member
 	| struct_union_member_recurse struct_union_member
-	;
-
-struct_union_member_recurse_or_null
-	: %empty
-	| struct_union_member_recurse
 	;
 
 /* End of 'struct_union_member' grammer rules */
@@ -2969,11 +2935,6 @@ delay_value
 	| package_scope_identifer
 	| time_literal
 	| SVLOG_1STEP
-	;
-
-delay_value_or_null
-	: %empty
-	| delay_value
 	;
 
 /* End of 'delay_value' grammer rules */
@@ -3315,11 +3276,6 @@ associative_dimension
 	| REPEAT_ZERO_OR_MORE
 	;
 
-associative_dimension_or_null
-	: %empty
-	| associative_dimension
-	;
-
 /* End of 'associative_dimension' grammer rules */
 
 
@@ -3330,11 +3286,6 @@ variable_dimension
 	| unpacked_dimension
 	| associative_dimension
 	| queue_dimension
-	;
-
-variable_dimension_or_null
-	: %empty
-	| variable_dimension
 	;
 
 variable_dimension_recurse
@@ -3357,11 +3308,6 @@ queue_dimension
 	| BOUNDED_QUEUE_INITIALIZE constant_expression ']'
 	;
 
-queue_dimension_or_null
-	: %empty
-	| queue_dimension
-	;
-
 /* End of 'queue_dimension' grammer rules */
 
 
@@ -3369,11 +3315,6 @@ queue_dimension_or_null
 
 unsized_dimension
 	: '[' ']'
-	;
-
-unsized_dimension_or_null
-	: %empty
-	| unsized_dimension
 	;
 
 /* End of 'unsized_dimension' grammer rules */
@@ -4510,7 +4451,7 @@ coverage_spec_or_option_recurse
 
 coverage_spec_or_option_recurse_or_null
 	: %empty
-	| coverage_spec_or_option
+	| coverage_spec_or_option_recurse
 	;
 
 /* End of 'coverage_spec_or_option' grammer rules */
@@ -6373,7 +6314,7 @@ statement_or_null_recurse
 
 statement_or_null_recurse_or_null
 	: %empty
-	| statement_or_null
+	| statement_or_null_recurse
 	;
 
 /* End of 'statement_or_null' grammer rules */
@@ -6838,11 +6779,6 @@ pattern_or_null
 	| pattern
 	;
 
-pattern_recurse
-	: pattern
-	| pattern_recurse pattern
-	;
-
 pattern_seq_list
 	: pattern
 	| pattern_seq_list ',' pattern
@@ -6875,11 +6811,6 @@ structure_pattern_key
 	| assignment_pattern_key
 	;
 
-structure_pattern_key_recurse
-	: structure_pattern_key
-	| structure_pattern_key_recurse structure_pattern_key
-	;
-
 structure_pattern_key_expression_seq_list
 	: structure_pattern_key ':' expression
 	| structure_pattern_key_expression_seq_list ',' structure_pattern_key ':' expression
@@ -6893,11 +6824,6 @@ structure_pattern_key_expression_seq_list
 array_pattern_key
 	: constant_expression
 	| assignment_pattern_key
-	;
-
-array_pattern_key_recurse
-	: array_pattern_key
-	| array_pattern_key_recurse array_pattern_key
 	;
 
 array_pattern_key_expression_seq_list
@@ -8281,11 +8207,6 @@ concatenation
 	: '{' expression_seq_list '}'
 	;
 
-concatenation_or_null
-	: %empty
-	| concatenation
-	;
-
 /* End of 'concatenation' grammer rules */
 
 
@@ -8293,11 +8214,6 @@ concatenation_or_null
 
 constant_concatenation
 	: '{' constant_expression_seq_list '}'
-	;
-
-constant_concatenation_or_null
-	: %empty
-	| constant_concatenation
 	;
 
 /* End of 'constant_concatenation' grammer rules */
@@ -8566,9 +8482,15 @@ with_paren_ident
 	| SVLOG_WITH '(' identifier_seq_list_or_null ')' constraint_block
 	;
 
+with_paren_ident_or_null
+	: %empty
+	| with_paren_ident
+	;
+
 randomize_call
 	: SVLOG_RANDOMIZE attribute_instance_recurse_or_null
 		paren_ident_list_or_paren_null_or_null
+			with_paren_ident_or_null
 	;
 
 /* End of 'array_manipulation_call' grammer rules */
@@ -8670,11 +8592,6 @@ paren_constant_expression
 	: '(' constant_expression ')'
 	;
 
-paren_constant_expression_or_null
-	: %empty
-	| paren_constant_expression
-	;
-
 square_brackets_constant_expression
 	: '[' constant_expression ']'
 	;
@@ -8707,11 +8624,6 @@ constant_mintypmax_expression_or_null
 
 equal_constant_mintypmax_expression
 	: '=' constant_mintypmax_expression
-	;
-
-equal_constant_mintypmax_expression_or_null
-	: %empty
-	| equal_constant_mintypmax_expression
 	;
 
 /* End of 'constant_mintypmax_expression' grammer rules */
@@ -8867,11 +8779,6 @@ paren_expression
 	: '(' expression_or_null ')'
 	;
 
-paren_expression_or_null
-	: %empty
-	| paren_expression
-	;
-
 iff_expression
 	: SVLOG_IF_AND_ONLY_IF '(' expression ')'
 	| SVLOG_IF_AND_ONLY_IF expression
@@ -8954,11 +8861,6 @@ module_path_expression
 module_path_expression_seq_list
 	: module_path_expression
 	| module_path_expression_seq_list ',' module_path_expression
-	;
-
-module_path_expression_seq_list_or_null
-	: %empty
-	| module_path_expression_seq_list
 	;
 
 /* End of 'module_path_expression' grammer rules */
@@ -9169,11 +9071,6 @@ implicit_class_handle
 
 implicit_class_handle_period
 	: implicit_class_handle '.'
-	;
-
-implicit_class_handle_period_or_null
-	: %empty
-	| implicit_class_handle_period
 	;
 
 implicit_class_handle_period_or_class_scope
@@ -10077,11 +9974,6 @@ identifier_equal_expression_seq_list
 	| identifier_equal_expression_seq_list ',' identifier equal_expression
 	;
 
-identifier_equal_expression_seq_list_or_null
-	: %empty
-	| identifier_equal_expression_seq_list
-	;
-
 ident_colon
 	: identifier ':'
 	;
@@ -10107,16 +9999,6 @@ ident_period
 ident_period_or_null
 	: %empty
 	| ident_period
-	;
-
-ident_period_recurse
-	: ident_period
-	| ident_period_recurse ident_period
-	;
-
-ident_period_recurse_or_null
-	: %empty
-	| ident_period_recurse
 	;
 
 period_ident
@@ -10183,16 +10065,6 @@ ps_type_identifier
 	;
 
 /* End of 'ps_type_identifier' grammer rules */
-
-
-/* Start of 'rs_production_identifier' grammer rules */
-
-rs_production_identifier_or_null
-	: %empty
-	| identifier
-	;
-
-/* End of 'rs_production_identifier' grammer rules */
 
 
 /* Start of 'ps_parameter_identifier' grammer rules */
